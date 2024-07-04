@@ -1,0 +1,10 @@
+/.vscode
+/node_modules
+./client/dist
+./server/dist
+
+*.env
+.env
+.env.*
+
+*.config.js
