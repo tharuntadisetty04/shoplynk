@@ -1,0 +1,71 @@
+import mongoose, { Schema } from "mongoose";
+
+const productSchema = new Schema(
+    {
+        name: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+        description: {
+            type: String,
+            required: true,
+        },
+        price: {
+            type: Number,
+            required: true,
+            maxLength: 7,
+        },
+        rating: {
+            type: Number,
+            default: 0,
+        },
+        image: [
+            {
+                public_id: {
+                    type: String,
+                    required: true,
+                },
+                url: {
+                    type: String,
+                    required: true,
+                },
+            }
+        ],
+        category: {
+            type: String,
+            required: true,
+        },
+        stock: {
+            type: Number,
+            required: true,
+            maxLength: 4,
+            default: 1,
+        },
+        numOfReviews: {
+            type: Number,
+            default: 0,
+        },
+        reviews: [
+            {
+                name: {
+                    type: String,
+                    required: true,
+                },
+                rating: {
+                    type: Number,
+                    required: true,
+                },
+                comment: {
+                    type: String,
+                    required: true,
+                }
+            }
+        ],
+    },
+    {
+        timestamps: true,
+    }
+);
+
+export const Product = mongoose.model("Product", productSchema);
