@@ -16,6 +16,12 @@ app.get("/", (req, res) => {
     res.send("Server running ...")
 })
 
+//Routes
+import productRouter from "./routes/product.routes.js";
+
+//product routes
+app.use("/api/v1/products", productRouter)
+
 app.on("error", (err) => {
     console.log("App error : ", err);
     throw err;
