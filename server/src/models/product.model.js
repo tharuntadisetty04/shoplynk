@@ -30,7 +30,7 @@ const productSchema = new Schema(
                     type: String,
                     required: true,
                 },
-            }
+            },
         ],
         category: {
             type: String,
@@ -59,13 +59,11 @@ const productSchema = new Schema(
                 comment: {
                     type: String,
                     required: true,
-                }
-            }
+                },
+            },
         ],
     },
-    {
-        timestamps: true,
-    }
+    { timestamps: true }
 );
 
 export const Product = mongoose.model("Product", productSchema);
