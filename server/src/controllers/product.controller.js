@@ -2,6 +2,7 @@ import { Product } from "../models/product.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
+import ProductSearch from "../utils/productSearch.js";
 
 //create a product
 const createProduct = asyncHandler(async (req, res) => {
@@ -35,14 +36,19 @@ const createProduct = asyncHandler(async (req, res) => {
 
 //get all products
 const getproducts = asyncHandler(async (req, res) => {
-    const products = await Product.find()
+    const resultPerPage = 12
+    const productCount = await Product.countDocuments()
+
+    const productFilters = new ProductSearch(Product.find(), req.query).search().filter().pagination(resultPerPage)
+
+    const products = await productFilters.data
 
     if (!products || products.length === 0) {
         throw new ApiError(500, "Products not found in Database")
     }
 
     res.status(200).json(
-        new ApiResponse(200, products, "Products fetched successfully")
+        new ApiResponse(200, { products, productCount }, "Products fetched successfully")
     )
 })
 
