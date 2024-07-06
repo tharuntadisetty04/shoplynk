@@ -13,6 +13,11 @@ router.route("/").get(getproducts);
 
 //admin routes
 router.route("/new").post(createProduct);
-router.route("/:id").patch(updateProduct).delete(deleteProduct).get(getProductDetails);
+
+router
+    .route("/:id")
+    .patch(updateProduct)
+    .delete(deleteProduct)
+    .get(getProductDetails);
 
 export default router;
