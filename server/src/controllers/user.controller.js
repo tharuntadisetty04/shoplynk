@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import validator from "validator";
+import sendEmail from "../utils/sendEmail.js";
 
 //generate tokens
 const generateTokens = async (userId) => {
@@ -122,6 +123,7 @@ const loginUser = asyncHandler(async (req, res) => {
         );
 });
 
+//logout user
 const logoutUser = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(
         req.user._id,
@@ -147,6 +149,7 @@ const logoutUser = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, "User logged out "));
 });
 
+//get current user
 const getCurrentUser = asyncHandler(async (req, res) => {
     return res
         .status(200)
@@ -155,4 +158,46 @@ const getCurrentUser = asyncHandler(async (req, res) => {
         );
 });
 
-export { registerUser, loginUser, logoutUser, getCurrentUser };
+//forgot password
+const forgotPassword = asyncHandler(async (req, res) => {
+    const user = await User.findOne({ email: req.body.email });
+
+    if (!user) {
+        throw new ApiError(404, "User does not exist or Invalid email");
+    }
+
+    const resetToken = user.getResetPasswordToken();
+
+    await user.save({ validateBeforeSave: false });
+
+    const resetPasswordUrl = `${req.protocol}://${req.get("host")}/password/reset/${resetToken}`;
+
+    const message = `Your password reset token is :- \n ${resetPasswordUrl} \n\n If you have not requested this email, then update your password or ignore it.`;
+
+    try {
+        await sendEmail({
+            email: user.email,
+            subject: `Password recovery request | ShopLynk`,
+            message,
+        });
+
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(
+                    200,
+                    {},
+                    `Email sent to ${user.email} successfully`
+                )
+            );
+    } catch (error) {
+        user.resetPasswordToken = null;
+        user.resetPasswordExpire = null;
+
+        await user.save({ validateBeforeSave: false });
+
+        throw new ApiError(500, error.message);
+    }
+});
+
+export { registerUser, loginUser, logoutUser, getCurrentUser, forgotPassword };
