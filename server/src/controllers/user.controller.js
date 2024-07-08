@@ -4,6 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import validator from "validator";
 import sendEmail from "../utils/sendEmail.js";
+import crypto from "crypto";
 
 //generate tokens
 const generateTokens = async (userId) => {
@@ -35,6 +36,20 @@ const registerUser = asyncHandler(async (req, res) => {
 
     if (!validator.isEmail(email)) {
         throw new ApiError(400, "Please Enter a valid Email");
+    }
+
+    if (username.length > 30 || username.length < 3) {
+        throw new ApiError(
+            400,
+            "Username may have exceeded the limit or below the limit"
+        );
+    }
+
+    if (password.length > 30 || password.length < 8) {
+        throw new ApiError(
+            400,
+            "Password may have exceeded the limit or below the limit"
+        );
     }
 
     const existedUser = await User.findOne({ email });
@@ -146,7 +161,9 @@ const logoutUser = asyncHandler(async (req, res) => {
         .status(200)
         .clearCookie("accessToken", options)
         .clearCookie("refreshToken", options)
-        .json(new ApiResponse(200, {}, "User logged out "));
+        .json(
+            new ApiResponse(200, {}, `User: ${req.user.username} logged out`)
+        );
 });
 
 //get current user
@@ -166,11 +183,11 @@ const forgotPassword = asyncHandler(async (req, res) => {
         throw new ApiError(404, "User does not exist or Invalid email");
     }
 
-    const resetToken = user.getResetPasswordToken();
+    const resetToken = user.getPasswordResetToken();
 
     await user.save({ validateBeforeSave: false });
 
-    const resetPasswordUrl = `${req.protocol}://${req.get("host")}/password/reset/${resetToken}`;
+    const resetPasswordUrl = `${req.protocol}://${req.get("host")}/api/v1/user/password/reset/${resetToken}`;
 
     const message = `Your password reset token is :- \n ${resetPasswordUrl} \n\n If you have not requested this email, then update your password or ignore it.`;
 
@@ -200,4 +217,133 @@ const forgotPassword = asyncHandler(async (req, res) => {
     }
 });
 
-export { registerUser, loginUser, logoutUser, getCurrentUser, forgotPassword };
+//reset password
+const resetPassword = asyncHandler(async (req, res) => {
+    const resetPasswordToken = crypto
+        .createHash("sha256")
+        .update(req.params.token)
+        .digest("hex");
+
+    const user = await User.findOne({
+        resetPasswordToken,
+        resetPasswordExpire: { $gt: Date.now() },
+    });
+
+    if (!user) {
+        throw new ApiError(400, "Reset password token has expired or invalid ");
+    }
+
+    if (req.body.password !== req.body.confirmPassword) {
+        throw new ApiError(400, "Password does not match ");
+    }
+
+    if (req.body.password.length > 30 || req.body.password.length < 8) {
+        throw new ApiError(
+            400,
+            "Password may have exceeded the limit or below the limit"
+        );
+    }
+
+    const { accessToken, refreshToken } = await generateTokens(user._id);
+
+    user.password = req.body.password;
+    user.refreshToken = refreshToken;
+    user.resetPasswordToken = null;
+    user.resetPasswordExpire = null;
+
+    await user.save();
+
+    const loggedInUser = await User.findById(user._id).select(
+        "-password -refreshToken"
+    );
+
+    const options = {
+        httpOnly: true,
+        secure: true,
+    };
+
+    return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+            new ApiResponse(
+                200,
+                { user: loggedInUser, accessToken, refreshToken },
+                "Password has been reset and user logged in successfully"
+            )
+        );
+});
+
+//update current password
+const updatePassword = asyncHandler(async (req, res) => {
+    const { oldPassword, newPassword } = req.body;
+
+    const user = await User.findById(req.user?._id);
+
+    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+
+    if (!isPasswordCorrect) {
+        throw new ApiError(400, "Invalid old password");
+    }
+
+    if (newPassword.length > 30 || newPassword.length < 8) {
+        throw new ApiError(
+            400,
+            "Password may have exceeded the limit or below the limit"
+        );
+    }
+
+    user.password = newPassword;
+
+    await user.save({ validateBeforeSave: false });
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Password updated successfully"));
+});
+
+//update profile
+const updateProfile = asyncHandler(async (req, res) => {
+    const { username, email } = req.body;
+
+    if (!(username || email)) {
+        throw new ApiError(400, "All fields are required");
+    }
+
+    if ([username, email].some((field) => field?.trim() === "")) {
+        throw new ApiError(400, "Required fields are empty");
+    }
+
+    const newUser = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                username: username,
+                email: email,
+            },
+        },
+        { new: true }
+    ).select("-password");
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                newUser,
+                "Account details updated successfully"
+            )
+        );
+});
+
+export {
+    registerUser,
+    loginUser,
+    logoutUser,
+    getCurrentUser,
+    forgotPassword,
+    resetPassword,
+    updatePassword,
+    updateProfile
+};
