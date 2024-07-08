@@ -3,21 +3,22 @@ import {
     createProduct,
     deleteProduct,
     getProductDetails,
-    getproducts,
+    getAllProducts,
     updateProduct,
 } from "../controllers/product.controller.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { verifySeller } from "../middlewares/verifySeller.middleware.js";
 
 const router = Router();
 
-router.route("/").get(getproducts);
+router.route("/").get(getAllProducts);
 
-//admin routes
-router.route("/new").post(createProduct);
-
+//seller routes
+router.route("/new").post(verifyJWT, verifySeller, createProduct);
 router
     .route("/:id")
-    .patch(updateProduct)
-    .delete(deleteProduct)
-    .get(getProductDetails);
+    .patch(verifyJWT, verifySeller, updateProduct)
+    .delete(verifyJWT, verifySeller, deleteProduct)
+    .get(verifyJWT, verifySeller, getProductDetails);
 
 export default router;

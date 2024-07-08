@@ -6,36 +6,44 @@ import ProductSearch from "../utils/productSearch.js";
 
 //create a product
 const createProduct = asyncHandler(async (req, res) => {
+    req.body.owner = req.user._id;
     const { name, description, price, image, category, stock } = req.body;
+
+    if ([name, description, category].some((field) => field?.trim() === "")) {
+        throw new ApiError(400, "Required fields are empty");
+    }
 
     if (!name || !description || !price || !image || !category) {
         throw new ApiError(400, "Please enter the required fields");
     }
+
+    // const product = await Product.create(req.body);
 
     const product = await Product.create({
         name: name,
         description: description,
         price: price,
         image: image,
-        category: category,
+        category: category.toLowerCase(),
         stock: stock,
+        owner: req.body.owner,
     });
 
-    const isProductCreated = await Product.findById(product._id).select(
-        "-reviews"
-    );
+    const isProductCreated = await Product.findById(product._id);
 
     if (!isProductCreated) {
         throw new ApiError(500, "Product creation failed in Database");
     }
 
-    res.status(201).json(
-        new ApiResponse(200, isProductCreated, "Product added successfully")
-    );
+    return res
+        .status(201)
+        .json(
+            new ApiResponse(200, isProductCreated, "Product added successfully")
+        );
 });
 
 //get all products
-const getproducts = asyncHandler(async (req, res) => {
+const getAllProducts = asyncHandler(async (req, res) => {
     const resultPerPage = 12;
     const productCount = await Product.countDocuments();
 
@@ -50,13 +58,15 @@ const getproducts = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Products not found in Database");
     }
 
-    res.status(200).json(
-        new ApiResponse(
-            200,
-            { products, productCount },
-            "Products fetched successfully"
-        )
-    );
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                { products, productCount },
+                "Products fetched successfully"
+            )
+        );
 });
 
 //get product details
@@ -65,18 +75,19 @@ const getProductDetails = asyncHandler(async (req, res, next) => {
 
     try {
         const product = await Product.findById(productId);
-
         if (!product) {
             throw new ApiError(404, "Product not found");
         }
 
-        res.status(200).json(
-            new ApiResponse(
-                200,
-                product,
-                "Product details fetched successfully"
-            )
-        );
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(
+                    200,
+                    product,
+                    "Product details fetched successfully"
+                )
+            );
     } catch (error) {
         if (error.name == "CastError") {
             next(new ApiError(400, `Invalid product ID: ${productId}`));
@@ -114,13 +125,15 @@ const updateProduct = asyncHandler(async (req, res, next) => {
             throw new ApiError(404, "Product to be updated not found");
         }
 
-        res.status(200).json(
-            new ApiResponse(
-                200,
-                updatedProduct,
-                "Product details updated successfully"
-            )
-        );
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(
+                    200,
+                    updatedProduct,
+                    "Product details updated successfully"
+                )
+            );
     } catch (error) {
         if (error.name == "CastError") {
             next(new ApiError(400, `Invalid product ID: ${productId}`));
@@ -141,9 +154,9 @@ const deleteProduct = asyncHandler(async (req, res, next) => {
             throw new ApiError(404, "Product to be deleted not found");
         }
 
-        res.status(200).json(
-            new ApiResponse(200, [], "Product deleted successfully")
-        );
+        return res
+            .status(200)
+            .json(new ApiResponse(200, [], "Product deleted successfully"));
     } catch (error) {
         if (error.name == "CastError") {
             next(new ApiError(400, `Invalid product ID: ${productId}`));
@@ -155,7 +168,7 @@ const deleteProduct = asyncHandler(async (req, res, next) => {
 
 export {
     createProduct,
-    getproducts,
+    getAllProducts,
     updateProduct,
     deleteProduct,
     getProductDetails,

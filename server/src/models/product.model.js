@@ -14,7 +14,7 @@ const productSchema = new Schema(
         price: {
             type: Number,
             required: true,
-            maxLength: 7,
+            maxLength: [7, "Price cannot exceed 7 characters"],
         },
         rating: {
             type: Number,
@@ -39,7 +39,7 @@ const productSchema = new Schema(
         stock: {
             type: Number,
             required: true,
-            maxLength: 4,
+            maxLength: [4, "Stock limit cannot exceed 4 characters"],
             default: 1,
         },
         numOfReviews: {
@@ -62,6 +62,11 @@ const productSchema = new Schema(
                 },
             },
         ],
+        owner: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+        },
     },
     { timestamps: true }
 );
