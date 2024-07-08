@@ -11,14 +11,14 @@ import { verifySeller } from "../middlewares/verifySeller.middleware.js";
 
 const router = Router();
 
-router.route("/").get(getAllProducts);
+router.route("/products").get(getAllProducts);
 
-//seller routes
-router.route("/new").post(verifyJWT, verifySeller, createProduct);
+//admin routes
+router.route("/admin/new").post(verifyJWT, verifySeller, createProduct);
 router
     .route("/:id")
     .patch(verifyJWT, verifySeller, updateProduct)
     .delete(verifyJWT, verifySeller, deleteProduct)
-    .get(verifyJWT, verifySeller, getProductDetails);
+    .get(verifyJWT, getProductDetails);
 
 export default router;

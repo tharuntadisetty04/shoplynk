@@ -17,6 +17,14 @@ const createProduct = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Please enter the required fields");
     }
 
+    if (price.toString().length > 7) {
+        throw new ApiError(400, "Price cannot exceed 7 characters");
+    }
+
+    if (stock.toString().length > 4) {
+        throw new ApiError(400, "Stock limit cannot exceed 4 characters");
+    }
+
     // const product = await Product.create(req.body);
 
     const product = await Product.create({
@@ -101,6 +109,14 @@ const getProductDetails = asyncHandler(async (req, res, next) => {
 const updateProduct = asyncHandler(async (req, res, next) => {
     const productId = req.params?.id;
     const { name, description, price, image, stock } = req.body;
+
+    if (price.toString().length > 7) {
+        throw new ApiError(400, "Price cannot exceed 7 characters");
+    }
+
+    if (stock.toString().length > 4) {
+        throw new ApiError(400, "Stock limit cannot exceed 4 characters");
+    }
 
     try {
         const updatedProduct = await Product.findByIdAndUpdate(
