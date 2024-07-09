@@ -1,6 +1,6 @@
-import { Product } from "../models/product.model";
-import { ApiError } from "../utils/ApiError";
-import { asyncHandler } from "../utils/asyncHandler";
+import { Product } from "../models/product.model.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
 
 export const verifyOwner = asyncHandler(async (req, res, next) => {
     const userId = req.user._id;
@@ -13,7 +13,7 @@ export const verifyOwner = asyncHandler(async (req, res, next) => {
             throw new ApiError(404, "Product not found");
         }
 
-        if (!product.owner === userId) {
+        if (!product.owner.equals(userId)) {
             throw new ApiError(
                 400,
                 "Product can not be modified by the current seller"
