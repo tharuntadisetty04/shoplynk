@@ -10,10 +10,8 @@ export const verifySeller = asyncHandler(async (req, res, next) => {
             throw new ApiError(401, "Unauthorized request");
         }
 
-        const seller = await User.findById(user?._id).select("+role");
-
-        if (!(user.role === "seller")) {
-            throw new ApiError(401, "Buyer role is not allowed to access");
+        if (user.role !== "seller") {
+            throw new ApiError(401, "Access denied");
         }
 
         next();
