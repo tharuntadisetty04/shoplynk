@@ -5,6 +5,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import validator from "validator";
 import sendEmail from "../utils/sendEmail.js";
 import crypto from "crypto";
+import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 //generate tokens
 const generateTokens = async (userId) => {
@@ -26,30 +28,24 @@ const generateTokens = async (userId) => {
 const registerUser = asyncHandler(async (req, res) => {
     const { username, email, password, role } = req.body;
 
-    if ([username, email, password].some((field) => field?.trim() === "")) {
-        throw new ApiError(400, "Required fields are empty");
-    }
-
-    if (!username || !email || !password) {
+    if (
+        [username, email, password].some(
+            (field) => !field || field.trim() === ""
+        )
+    ) {
         throw new ApiError(400, "Please enter the required fields");
     }
 
     if (!validator.isEmail(email)) {
-        throw new ApiError(400, "Please Enter a valid Email");
+        throw new ApiError(400, "Please enter a valid email");
     }
 
     if (username.length > 30 || username.length < 3) {
-        throw new ApiError(
-            400,
-            "Username may have exceeded the limit or below the limit"
-        );
+        throw new ApiError(400, "Username must be between 3 and 30 characters");
     }
 
     if (password.length > 30 || password.length < 8) {
-        throw new ApiError(
-            400,
-            "Password may have exceeded the limit or below the limit"
-        );
+        throw new ApiError(400, "Password must be between 8 and 30 characters");
     }
 
     const existedUser = await User.findOne({ email });
@@ -58,16 +54,18 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(409, "User with email already exists");
     }
 
-    const user = await User.create({
-        username: username,
-        email: email,
-        password: password,
+    const newUser = {
+        username,
+        email,
+        password,
         avatar: {
             public_id: "sample avatar id",
             url: "sample avatar url",
         },
-        role: role.toLowerCase() || "buyer",
-    });
+        role: role ? role.toLowerCase() : "buyer",
+    };
+
+    const user = await User.create(newUser);
 
     const isUserCreated = await User.findById(user._id).select(
         "-password -refreshToken"
@@ -88,11 +86,7 @@ const registerUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
-    if ([email, password].some((field) => field?.trim() === "")) {
-        throw new ApiError(400, "Required fields are empty");
-    }
-
-    if (!email || !password) {
+    if ([email, password].some((field) => !field || field.trim() === "")) {
         throw new ApiError(400, "Please enter the required fields");
     }
 
@@ -234,13 +228,13 @@ const resetPassword = asyncHandler(async (req, res) => {
     }
 
     if (req.body.password !== req.body.confirmPassword) {
-        throw new ApiError(400, "Password does not match ");
+        throw new ApiError(400, "Password do not match ");
     }
 
     if (req.body.password.length > 30 || req.body.password.length < 8) {
         throw new ApiError(
             400,
-            "Password may have exceeded the limit or below the limit"
+            "Password length must be between 8 and 30 characters"
         );
     }
 
@@ -290,7 +284,7 @@ const updatePassword = asyncHandler(async (req, res) => {
     if (newPassword.length > 30 || newPassword.length < 8) {
         throw new ApiError(
             400,
-            "Password may have exceeded the limit or below the limit"
+            "Password length must be between 8 and 30 characters"
         );
     }
 
@@ -307,12 +301,19 @@ const updatePassword = asyncHandler(async (req, res) => {
 const updateProfile = asyncHandler(async (req, res) => {
     const { username, email } = req.body;
 
-    if (!(username || email)) {
+    if ([username, email].some((field) => !field || field.trim() === "")) {
         throw new ApiError(400, "All fields are required");
     }
 
-    if ([username, email].some((field) => field?.trim() === "")) {
-        throw new ApiError(400, "Required fields are empty");
+    if (!validator.isEmail(email)) {
+        throw new ApiError(400, "Please Enter a valid Email");
+    }
+
+    if (username.length > 30 || username.length < 3) {
+        throw new ApiError(
+            400,
+            "Username length must be between 3 and 30 characters"
+        );
     }
 
     const newUser = await User.findByIdAndUpdate(
@@ -326,6 +327,10 @@ const updateProfile = asyncHandler(async (req, res) => {
         { new: true }
     ).select("-password");
 
+    if (!newUser) {
+        throw new ApiError(500, "Account updation failed");
+    }
+
     return res
         .status(200)
         .json(
@@ -337,6 +342,153 @@ const updateProfile = asyncHandler(async (req, res) => {
         );
 });
 
+//update from buyer to seller role
+const updateUserRole = asyncHandler(async (req, res) => {
+    const { username, email, role } = req.body;
+
+    if ([username, email].some((field) => !field || field.trim() === "")) {
+        throw new ApiError(400, "Required fields are empty");
+    }
+
+    if (!username || !email || !role) {
+        throw new ApiError(400, "Please enter the required fields");
+    }
+
+    if (!validator.isEmail(email)) {
+        throw new ApiError(400, "Please Enter a valid Email");
+    }
+
+    if (username.length > 30 || username.length < 3) {
+        throw new ApiError(
+            400,
+            "Username length must be between 3 and 30 characters"
+        );
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                username,
+                email,
+                role: role.toLowerCase() || "seller",
+            },
+        },
+        {
+            new: true,
+            runValidators: true,
+            useFindAndModify: false,
+        }
+    ).select("-password -refreshToken");
+
+    if (!updatedUser) {
+        throw new ApiError(404, `User with ID ${req.user?._id} not found`);
+    }
+
+    res.status(200).json(
+        new ApiResponse(200, updatedUser, "User role updated successfully")
+    );
+});
+
+//delete account
+const deleteUserProfile = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+
+    try {
+        const user = await User.findById(userId);
+
+        if (!user) {
+            throw new ApiError(404, "User not found");
+        }
+
+        await User.findByIdAndDelete(userId);
+
+        res.status(200).json(
+            new ApiResponse(200, {}, "User account deleted successfully")
+        );
+    } catch (error) {
+        throw new ApiError(400, error?.message || "User cannot be deleted");
+    }
+});
+
+//renew access token
+const renewAccessToken = asyncHandler(async (req, res) => {
+    const incomingRefreshToken =
+        req.cookies.refreshToken || req.body.refreshToken;
+
+    if (!incomingRefreshToken) {
+        throw new ApiError(401, "Unauthorized request");
+    }
+
+    try {
+        const decodedToken = jwt.verify(
+            incomingRefreshToken,
+            process.env.REFRESH_TOKEN_SECRET
+        );
+
+        const user = await User.findById(decodedToken?._id);
+
+        if (!user) {
+            throw new ApiError(401, "Invalid refresh token");
+        }
+
+        if (incomingRefreshToken !== user?.refreshToken) {
+            throw new ApiError(401, "Refresh token is expired or used");
+        }
+
+        const options = {
+            httpOnly: true,
+            secure: true,
+        };
+
+        const { accessToken, newRefreshToken } = await generateTokens(user._id);
+
+        return res
+            .status(200)
+            .cookie("accessToken", accessToken, options)
+            .cookie("refreshToken", newRefreshToken, options)
+            .json(
+                new ApiResponse(
+                    200,
+                    { accessToken, refreshToken: newRefreshToken },
+                    "Access token refreshed"
+                )
+            );
+    } catch (error) {
+        throw new ApiError(401, error?.message || "Invalid refresh token");
+    }
+});
+
+//get all users --Admin
+const getAllUser = asyncHandler(async (req, res) => {
+    const users = await User.find();
+
+    if (!users || users.length === 0) {
+        throw new ApiError(404, "No users found");
+    }
+
+    res.status(200).json(
+        new ApiResponse(200, users, "All users fetched successfully")
+    );
+});
+
+//get single user --Admin
+const getSingleUser = asyncHandler(async (req, res) => {
+    if (!mongoose.Types.ObjectId.isValid(req.params?.id)) {
+        throw new ApiError(400, "Invalid user ID");
+    }
+
+    const user = await User.findById(req.params?.id);
+
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    res.status(200).json(
+        new ApiResponse(200, user, "User fetched successfully")
+    );
+});
+
 export {
     registerUser,
     loginUser,
@@ -345,5 +497,10 @@ export {
     forgotPassword,
     resetPassword,
     updatePassword,
-    updateProfile
+    updateProfile,
+    renewAccessToken,
+    getAllUser,
+    getSingleUser,
+    updateUserRole,
+    deleteUserProfile,
 };
