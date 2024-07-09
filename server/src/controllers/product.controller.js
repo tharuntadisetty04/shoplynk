@@ -17,6 +17,10 @@ const createProduct = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Please enter the required fields");
     }
 
+    if (typeof price !== 'number' || price < 0) {
+        throw new ApiError(400, "Price must be a non-negative number");
+    }
+
     if (price.toString().length > 7) {
         throw new ApiError(400, "Price cannot exceed 7 characters");
     }
@@ -24,8 +28,6 @@ const createProduct = asyncHandler(async (req, res) => {
     if (stock.toString().length > 4) {
         throw new ApiError(400, "Stock limit cannot exceed 4 characters");
     }
-
-    // const product = await Product.create(req.body);
 
     const product = await Product.create({
         name: name,
@@ -109,6 +111,18 @@ const getProductDetails = asyncHandler(async (req, res, next) => {
 const updateProduct = asyncHandler(async (req, res, next) => {
     const productId = req.params?.id;
     const { name, description, price, image, stock } = req.body;
+
+    if ([name, description].some((field) => field?.trim() === "")) {
+        throw new ApiError(400, "Required fields are empty");
+    }
+
+    if (!name || !description || !price || !image) {
+        throw new ApiError(400, "Please enter the required fields");
+    }
+
+    if (typeof price !== 'number' || price < 0) {
+        throw new ApiError(400, "Price must be a non-negative number");
+    }
 
     if (price.toString().length > 7) {
         throw new ApiError(400, "Price cannot exceed 7 characters");
