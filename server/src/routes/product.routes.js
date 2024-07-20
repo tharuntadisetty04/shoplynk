@@ -5,6 +5,9 @@ import {
     getProductDetails,
     getAllProducts,
     updateProduct,
+    createProductReview,
+    getAllReviews,
+    deleteReview,
 } from "../controllers/product.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { verifySeller } from "../middlewares/verifySeller.middleware.js";
@@ -13,7 +16,11 @@ import { verifyOwner } from "../middlewares/verifyOwner.middleware.js";
 const router = Router();
 
 router.route("/").get(getAllProducts);
-router.route("/:id").get(getProductDetails);
+router.route("/product/:id").get(getProductDetails);
+
+//secured routes
+router.route("/review").post(verifyJWT, createProductReview);
+router.route("/reviews").get(getAllReviews).delete(verifyJWT, deleteReview);
 
 //admin routes
 router.route("/admin/new").post(verifyJWT, verifySeller, createProduct);

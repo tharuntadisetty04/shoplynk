@@ -3,6 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import ProductSearch from "../utils/productSearch.js";
+import mongoose from "mongoose";
 
 //create a product
 const createProduct = asyncHandler(async (req, res) => {
@@ -17,7 +18,7 @@ const createProduct = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Please enter the required fields");
     }
 
-    if (typeof price !== 'number' || price < 0) {
+    if (typeof price !== "number" || price < 0) {
         throw new ApiError(400, "Price must be a non-negative number");
     }
 
@@ -54,7 +55,7 @@ const createProduct = asyncHandler(async (req, res) => {
 
 //get all products
 const getAllProducts = asyncHandler(async (req, res) => {
-    const resultPerPage = 12;
+    const resultPerPage = 5; //12
     const productCount = await Product.countDocuments();
 
     const productFilters = new ProductSearch(Product.find(), req.query)
@@ -120,7 +121,7 @@ const updateProduct = asyncHandler(async (req, res, next) => {
         throw new ApiError(400, "Please enter the required fields");
     }
 
-    if (typeof price !== 'number' || price < 0) {
+    if (typeof price !== "number" || price < 0) {
         throw new ApiError(400, "Price must be a non-negative number");
     }
 
@@ -196,10 +197,137 @@ const deleteProduct = asyncHandler(async (req, res, next) => {
     }
 });
 
+//create or update product review
+const createProductReview = asyncHandler(async (req, res) => {
+    const { rating, comment, productId } = req.body;
+
+    if (!rating) {
+        throw new ApiError(400, "Please enter ratings");
+    }
+
+    if (!productId) {
+        throw new ApiError(400, "Product ID is required");
+    }
+
+    const review = {
+        userId: req.user._id,
+        name: req.user.username,
+        rating: Number(rating),
+        comment,
+    };
+
+    const product = await Product.findById(productId);
+
+    if (!product) {
+        throw new ApiError(404, "Product not found");
+    }
+
+    const existingReview = product.reviews.find((rev) =>
+        rev.userId.equals(req.user._id)
+    );
+
+    if (existingReview) {
+        existingReview.rating = rating;
+        existingReview.comment = comment;
+    } else {
+        product.reviews.push(review);
+        product.numOfReviews = product.reviews.length;
+    }
+
+    let avg = 0;
+    product.reviews.forEach((rev) => {
+        avg += rev.rating;
+    });
+
+    product.rating = avg / product.reviews.length;
+
+    await product.save({ validateBeforeSave: false });
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Review added successfully"));
+});
+
+//get all reviews of a product
+const getAllReviews = asyncHandler(async (req, res) => {
+    const productId = req.query.id;
+
+    if (!productId) {
+        throw new ApiError(400, "Product ID is required");
+    }
+
+    const product = await Product.findById(productId);
+
+    if (!product) {
+        throw new ApiError(404, "Product not found");
+    }
+
+    const reviews = product.reviews;
+
+    res.status(200).json(
+        new ApiResponse(200, reviews, "All reviews fetched successfully")
+    );
+});
+
+//delete product review
+const deleteReview = asyncHandler(async (req, res) => {
+    const { productId, reviewId } = req.query;
+
+    if (!productId || !reviewId) {
+        throw new ApiError(400, "Product ID and Review ID are required");
+    }
+
+    if (
+        !mongoose.Types.ObjectId.isValid(productId) ||
+        !mongoose.Types.ObjectId.isValid(reviewId)
+    ) {
+        throw new ApiError(400, "Invalid Product ID or Review ID");
+    }
+
+    const product = await Product.findById(productId);
+
+    if (!product) {
+        throw new ApiError(404, "Product not found");
+    }
+
+    const reviews = product.reviews.filter(
+        (rev) => rev._id.toString() !== req.query.reviewId.toString()
+    );
+
+    let avg = 0;
+    reviews.forEach((rev) => {
+        avg += rev.rating;
+    });
+
+    const numOfReviews = reviews.length;
+    const ratings = numOfReviews > 0 ? avg / numOfReviews : 0;
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+        productId,
+        {
+            reviews,
+            ratings,
+            numOfReviews,
+        },
+        {
+            new: true,
+            runValidators: true,
+            useFindAndModify: false,
+        }
+    );
+
+    res.status(200).json(
+        new ApiResponse(200, updatedProduct, "Review deleted successfully")
+    );
+});
+
 export {
     createProduct,
     getAllProducts,
     updateProduct,
     deleteProduct,
     getProductDetails,
+    createProductReview,
+    getAllReviews,
+    deleteReview,
 };
