@@ -290,6 +290,12 @@ const deleteReview = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Product not found");
     }
 
+    const reviewExists = product.reviews.some((review) => review._id.toString() === reviewId);
+
+    if (!reviewExists) {
+        throw new ApiError(400, "Review to be deleted not found");
+    }
+
     const reviews = product.reviews.filter(
         (rev) => rev._id.toString() !== req.query.reviewId.toString()
     );
@@ -302,7 +308,7 @@ const deleteReview = asyncHandler(async (req, res) => {
     const numOfReviews = reviews.length;
     const ratings = numOfReviews > 0 ? avg / numOfReviews : 0;
 
-    const updatedProduct = await Product.findByIdAndUpdate(
+    await Product.findByIdAndUpdate(
         productId,
         {
             reviews,
@@ -317,7 +323,7 @@ const deleteReview = asyncHandler(async (req, res) => {
     );
 
     res.status(200).json(
-        new ApiResponse(200, updatedProduct, "Review deleted successfully")
+        new ApiResponse(200, {}, "Review deleted successfully")
     );
 });
 
