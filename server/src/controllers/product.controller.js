@@ -222,6 +222,14 @@ const createProductReview = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Product not found");
     }
 
+    const isReviewOwner = product.reviews.some(
+        (review) => review.userId.toString() === req.user._id.toString()
+    );
+
+    if (!isReviewOwner) {
+        throw new ApiError(400, "You are not authorized to update this review");
+    }
+
     const existingReview = product.reviews.find((rev) =>
         rev.userId.equals(req.user._id)
     );
@@ -290,28 +298,34 @@ const deleteReview = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Product not found");
     }
 
-    const reviewExists = product.reviews.some((review) => review._id.toString() === reviewId);
+    const review = product.reviews.find(
+        (review) => review._id.toString() === reviewId
+    );
 
-    if (!reviewExists) {
-        throw new ApiError(400, "Review to be deleted not found");
+    if (!review) {
+        throw new ApiError(404, "Review to be deleted not found");
     }
 
-    const reviews = product.reviews.filter(
-        (rev) => rev._id.toString() !== req.query.reviewId.toString()
+    if (review.userId.toString() !== req.user._id.toString()) {
+        throw new ApiError(403, "You are not authorized to delete this review");
+    }
+
+    const newReviews = product.reviews.filter(
+        (rev) => rev._id.toString() !== reviewId
     );
 
     let avg = 0;
-    reviews.forEach((rev) => {
+    newReviews.forEach((rev) => {
         avg += rev.rating;
     });
 
-    const numOfReviews = reviews.length;
+    const numOfReviews = newReviews.length;
     const ratings = numOfReviews > 0 ? avg / numOfReviews : 0;
 
     await Product.findByIdAndUpdate(
         productId,
         {
-            reviews,
+            reviews: newReviews,
             ratings,
             numOfReviews,
         },
