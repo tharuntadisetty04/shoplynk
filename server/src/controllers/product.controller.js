@@ -37,7 +37,7 @@ const createProduct = asyncHandler(async (req, res) => {
         image: image,
         category: category.toLowerCase(),
         stock: stock,
-        owner: req.body.owner,
+        owner: req.user._id,
     });
 
     const isProductCreated = await Product.findById(product._id);
@@ -197,6 +197,26 @@ const deleteProduct = asyncHandler(async (req, res, next) => {
     }
 });
 
+//get seller products only
+const getSellerProducts = asyncHandler(async (req, res, next) => {
+    const sellerId = req.user._id;
+
+    const products = await Product.find({ owner: sellerId });
+    const productCount = products.length;
+
+    if (!products || products.length === 0) {
+        throw new ApiError(404, "Seller has no products");
+    }
+
+    res.status(200).json(
+        new ApiResponse(
+            200,
+            { products, productCount },
+            "Your products fetched successfully"
+        )
+    );
+});
+
 //create or update product review
 const createProductReview = asyncHandler(async (req, res) => {
     const { rating, comment, productId } = req.body;
@@ -350,4 +370,5 @@ export {
     createProductReview,
     getAllReviews,
     deleteReview,
+    getSellerProducts,
 };

@@ -8,6 +8,7 @@ import {
     createProductReview,
     getAllReviews,
     deleteReview,
+    getSellerProducts,
 } from "../controllers/product.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { verifySeller } from "../middlewares/verifySeller.middleware.js";
@@ -24,6 +25,7 @@ router.route("/reviews").get(getAllReviews).delete(verifyJWT, deleteReview);
 
 //admin routes
 router.route("/admin/new").post(verifyJWT, verifySeller, createProduct);
+router.route("/admin/all").get(verifyJWT, verifySeller, getSellerProducts);
 router
     .route("/admin/:id")
     .patch(verifyJWT, verifySeller, verifyOwner, updateProduct)

@@ -461,7 +461,7 @@ const renewAccessToken = asyncHandler(async (req, res) => {
 
 //get all users --Admin
 const getAllUser = asyncHandler(async (req, res) => {
-    const users = await User.find();
+    const users = await User.find().select("-password -refreshToken");
 
     if (!users || users.length === 0) {
         throw new ApiError(404, "No users found");
@@ -478,7 +478,9 @@ const getSingleUser = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Invalid user ID");
     }
 
-    const user = await User.findById(req.params?.id);
+    const user = await User.findById(req.params?.id).select(
+        "-password -refreshToken"
+    );
 
     if (!user) {
         throw new ApiError(404, "User not found");
