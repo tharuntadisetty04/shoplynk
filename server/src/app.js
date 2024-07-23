@@ -23,12 +23,16 @@ app.get("/", (req, res) => {
 //Routes
 import productRouter from "./routes/product.routes.js";
 import userRouter from "./routes/user.routes.js";
+import orderRouter from "./routes/order.routes.js";
 
 //product routes
 app.use("/api/v1/products", productRouter);
 
 //user route
 app.use("/api/v1/user", userRouter);
+
+//order route
+app.use("/api/v1/orders", orderRouter);
 
 app.on("error", (err) => {
     console.log("App error : ", err);
