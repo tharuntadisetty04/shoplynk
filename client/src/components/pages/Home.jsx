@@ -1,5 +1,6 @@
 import React from "react";
 import heroImg from "../../assets/hero-img.png";
+import heroImg2 from "../../assets/hero-img2.png";
 import { Link } from "react-router-dom";
 import { GiAmpleDress } from "react-icons/gi";
 import { MdOutlineSportsEsports } from "react-icons/md";
@@ -10,6 +11,7 @@ import { MdElectricalServices } from "react-icons/md";
 import { TbTruckDelivery } from "react-icons/tb";
 import { RiCustomerService2Line } from "react-icons/ri";
 import { MdPayment } from "react-icons/md";
+import { FaArrowRight } from "react-icons/fa";
 import Product from "../utils/Product";
 
 const product = {
@@ -72,7 +74,7 @@ const Home = () => {
 
                     <Link
                         to="/products"
-                        className="rounded-md bg-blue-600 md:px-3.5 px-2 md:py-2 py-1 text-sm font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200"
+                        className="rounded-md bg-blue-600 md:px-3.5 px-2 md:py-2 py-1 text-sm font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 text-center"
                     >
                         View All
                     </Link>
@@ -141,6 +143,59 @@ const Home = () => {
                 </div>
             </div>
 
+            {/* Best selling products */}
+            <div className="best-products w-full h-fit py-4 px-8 md:px-16">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl md:text-3xl font-bold">
+                        Best <span className="text-blue-600">Selling Products</span>
+                    </h2>
+
+                    <Link
+                        to="/products"
+                        className="rounded-md bg-blue-600 md:px-3.5 px-2 md:py-2 py-1.5 text-sm font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 text-center"
+                    >
+                        View All
+                    </Link>
+                </div>
+
+                <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 place-items-center gap-8">
+                    <Product product={product} />
+                    <Product product={product} />
+                    <Product product={product} />
+                    <Product product={product} />
+                </div>
+            </div>
+
+            {/* Limited time offer */}
+            <div className="limited-time-banner w-full h-fit md:flex md:items-center lg:justify-around md:justify-between px-8 lg:px-16 md:my-8 lg:gap-10 gap-4 bordesr-2">
+                <div className="img">
+                    <img src={heroImg2} alt="Shopping image" width={500} loading="lazy" />
+                </div>
+
+                <div className="details">
+                    <h1 className="font-bold flex flex-col">
+                        <span className="lg:text-5xl text-3xl text-blue-600">
+                            Limited Time Offer!
+                        </span>
+                        <span className="lg:text-3xl md:text-xl text-base">
+                            Get Upto 30% Off On First Purchase
+                        </span>
+                    </h1>
+
+                    <p className="font-medium md:text-lg text-sm lg:flex-col lg:flex md:my-2 mb-2">
+                        <span>Discover More for Less - Enjoy discount on </span>
+                        <span>All Items! Limited Time Offer, Act Fast!</span>
+                    </p>
+
+                    <Link
+                        to="/products"
+                        className="w-fit rounded-md bg-blue-600 md:px-3.5 md:py-2.5 p-2 text-sm font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 flex items-center gap-2"
+                    >
+                        Shop Now <FaArrowRight />
+                    </Link>
+                </div>
+            </div>
+
             {/* Featured products */}
             <div className="featured-products w-full h-fit py-4 px-8 md:px-16">
                 <div className="flex justify-between items-center mb-6">
@@ -150,7 +205,7 @@ const Home = () => {
 
                     <Link
                         to="/products"
-                        className="rounded-md bg-blue-600 md:px-3.5 px-2 md:py-2 py-1 text-sm font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200"
+                        className="rounded-md bg-blue-600 md:px-3.5 px-2 md:py-2 py-1.5 text-sm font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200"
                     >
                         View All
                     </Link>
