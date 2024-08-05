@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import heroImg from "../../assets/hero-img.png";
 import heroImg2 from "../../assets/hero-img2.png";
 import { Link } from "react-router-dom";
@@ -12,22 +12,52 @@ import { TbTruckDelivery } from "react-icons/tb";
 import { RiCustomerService2Line } from "react-icons/ri";
 import { MdPayment } from "react-icons/md";
 import { FaArrowRight } from "react-icons/fa";
-import Product from "../utils/Product";
-
-const product = {
-    name: "T-Shirt saradttre",
-    price: 2024,
-    image: [
-        {
-            url: "https://img.freepik.com/free-vector/simple-flat-i-heart-you-valentine-s-day-t-shirt_742173-14411.jpg?t=st=1722667718~exp=1722671318~hmac=9477941f0f54f00673b03704403d36a2f26f1c78e69f620cbedced8d4b485011&w=740",
-        },
-    ],
-    _id: 1,
-};
+import ProductCard from "../utils/ProductCard";
+import TitleHelmet from "../utils/TitleHelmet";
+import ItemLoader from "../layout/ItemLoader";
+import { useDispatch, useSelector } from "react-redux";
+import { getProducts } from "../../redux/actions/ProductAction";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Home = () => {
+    const dispatch = useDispatch();
+    const { loading, error, products } = useSelector((state) => state.products);
+
+    useEffect(() => {
+        if (error) {
+            toast.error(error);
+        }
+
+        dispatch(getProducts());
+    }, [dispatch, error]);
+
+    let bestSellingProducts;
+    let featuredProducts;
+
+    if (products) {
+        bestSellingProducts = products.slice(0, 4);
+        featuredProducts = products.slice(0, 8);
+    }
+
     return (
         <div className="home w-full h-full">
+            <TitleHelmet title={"Home | ShopLynk"} />
+
+            <ToastContainer
+                position="top-right"
+                autoClose={2500}
+                hideProgressBar={false}
+                newestOnTop
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+                transition:Slide
+            />
+
             {/* hero section */}
             <div className="hero-banner w-full h-fit md:flex md:items-center md:justify-between px-8 md:px-16 md:my-2 mt-0">
                 <div className="left-section flex-col flex gap-4">
@@ -158,18 +188,22 @@ const Home = () => {
                     </Link>
                 </div>
 
-                <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 place-items-center gap-8">
-                    <Product product={product} />
-                    <Product product={product} />
-                    <Product product={product} />
-                    <Product product={product} />
-                </div>
+                {loading ? (
+                    <ItemLoader />
+                ) : (
+                    <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 place-items-center gap-8">
+                        {bestSellingProducts &&
+                            bestSellingProducts.map((product) => (
+                                <ProductCard key={product._id} product={product} />
+                            ))}
+                    </div>
+                )}
             </div>
 
             {/* Limited time offer */}
-            <div className="limited-time-banner w-full h-fit md:flex md:items-center lg:justify-around md:justify-between px-8 lg:px-16 md:my-8 lg:gap-10 gap-4 bordesr-2">
+            <div className="limited-time-banner w-full h-fit md:flex md:items-center lg:justify-around md:justify-between px-8 lg:px-16 md:my-6 lg:gap-8 gap-4">
                 <div className="img">
-                    <img src={heroImg2} alt="Shopping image" width={500} loading="lazy" />
+                    <img src={heroImg2} alt="Shopping image" width={540} loading="lazy" />
                 </div>
 
                 <div className="details">
@@ -211,17 +245,16 @@ const Home = () => {
                     </Link>
                 </div>
 
-                <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 place-items-center gap-8">
-                    <Product product={product} />
-                    <Product product={product} />
-                    <Product product={product} />
-                    <Product product={product} />
-
-                    <Product product={product} />
-                    <Product product={product} />
-                    <Product product={product} />
-                    <Product product={product} />
-                </div>
+                {loading ? (
+                    <ItemLoader />
+                ) : (
+                    <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 place-items-center gap-8">
+                        {featuredProducts &&
+                            featuredProducts.map((product) => (
+                                <ProductCard key={product._id} product={product} />
+                            ))}
+                    </div>
+                )}
             </div>
 
             {/* Why choose us section */}
