@@ -24,8 +24,8 @@ const ProductCard = ({ product }) => {
 
     return (
         <Link
-            to={product._id}
-            className="border-2 border-slate-200 rounded-sm duration-300 hover:-translate-y-2 hover:shadow-md"
+            to={`/products/${product._id}`}
+            className="border-2 border-slate-200 rounded duration-300 hover:-translate-y-2 hover:shadow-md"
         >
             <div className="product-image">
                 <img
@@ -33,6 +33,7 @@ const ProductCard = ({ product }) => {
                     alt={product.name}
                     loading="lazy"
                     width={300}
+                    className="rounded"
                 />
             </div>
 
@@ -49,7 +50,7 @@ const ProductCard = ({ product }) => {
                     <div>
                         <span className="font-bold text-xl pr-1">₹{product.price}</span>
                         <span className="line-through text-sm text-gray-500 font-medium">
-                            ₹{product.price + product.price * getRandomDiscount(0.1, 0.3, 2)}
+                            ₹{product.price + product.price * 0.25}
                         </span>
                     </div>
 

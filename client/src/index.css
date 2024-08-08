@@ -2,8 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
-*{
-    font-family: inter,sans-serif;
-    box-sizing: border-box;
-    scroll-behavior: smooth;
+* {
+  font-family: inter, sans-serif;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+.carousel {
+  display: flex;
+  justify-content: center;
+}
+
+.carousel.carousel-slider .control-arrow:hover {
+  background: none !important;
+}
+
+@media (max-width:1000px) {
+  .carousel.carousel-slider .control-arrow {
+    display: none !important;
+  }
+}
+
+.carousel .thumb{
+  border: none !important;
+  outline: none !important;
+}
+
+.thumb.selected{
+  border: 2px solid #111827 !important;
+border-radius: .2rem;
 }

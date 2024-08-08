@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FaRegUser } from "react-icons/fa";
+import { FaRegUser } from "react-icons/fa6";
 import { FiShoppingCart, FiMenu, FiX } from "react-icons/fi";
 import { IoIosSearch } from "react-icons/io";
 
@@ -44,7 +44,7 @@ const Navbar = () => {
                     </div>
                 </div>
 
-                <div className="flex gap-3 items-center justify-between">
+                <div className="flex gap-x-2.5 items-center justify-between">
                     <Link
                         aria-label="Search"
                         to="/search"

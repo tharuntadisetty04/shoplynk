@@ -55,7 +55,7 @@ const createProduct = asyncHandler(async (req, res) => {
 
 //get all products
 const getAllProducts = asyncHandler(async (req, res) => {
-    const resultPerPage = 5; //12
+    const resultPerPage = 12;
     const productCount = await Product.countDocuments();
 
     const productFilters = new ProductSearch(Product.find(), req.query)
@@ -233,21 +233,13 @@ const createProductReview = asyncHandler(async (req, res) => {
         userId: req.user._id,
         name: req.user.username,
         rating: Number(rating),
-        comment,
+        comment: comment || "",
     };
 
     const product = await Product.findById(productId);
 
     if (!product) {
         throw new ApiError(404, "Product not found");
-    }
-
-    const isReviewOwner = product.reviews.some(
-        (review) => review.userId.toString() === req.user._id.toString()
-    );
-
-    if (!isReviewOwner) {
-        throw new ApiError(400, "You are not authorized to update this review");
     }
 
     const existingReview = product.reviews.find((rev) =>

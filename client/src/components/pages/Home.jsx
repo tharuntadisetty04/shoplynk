@@ -3,20 +3,17 @@ import heroImg from "../../assets/hero-img.png";
 import heroImg2 from "../../assets/hero-img2.png";
 import { Link } from "react-router-dom";
 import { GiAmpleDress } from "react-icons/gi";
-import { MdOutlineSportsEsports } from "react-icons/md";
-import { MdOutlineFoodBank } from "react-icons/md";
-import { BsHeartPulse } from "react-icons/bs";
-import { FaBowlFood } from "react-icons/fa6";
-import { MdElectricalServices } from "react-icons/md";
+import { IoGameController } from "react-icons/io5";
+import { MdOutlineFoodBank, MdElectricalServices, MdPayment } from "react-icons/md";
+import { FaBowlFood, FaHandSparkles } from "react-icons/fa6";
 import { TbTruckDelivery } from "react-icons/tb";
 import { RiCustomerService2Line } from "react-icons/ri";
-import { MdPayment } from "react-icons/md";
 import { FaArrowRight } from "react-icons/fa";
 import ProductCard from "../utils/ProductCard";
 import TitleHelmet from "../utils/TitleHelmet";
 import ItemLoader from "../layout/ItemLoader";
 import { useDispatch, useSelector } from "react-redux";
-import { getProducts } from "../../redux/actions/ProductAction";
+import { clearErrors, getAllProducts } from "../../redux/actions/ProductAction";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -27,16 +24,17 @@ const Home = () => {
     useEffect(() => {
         if (error) {
             toast.error(error);
+            dispatch(clearErrors());
         }
 
-        dispatch(getProducts());
+        dispatch(getAllProducts());
     }, [dispatch, error]);
 
-    let bestSellingProducts;
-    let featuredProducts;
+    let bestSellingProducts = [];
+    let featuredProducts = [];
 
     if (products) {
-        bestSellingProducts = products.slice(0, 4);
+        bestSellingProducts = products.filter(product => product.rating >= 4).slice(0, 4);
         featuredProducts = products.slice(0, 8);
     }
 
@@ -113,7 +111,7 @@ const Home = () => {
                 <div className="gap-6 grid place-items-center lg:grid-cols-6 md:grid-cols-3 grid-cols-2">
                     <Link
                         to="/products"
-                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded-sm md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
+                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
                     >
                         <div className="font-medium md:text-5xl text-4xl">
                             <GiAmpleDress />
@@ -123,7 +121,7 @@ const Home = () => {
 
                     <Link
                         to="/products"
-                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded-sm md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
+                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
                     >
                         <div className="font-medium md:text-5xl text-4xl">
                             <MdElectricalServices />
@@ -133,19 +131,19 @@ const Home = () => {
 
                     <Link
                         to="/products"
-                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded-sm md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
+                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
                     >
                         <div className="font-medium md:text-5xl text-4xl">
-                            <BsHeartPulse />
+                            <FaHandSparkles />
                         </div>
                         <p className="font-medium md:text-lg">Personal Care</p>
                     </Link>
 
                     <Link
                         to="/products"
-                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded-sm md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
+                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
                     >
-                        <div className="font-medium md:text-6xl text-4xl">
+                        <div className="font-medium md:text-[3.7rem] text-4xl">
                             <MdOutlineFoodBank />
                         </div>
                         <p className="font-medium md:text-lg">Home & Kitchen</p>
@@ -153,17 +151,17 @@ const Home = () => {
 
                     <Link
                         to="/products"
-                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded-sm md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
+                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
                     >
-                        <div className="font-medium md:text-6xl text-4xl">
-                            <MdOutlineSportsEsports />
+                        <div className="font-medium md:text-5xl text-4xl">
+                            <IoGameController />
                         </div>
                         <p className="font-medium md:text-lg">Sports & Games</p>
                     </Link>
 
                     <Link
                         to="/products"
-                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded-sm md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
+                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
                     >
                         <div className="font-medium md:text-5xl text-4xl">
                             <FaBowlFood />
@@ -271,7 +269,7 @@ const Home = () => {
 
                         <div className="flex flex-col md:items-center">
                             <h2 className="font-medium text-xl">Free Shipping</h2>
-                            <p className="text-gray-600">
+                            <p className="text-gray-600 md:text-center">
                                 Free Shipping for order above ₹3000
                             </p>
                         </div>
@@ -284,7 +282,7 @@ const Home = () => {
 
                         <div className="flex flex-col md:items-center">
                             <h2 className="font-medium text-xl">Flexible Payment</h2>
-                            <p className="text-gray-600">Multiple secure payment options</p>
+                            <p className="text-gray-600 md:text-center">Multiple secure payment options</p>
                         </div>
                     </div>
 
@@ -295,7 +293,7 @@ const Home = () => {
 
                         <div className="flex flex-col md:items-center">
                             <h2 className="font-medium text-xl">24*7 Support</h2>
-                            <p className="text-gray-600">We Support Online all days</p>
+                            <p className="text-gray-600 md:text-center">We Support Online all days</p>
                         </div>
                     </div>
                 </div>
