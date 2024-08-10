@@ -4,7 +4,11 @@ import heroImg2 from "../../assets/hero-img2.png";
 import { Link } from "react-router-dom";
 import { GiAmpleDress } from "react-icons/gi";
 import { IoGameController } from "react-icons/io5";
-import { MdOutlineFoodBank, MdElectricalServices, MdPayment } from "react-icons/md";
+import {
+    MdOutlineFoodBank,
+    MdElectricalServices,
+    MdPayment,
+} from "react-icons/md";
 import { FaBowlFood, FaHandSparkles } from "react-icons/fa6";
 import { TbTruckDelivery } from "react-icons/tb";
 import { RiCustomerService2Line } from "react-icons/ri";
@@ -16,6 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearErrors, getAllProducts } from "../../redux/actions/ProductAction";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ProductNotFound from "./ProductNotFound";
 
 const Home = () => {
     const dispatch = useDispatch();
@@ -26,21 +31,28 @@ const Home = () => {
             toast.error(error);
             dispatch(clearErrors());
         }
-
         dispatch(getAllProducts());
     }, [dispatch, error]);
+
+    if (!products.length === 0) {
+        return <ProductNotFound />;
+    }
 
     let bestSellingProducts = [];
     let featuredProducts = [];
 
     if (products) {
-        bestSellingProducts = products.filter(product => product.rating >= 4).slice(0, 4);
+        bestSellingProducts = products
+            .filter((product) => product.rating >= 4)
+            .slice(0, 4);
         featuredProducts = products.slice(0, 8);
     }
 
     return (
         <div className="home w-full h-full">
-            <TitleHelmet title={"Home | ShopLynk"} />
+            <TitleHelmet
+                title={"Home | ShopLynk | Connecting You to the Best Deals"}
+            />
 
             <ToastContainer
                 position="top-right"
@@ -282,7 +294,9 @@ const Home = () => {
 
                         <div className="flex flex-col md:items-center">
                             <h2 className="font-medium text-xl">Flexible Payment</h2>
-                            <p className="text-gray-600 md:text-center">Multiple secure payment options</p>
+                            <p className="text-gray-600 md:text-center">
+                                Multiple secure payment options
+                            </p>
                         </div>
                     </div>
 
@@ -293,7 +307,9 @@ const Home = () => {
 
                         <div className="flex flex-col md:items-center">
                             <h2 className="font-medium text-xl">24*7 Support</h2>
-                            <p className="text-gray-600 md:text-center">We Support Online all days</p>
+                            <p className="text-gray-600 md:text-center">
+                                We Support Online all days
+                            </p>
                         </div>
                     </div>
                 </div>

@@ -44,6 +44,10 @@ class ProductSearch {
 
         return this;
     }
+
+    async execute() {
+        return await this.data;
+    }
 }
 
 export default ProductSearch;

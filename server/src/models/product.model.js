@@ -20,7 +20,7 @@ const productSchema = new Schema(
             type: Number,
             default: 0,
         },
-        image: [
+        images: [
             {
                 public_id: {
                     type: String,
@@ -33,6 +33,10 @@ const productSchema = new Schema(
             },
         ],
         category: {
+            type: String,
+            required: true,
+        },
+        subCategory: {
             type: String,
             required: true,
         },

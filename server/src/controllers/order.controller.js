@@ -91,7 +91,7 @@ const getSingleOrder = asyncHandler(async (req, res) => {
         },
     ]);
 
-    if (products.length === 0) {
+    if (!products || products.length === 0) {
         throw new ApiError(403, "Order does not belong to this seller");
     }
 
@@ -164,7 +164,7 @@ const updateOrder = asyncHandler(async (req, res) => {
         owner: req.user._id,
     });
 
-    if (products.length === 0) {
+    if (!products || products.length === 0) {
         throw new ApiError(403, "Order does not belong to this seller");
     }
 

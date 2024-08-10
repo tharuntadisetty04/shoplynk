@@ -8,13 +8,25 @@ import mongoose from "mongoose";
 //create a product
 const createProduct = asyncHandler(async (req, res) => {
     req.body.owner = req.user._id;
-    const { name, description, price, image, category, stock } = req.body;
+    const { name, description, price, images, category, subCategory, stock } =
+        req.body;
 
-    if ([name, description, category].some((field) => field?.trim() === "")) {
+    if (
+        [name, description, category, subCategory].some(
+            (field) => field?.trim() === ""
+        )
+    ) {
         throw new ApiError(400, "Required fields are empty");
     }
 
-    if (!name || !description || !price || !image || !category) {
+    if (
+        !name ||
+        !description ||
+        !price ||
+        !images ||
+        !category ||
+        !subCategory
+    ) {
         throw new ApiError(400, "Please enter the required fields");
     }
 
@@ -34,8 +46,9 @@ const createProduct = asyncHandler(async (req, res) => {
         name: name,
         description: description,
         price: price,
-        image: image,
+        images: images,
         category: category.toLowerCase(),
+        subCategory: subCategory.toLowerCase(),
         stock: stock,
         owner: req.user._id,
     });
@@ -56,7 +69,7 @@ const createProduct = asyncHandler(async (req, res) => {
 //get all products
 const getAllProducts = asyncHandler(async (req, res) => {
     const resultPerPage = 12;
-    const productCount = await Product.countDocuments();
+    const allProductsCount = await Product.countDocuments();
 
     const productFilters = new ProductSearch(Product.find(), req.query)
         .search()
@@ -64,9 +77,10 @@ const getAllProducts = asyncHandler(async (req, res) => {
         .pagination(resultPerPage);
 
     const products = await productFilters.data;
+    const filteredProductsCount = await products.length;
 
-    if (!products || products.length === 0) {
-        throw new ApiError(500, "Products not found in Database");
+    if (!products) {
+        throw new ApiError(500, "Products not found");
     }
 
     return res
@@ -74,10 +88,53 @@ const getAllProducts = asyncHandler(async (req, res) => {
         .json(
             new ApiResponse(
                 200,
-                { products, productCount },
+                { products, allProductsCount, filteredProductsCount },
                 "Products fetched successfully"
             )
         );
+});
+
+// get similar products
+const getSimilarProducts = asyncHandler(async (req, res, next) => {
+    const productId = req.params?.id;
+    const resultPerPage = 8;
+
+    try {
+        const product = await Product.findById(productId);
+        if (!product) {
+            throw new ApiError(404, "Product not found");
+        }
+
+        const similarProductsQuery = new ProductSearch(
+            Product.find({
+                category: product.category,
+                _id: { $ne: productId },
+            }),
+            req.query
+        ).pagination(resultPerPage);
+
+        const similarProducts = await similarProductsQuery.execute();
+
+        if (!similarProducts) {
+            throw new ApiError(404, "No similar products found");
+        }
+
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(
+                    200,
+                    similarProducts,
+                    "Similar products fetched successfully"
+                )
+            );
+    } catch (error) {
+        if (error.name === "CastError") {
+            next(new ApiError(400, `Invalid product ID: ${productId}`));
+        } else {
+            next(error);
+        }
+    }
 });
 
 //get product details
@@ -111,13 +168,13 @@ const getProductDetails = asyncHandler(async (req, res, next) => {
 //update product
 const updateProduct = asyncHandler(async (req, res, next) => {
     const productId = req.params?.id;
-    const { name, description, price, image, stock } = req.body;
+    const { name, description, price, images, stock } = req.body;
 
     if ([name, description].some((field) => field?.trim() === "")) {
         throw new ApiError(400, "Required fields are empty");
     }
 
-    if (!name || !description || !price || !image) {
+    if (!name || !description || !price || !images) {
         throw new ApiError(400, "Please enter the required fields");
     }
 
@@ -141,7 +198,7 @@ const updateProduct = asyncHandler(async (req, res, next) => {
                     name: name,
                     description: description,
                     price: price,
-                    image: image,
+                    images: images,
                     stock: stock,
                 },
             },
@@ -204,7 +261,7 @@ const getSellerProducts = asyncHandler(async (req, res, next) => {
     const products = await Product.find({ owner: sellerId });
     const productCount = products.length;
 
-    if (!products || products.length === 0) {
+    if (!products) {
         throw new ApiError(404, "Seller has no products");
     }
 
@@ -363,4 +420,5 @@ export {
     getAllReviews,
     deleteReview,
     getSellerProducts,
+    getSimilarProducts,
 };

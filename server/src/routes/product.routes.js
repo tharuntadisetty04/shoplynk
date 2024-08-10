@@ -9,6 +9,7 @@ import {
     getAllReviews,
     deleteReview,
     getSellerProducts,
+    getSimilarProducts,
 } from "../controllers/product.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { verifySeller } from "../middlewares/verifySeller.middleware.js";
@@ -18,6 +19,7 @@ const router = Router();
 
 router.route("/").get(getAllProducts);
 router.route("/product/:id").get(getProductDetails);
+router.route("/similar-products/:id").get(getSimilarProducts);
 
 //secured routes
 router.route("/review").post(verifyJWT, createProductReview);

@@ -1,9 +1,15 @@
 import React, { Suspense, lazy, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import PageLoader from "./components/layout/PageLoader";
-import NotFound from "./components/pages/NotFound";
+import NotFound from "./components/pages/PageNotFound";
+import SearchPage from "./components/pages/SearchPage";
 
 const Home = lazy(() => import("./components/pages/Home"));
 const Products = lazy(() => import("./components/pages/Products"));
@@ -35,6 +41,8 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/products/:id" element={<ProductDetails />} />
+              <Route path="/products/search" element={<SearchPage />} />
+              <Route path="/products/filter/:keyword" element={<Products />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

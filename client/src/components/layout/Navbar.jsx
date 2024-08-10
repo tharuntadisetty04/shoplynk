@@ -47,7 +47,7 @@ const Navbar = () => {
                 <div className="flex gap-x-2.5 items-center justify-between">
                     <Link
                         aria-label="Search"
-                        to="/search"
+                        to="/products/search"
                         className="hover:text-blue-600 text-2xl duration-200"
                     >
                         <IoIosSearch />

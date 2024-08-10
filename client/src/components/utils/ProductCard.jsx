@@ -25,15 +25,15 @@ const ProductCard = ({ product }) => {
     return (
         <Link
             to={`/products/${product._id}`}
-            className="border-2 border-slate-200 rounded duration-300 hover:-translate-y-2 hover:shadow-md"
+            className="border-2 border-slate-200 rounded duration-300 hover:-translate-y-2 hover:shadow-md h-full"
         >
-            <div className="product-image">
+            <div className="product-image aspect-square object-contain flex items-center justify-center">
                 <img
-                    src={product.image[0].url}
+                    src={product.images[0].url}
                     alt={product.name}
                     loading="lazy"
                     width={300}
-                    className="rounded"
+                    className="object-contain"
                 />
             </div>
 

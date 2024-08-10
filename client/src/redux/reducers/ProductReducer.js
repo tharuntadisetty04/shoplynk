@@ -5,14 +5,18 @@ import {
     CLEAR_ERRORS,
     PRODUCT_DETAILS_REQUEST,
     PRODUCT_DETAILS_SUCCESS,
-    PRODUCT_DETAILS_FAIL
+    PRODUCT_DETAILS_FAIL,
+    SIMILAR_PRODUCTS_REQUEST,
+    SIMILAR_PRODUCTS_SUCCESS,
+    SIMILAR_PRODUCTS_FAIL,
 } from "../constants/ProductConstant";
 
+// all products reducer
 const initialProductsState = {
     loading: false,
     products: [],
-    productCount: 0,
-    error: null
+    productsCount: 0,
+    error: null,
 };
 
 const productsReducer = (state = initialProductsState, action) => {
@@ -27,7 +31,8 @@ const productsReducer = (state = initialProductsState, action) => {
                 ...state,
                 loading: false,
                 products: action.payload.data.products,
-                productCount: action.payload.data.productCount,
+                productsCount: action.payload.data.allProductsCount,
+                filteredProductsCount: action.payload.data.filteredProductsCount,
                 error: null,
             };
         case ALL_PRODUCT_FAIL:
@@ -46,10 +51,11 @@ const productsReducer = (state = initialProductsState, action) => {
     }
 };
 
+// product details reducer
 const initialProductDetailsState = {
     loading: false,
     product: {},
-    error: null
+    error: null,
 };
 
 const productDetailsReducer = (state = initialProductDetailsState, action) => {
@@ -82,4 +88,41 @@ const productDetailsReducer = (state = initialProductDetailsState, action) => {
     }
 };
 
-export { productsReducer, productDetailsReducer };
+// similar products reducer
+const similarProductsState = {
+    loading: false,
+    similarProducts: [],
+    error: null,
+};
+
+const similarProductsReducer = (state = similarProductsState, action) => {
+    switch (action.type) {
+        case SIMILAR_PRODUCTS_REQUEST:
+            return {
+                ...state,
+                loading: true,
+            };
+        case SIMILAR_PRODUCTS_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                similarProducts: action.payload.data,
+                error: null,
+            };
+        case SIMILAR_PRODUCTS_FAIL:
+            return {
+                ...state,
+                loading: false,
+                error: action.payload,
+            };
+        case CLEAR_ERRORS:
+            return {
+                ...state,
+                error: null,
+            };
+        default:
+            return state;
+    }
+};
+
+export { productsReducer, productDetailsReducer, similarProductsReducer };
