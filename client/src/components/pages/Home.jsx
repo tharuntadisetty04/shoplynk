@@ -69,7 +69,7 @@ const Home = () => {
             />
 
             {/* hero section */}
-            <div className="hero-banner w-full h-fit md:flex md:items-center md:justify-between px-8 md:px-16 md:my-2 mt-0">
+            <div className="hero-banner w-full lg:h-svh h-full md:flex md:items-center md:justify-between px-8 md:px-16 md:mb-3 lg:-my-8">
                 <div className="left-section flex-col flex gap-4">
                     <h1 className="lg:text-5xl md:text-3xl text-2xl font-bold flex-col flex lg:gap-1">
                         <span>Shop your favorite</span>
@@ -273,8 +273,8 @@ const Home = () => {
                     Why <span className="text-blue-600">Choose Us</span>
                 </h2>
 
-                <div className="flex flex-col md:flex-row justify-between items-center px-3 gap-4">
-                    <div className="md:w-96 w-80 flex md:flex-col px-4 items-center justify-center gap-6 md:gap-3 py-6 border-4 border-slate-200 rounded-md cursor-pointer">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4 px-3">
+                    <div className="md:w-96 w-72 flex md:flex-col px-4 items-center justify-center gap-6 md:gap-3 py-6 border-4 border-slate-200 rounded-md cursor-pointer">
                         <div className="border-4 border-blue-600 p-2 rounded-full text-5xl">
                             <TbTruckDelivery />
                         </div>
@@ -287,7 +287,7 @@ const Home = () => {
                         </div>
                     </div>
 
-                    <div className="md:w-96 w-80 flex md:flex-col px-4 items-center justify-center gap-6 md:gap-3 py-6 border-4 border-slate-200 rounded-md cursor-pointer">
+                    <div className="md:w-96 w-72 flex md:flex-col px-4 items-center justify-center gap-6 md:gap-3 py-6 border-4 border-slate-200 rounded-md cursor-pointer">
                         <div className="border-4 border-blue-600 p-2 rounded-full text-5xl">
                             <MdPayment />
                         </div>
@@ -300,7 +300,7 @@ const Home = () => {
                         </div>
                     </div>
 
-                    <div className="md:w-96 w-80 flex md:flex-col px-4 items-center justify-center gap-6 md:gap-3 py-6 border-4 border-slate-200 rounded-md cursor-pointer">
+                    <div className="md:w-96 w-72 flex md:flex-col px-4 items-center justify-center gap-6 md:gap-3 py-6 border-4 border-slate-200 rounded-md cursor-pointer">
                         <div className="border-4 border-blue-600 p-2 rounded-full text-5xl">
                             <RiCustomerService2Line />
                         </div>

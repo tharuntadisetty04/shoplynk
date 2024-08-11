@@ -27,11 +27,11 @@ const extractErrorMessage = (htmlString) => {
 };
 
 // Get all products
-const getAllProducts = (keyword = "") => async (dispatch) => {
+const getAllProducts = (keyword = "", currentPage = 1) => async (dispatch) => {
     try {
         dispatch({ type: ALL_PRODUCT_REQUEST });
 
-        const { data } = await axios.get(`http://localhost:8000/api/v1/products?keyword=${keyword}`);
+        const { data } = await axios.get(`http://localhost:8000/api/v1/products?keyword=${keyword}&page=${currentPage}`);
 
         dispatch({
             type: ALL_PRODUCT_SUCCESS,

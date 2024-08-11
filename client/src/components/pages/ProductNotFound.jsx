@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const ProductNotFound = () => {
     return (
-        <div className="grid w-full h-svh place-items-center px-6 lg:px-8">
+        <div className="grid w-full h-svh place-items-center px-6 lg:px-8 -mt-8">
             <div className="text-center">
                 <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 md:text-5xl">
                     Product not found

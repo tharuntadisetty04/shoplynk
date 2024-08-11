@@ -9,7 +9,7 @@ const SearchPage = () => {
         e.preventDefault();
 
         if (keyword.trim()) {
-            navigate(`/products/filter/${keyword}`);
+            navigate(`/products/search/${keyword}`);
         } else {
             navigate("/products");
         }

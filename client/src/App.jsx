@@ -42,7 +42,7 @@ function App() {
               <Route path="/contact" element={<Contact />} />
               <Route path="/products/:id" element={<ProductDetails />} />
               <Route path="/products/search" element={<SearchPage />} />
-              <Route path="/products/filter/:keyword" element={<Products />} />
+              <Route path="/products/search/:keyword" element={<Products />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

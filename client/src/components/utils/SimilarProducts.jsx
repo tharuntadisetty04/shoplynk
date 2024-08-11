@@ -28,11 +28,6 @@ const SimilarProducts = () => {
         dispatch(getSimilarProducts(id));
     }, [dispatch, id, error]);
 
-
-    if (similarProducts.length === 0) {
-        return <div>asd</div>
-    }
-
     return (
         <div className="similar-products w-full h-fit py-4 px-8 md:px-16">
             <ToastContainer
