@@ -79,7 +79,7 @@ const Navbar = () => {
 
             {/* ham-burger menu */}
             {menuOpen && (
-                <div className="md:hidden flex flex-col items-center gap-3 font-medium py-4 bg-slate-200">
+                <div className="md:hidden flex flex-col items-center gap-3 font-medium py-4 bg-slate-200 mb-2">
                     <Link to="/" className={isActive("/")}>
                         Home
                     </Link>

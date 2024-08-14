@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import heroImg from "../../assets/hero-img.png";
 import heroImg2 from "../../assets/hero-img2.png";
 import { Link } from "react-router-dom";
@@ -20,23 +20,21 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearErrors, getAllProducts } from "../../redux/actions/ProductAction";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ProductNotFound from "./ProductNotFound";
 
 const Home = () => {
     const dispatch = useDispatch();
     const { loading, error, products } = useSelector((state) => state.products);
+    const errorHandled = useRef(false);
 
     useEffect(() => {
-        if (error) {
+        if (error && !errorHandled.current) {
             toast.error(error);
             dispatch(clearErrors());
+            errorHandled.current = true;
         }
+
         dispatch(getAllProducts());
     }, [dispatch, error]);
-
-    if (!products.length === 0) {
-        return <ProductNotFound />;
-    }
 
     let bestSellingProducts = [];
     let featuredProducts = [];
@@ -76,7 +74,7 @@ const Home = () => {
                         <span>products from one place.</span>
                     </h1>
 
-                    <p className="font-medium md:flex-col md:flex md:my-2">
+                    <p className="font-medium md:flex-col md:flex md:my-2 text-justify">
                         <span>Browse our wide selection of high-quality products </span>
                         <span>
                             from verified sellers and find the perfect items for your needs.
@@ -274,7 +272,7 @@ const Home = () => {
                 </h2>
 
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 px-3">
-                    <div className="md:w-96 w-72 flex md:flex-col px-4 items-center justify-center gap-6 md:gap-3 py-6 border-4 border-slate-200 rounded-md cursor-pointer">
+                    <div className="md:w-96 h-full w-72 flex md:flex-col px-4 items-center justify-center gap-6 md:gap-3 py-6 border-4 border-slate-200 rounded-md cursor-pointer">
                         <div className="border-4 border-blue-600 p-2 rounded-full text-5xl">
                             <TbTruckDelivery />
                         </div>
@@ -293,7 +291,7 @@ const Home = () => {
                         </div>
 
                         <div className="flex flex-col md:items-center">
-                            <h2 className="font-medium text-xl">Flexible Payment</h2>
+                            <h2 className="font-medium text-xl text-center">Flexible Payment</h2>
                             <p className="text-gray-600 md:text-center">
                                 Multiple secure payment options
                             </p>

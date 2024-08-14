@@ -133,7 +133,13 @@ const Footer = () => {
 
             {/* Bottom footer */}
             <div className="w-full text-center text-sm text-gray-600 mt-1">
-                <span>&copy;2024 ShopLynk. All Rights Reserved.</span>
+                <p>&copy;2024 ShopLynk. All Rights Reserved.</p>
+                <span>
+                    For any Queries contact{" "}
+                    <span className="text-blue-500 font-medium">
+                        mail.for.dev.tharun@gmail.com
+                    </span>
+                </span>
             </div>
 
             {/* scroll to top button */}

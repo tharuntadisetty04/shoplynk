@@ -4,7 +4,6 @@
 
 * {
   font-family: inter, sans-serif;
-  box-sizing: border-box;
   scroll-behavior: smooth;
 }
 
@@ -35,9 +34,12 @@
 
 .page-item:first-child {
   border-radius: 5px 0 0 5px;
+  font-size: 1.2rem;
+  margin-right: -.2rem;
 }
 
 .page-item:last-child {
   border-radius: 0 5px 5px 0;
-  border-right: 2px solid #2563eb;
+  font-size: 1.2rem;
+  margin-left: -.2rem;
 }

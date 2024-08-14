@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import PageLoader from "../layout/PageLoader";
 import { Link } from "react-router-dom";
@@ -26,7 +26,6 @@ Modal.setAppElement("#root");
 const ProductDetails = () => {
     const { id } = useParams();
     const dispatch = useDispatch();
-
     const { loading, error, product } = useSelector(
         (state) => state.productDetails
     );
@@ -36,12 +35,15 @@ const ProductDetails = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     const [selectedReview, setSelectedReview] = useState(null);
+    const errorHandled = useRef(false);
 
     useEffect(() => {
-        if (error) {
+        if (error && !errorHandled.current) {
             toast.error(error);
             dispatch(clearErrors());
+            errorHandled.current = true;
         }
+
         dispatch(getProductDetails(id));
     }, [dispatch, id, error]);
 
@@ -158,7 +160,7 @@ const ProductDetails = () => {
             />
 
             {/* product details */}
-            <div className="product w-full h-full lg:py-4 px-8 md:px-16 flex items-center justify-center md:flex-row flex-col lg:gap-8 md:gap-6 gap-4">
+            <div className="product w-full h-full lg:py-4 px-8 md:px-16 flex items-center justify-center md:flex-row flex-col lg:gap-8 md:gap-6 gap-4 md:mt-2">
                 {/* Left Column - Images */}
                 <div className="images flex lg:flex-row flex-col-reverse justify-center items-center lg:gap-8 gap-3">
                     <div className="other-img flex lg:flex-col lg:gap-3 gap-2 items-center justify-between">
@@ -235,7 +237,7 @@ const ProductDetails = () => {
 
                 {/* Right Column - Product Details */}
                 <div className="details flex flex-col items-start px-2 max-w-96">
-                    <div>
+                    <div className="md:-mt-16 lg:-mt-6">
                         <h2 className="text-2xl font-semibold">{product.name}</h2>
 
                         <div className="flex items-center">

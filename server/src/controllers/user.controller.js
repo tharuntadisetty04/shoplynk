@@ -171,7 +171,17 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 
 //forgot password
 const forgotPassword = asyncHandler(async (req, res) => {
-    const user = await User.findOne({ email: req.body.email });
+    const email = req.body?.email;
+
+    if (!email) {
+        throw new ApiError(400, "Please Enter Email");
+    }
+
+    if (!validator.isEmail(email)) {
+        throw new ApiError(400, "Please Enter a valid Email");
+    }
+
+    const user = await User.findOne({ email: email });
 
     if (!user) {
         throw new ApiError(404, "User does not exist or Invalid email");
@@ -213,6 +223,12 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
 //reset password
 const resetPassword = asyncHandler(async (req, res) => {
+    const { password, confirmPassword } = req.body;
+
+    if (!password || !confirmPassword) {
+        throw new ApiError(400, "Please Enter Password");
+    }
+
     const resetPasswordToken = crypto
         .createHash("sha256")
         .update(req.params.token)
@@ -227,11 +243,11 @@ const resetPassword = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Reset password token has expired or invalid ");
     }
 
-    if (req.body.password !== req.body.confirmPassword) {
+    if (password !== confirmPassword) {
         throw new ApiError(400, "Password do not match ");
     }
 
-    if (req.body.password.length > 30 || req.body.password.length < 8) {
+    if (password.length > 30 || password.length < 8) {
         throw new ApiError(
             400,
             "Password length must be between 8 and 30 characters"
@@ -240,7 +256,7 @@ const resetPassword = asyncHandler(async (req, res) => {
 
     const { accessToken, refreshToken } = await generateTokens(user._id);
 
-    user.password = req.body.password;
+    user.password = password;
     user.refreshToken = refreshToken;
     user.resetPasswordToken = null;
     user.resetPasswordExpire = null;
@@ -463,7 +479,7 @@ const renewAccessToken = asyncHandler(async (req, res) => {
 const getAllUser = asyncHandler(async (req, res) => {
     const users = await User.find().select("-password -refreshToken");
 
-    if (!users || users.length === 0) {
+    if (!users) {
         throw new ApiError(404, "No users found");
     }
 

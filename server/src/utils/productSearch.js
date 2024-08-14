@@ -25,13 +25,19 @@ class ProductSearch {
         const removeFields = ["keyword", "page", "limit"];
         removeFields.forEach((key) => delete queryStringCopy[key]);
 
-        let queryString = JSON.stringify(queryStringCopy);
-        queryString = queryString.replace(
-            /\b(gt|gte|lt|lte)\b/g,
-            (key) => `$${key}`
-        );
+        let queryObj = {};
+        for (const key in queryStringCopy) {
+            if (typeof queryStringCopy[key] === 'object') {
+                for (const operator in queryStringCopy[key]) {
+                    if (!queryObj[key]) queryObj[key] = {};
+                    queryObj[key][`$${operator}`] = queryStringCopy[key][operator];
+                }
+            } else {
+                queryObj[key] = queryStringCopy[key];
+            }
+        }
 
-        this.data = this.data.find(JSON.parse(queryString));
+        this.data = this.data.find(queryObj);
 
         return this;
     }

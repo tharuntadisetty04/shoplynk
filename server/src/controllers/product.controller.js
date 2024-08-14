@@ -7,7 +7,6 @@ import mongoose from "mongoose";
 
 //create a product
 const createProduct = asyncHandler(async (req, res) => {
-    req.body.owner = req.user._id;
     const { name, description, price, images, category, subCategory, stock } =
         req.body;
 
@@ -71,13 +70,15 @@ const getAllProducts = asyncHandler(async (req, res) => {
     const resultPerPage = 12;
     const allProductsCount = await Product.countDocuments();
 
-    const productFilters = new ProductSearch(Product.find(), req.query)
+    let productFilters = new ProductSearch(Product.find(), req.query)
         .search()
-        .filter()
-        .pagination(resultPerPage);
+        .filter();
+
+    const filteredProductsCount = await productFilters.data.clone().countDocuments();
+
+    productFilters = productFilters.pagination(resultPerPage);
 
     const products = await productFilters.data;
-    const filteredProductsCount = await products.length;
 
     if (!products) {
         throw new ApiError(500, "Products not found");
@@ -244,7 +245,7 @@ const deleteProduct = asyncHandler(async (req, res, next) => {
 
         return res
             .status(200)
-            .json(new ApiResponse(200, [], "Product deleted successfully"));
+            .json(new ApiResponse(200, {}, "Product deleted successfully"));
     } catch (error) {
         if (error.name == "CastError") {
             next(new ApiError(400, `Invalid product ID: ${productId}`));
@@ -259,7 +260,7 @@ const getSellerProducts = asyncHandler(async (req, res, next) => {
     const sellerId = req.user._id;
 
     const products = await Product.find({ owner: sellerId });
-    const productCount = products.length;
+    const productsCount = products.length;
 
     if (!products) {
         throw new ApiError(404, "Seller has no products");
@@ -268,7 +269,7 @@ const getSellerProducts = asyncHandler(async (req, res, next) => {
     res.status(200).json(
         new ApiResponse(
             200,
-            { products, productCount },
+            { products, productsCount },
             "Your products fetched successfully"
         )
     );
