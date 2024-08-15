@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import heroImg from "../../assets/hero-img.png";
 import heroImg2 from "../../assets/hero-img2.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { GiAmpleDress } from "react-icons/gi";
 import { IoGameController } from "react-icons/io5";
 import {
@@ -119,65 +119,59 @@ const Home = () => {
                 </div>
 
                 <div className="gap-6 grid place-items-center lg:grid-cols-6 md:grid-cols-3 grid-cols-2">
-                    <Link
-                        to="/products"
+                    <div
                         className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
                     >
                         <div className="font-medium md:text-5xl text-4xl">
                             <GiAmpleDress />
                         </div>
                         <p className="font-medium md:text-lg">Fashion</p>
-                    </Link>
+                    </div>
 
-                    <Link
-                        to="/products"
+                    <div
                         className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
                     >
                         <div className="font-medium md:text-5xl text-4xl">
                             <MdElectricalServices />
                         </div>
                         <p className="font-medium md:text-lg">Electronics</p>
-                    </Link>
+                    </div>
 
-                    <Link
-                        to="/products"
+                    <div
                         className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
                     >
                         <div className="font-medium md:text-5xl text-4xl">
                             <FaHandSparkles />
                         </div>
                         <p className="font-medium md:text-lg">Personal Care</p>
-                    </Link>
+                    </div>
 
-                    <Link
-                        to="/products"
+                    <div
                         className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
                     >
                         <div className="font-medium md:text-[3.7rem] text-4xl">
                             <MdOutlineFoodBank />
                         </div>
                         <p className="font-medium md:text-lg">Home & Kitchen</p>
-                    </Link>
+                    </div>
 
-                    <Link
-                        to="/products"
+                    <div
                         className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
                     >
                         <div className="font-medium md:text-5xl text-4xl">
                             <IoGameController />
                         </div>
                         <p className="font-medium md:text-lg">Sports & Games</p>
-                    </Link>
+                    </div>
 
-                    <Link
-                        to="/products"
+                    <div
                         className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
                     >
                         <div className="font-medium md:text-5xl text-4xl">
                             <FaBowlFood />
                         </div>
                         <p className="font-medium md:text-lg">Groceries</p>
-                    </Link>
+                    </div>
                 </div>
             </div>
 

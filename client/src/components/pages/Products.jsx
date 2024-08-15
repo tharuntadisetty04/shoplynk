@@ -12,6 +12,10 @@ import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import PageLoader from "../layout/PageLoader";
 import ReactStars from "react-rating-stars-component";
 import debounce from "lodash/debounce";
+import { GiAmpleDress } from "react-icons/gi";
+import { IoGameController } from "react-icons/io5";
+import { MdOutlineFoodBank, MdElectricalServices } from "react-icons/md";
+import { FaBowlFood, FaHandSparkles } from "react-icons/fa6";
 
 const Products = () => {
     const { keyword } = useParams();
@@ -22,14 +26,11 @@ const Products = () => {
     const resultPerPage = 12;
     const [currentPage, setCurrentPage] = useState(1);
     const [price, setPrice] = useState([]);
-    const [isPriceOpen, setIsPriceOpen] = useState(true);
+    const [category, setCategory] = useState("");
+    const [rating, setRating] = useState(0);
+
+    const [isPriceOpen, setIsPriceOpen] = useState(false);
     const [isCategoryOpen, setIsCategoryOpen] = useState(false);
-    const [isFashionOpen, setIsFashionOpen] = useState(false);
-    const [isElectronicsOpen, setIsElectronicsOpen] = useState(false);
-    const [isPersonalCareOpen, setIsPersonalCareOpen] = useState(false);
-    const [isHomeKitchenOpen, setIsHomeKitchenOpen] = useState(false);
-    const [isSportsOpen, setIsSportsOpen] = useState(false);
-    const [isGroceriesOpen, setIsGroceriesOpen] = useState(false);
     const [isRatingsOpen, setIsRatingsOpen] = useState(false);
 
     useEffect(() => {
@@ -37,10 +38,10 @@ const Products = () => {
             toast.error(error);
             dispatch(clearErrors());
         }
-        dispatch(getAllProducts(keyword, currentPage));
-    }, [dispatch, error, keyword, currentPage]);
+        dispatch(getAllProducts(keyword, currentPage, category, rating));
+    }, [dispatch, error, keyword, currentPage, category, rating]);
 
-    const handlePriceChange = debounce(() => {
+    const handlePriceChange = () => {
         const defaultMinPrice = 1;
         const defaultMaxPrice = 100000;
 
@@ -53,8 +54,10 @@ const Products = () => {
         const priceRange = [finalMinPrice, finalMaxPrice];
         setPrice(priceRange);
 
-        dispatch(getAllProducts(keyword, currentPage, priceRange));
-    }, 200);
+        dispatch(
+            getAllProducts(keyword, currentPage, category, rating, priceRange)
+        );
+    };
 
     if (loading) {
         return <PageLoader />;
@@ -62,10 +65,6 @@ const Products = () => {
 
     const setCurrentPageNo = (pageNumber) => {
         setCurrentPage(pageNumber);
-    };
-
-    const togglePrice = () => {
-        setIsPriceOpen(!isPriceOpen);
     };
 
     const handleMinPrice = (e) => {
@@ -96,32 +95,28 @@ const Products = () => {
         }
     };
 
+    const handleCategory = (category) => {
+        setCategory(category);
+    };
+
+    const handleRatings = (rating) => {
+        setRating(rating);
+    };
+
+    const clearFilters = debounce(() => {
+        setPrice([1, 100000]);
+        setCategory("");
+        setRating(0);
+        setCurrentPage(1);
+        dispatch(getAllProducts(keyword, currentPage, "", 0, [1, 100000]));
+    }, 200);
+
+    const togglePrice = () => {
+        setIsPriceOpen(!isPriceOpen);
+    };
+
     const toggleCategory = () => {
         setIsCategoryOpen(!isCategoryOpen);
-    };
-
-    const toggleFashion = () => {
-        setIsFashionOpen(!isFashionOpen);
-    };
-
-    const toggleElectronics = () => {
-        setIsElectronicsOpen(!isElectronicsOpen);
-    };
-
-    const togglePersonalCare = () => {
-        setIsPersonalCareOpen(!isPersonalCareOpen);
-    };
-
-    const toggleHomeKitchen = () => {
-        setIsHomeKitchenOpen(!isHomeKitchenOpen);
-    };
-
-    const toggleSports = () => {
-        setIsSportsOpen(!isSportsOpen);
-    };
-
-    const toggleGroceries = () => {
-        setIsGroceriesOpen(!isGroceriesOpen);
     };
 
     const toggleRatings = () => {
@@ -201,7 +196,7 @@ const Products = () => {
                                 </div>
 
                                 <button
-                                    className="rounded-md bg-blue-600 p-2 font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 text-sm"
+                                    className="rounded bg-blue-600 p-2 font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 text-sm"
                                     onClick={handlePriceChange}
                                 >
                                     Apply Price
@@ -222,165 +217,62 @@ const Products = () => {
                         </div>
 
                         {isCategoryOpen && (
-                            <>
-                                <div className="fashion py-1.5 pl-3">
-                                    <div
-                                        className="flex justify-between items-center cursor-pointer"
-                                        onClick={toggleFashion}
-                                    >
-                                        <h3 className="font-medium">Fashion</h3>
-                                        <span className="font-medium md:text-lg text-base">
-                                            {isFashionOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
-                                        </span>
-                                    </div>
-
-                                    {isFashionOpen && (
-                                        <ul className="pl-4 pt-1 space-y-1 font-medium list-disc">
-                                            <li className="text-sm text-gray-700">All Fashion</li>
-                                            <li className="text-sm text-gray-700">Men</li>
-                                            <li className="text-sm text-gray-700">Women</li>
-                                            <li className="text-sm text-gray-700">Kids</li>
-                                            <li className="text-sm text-gray-700">Footwear</li>
-                                            <li className="text-sm text-gray-700">Accessories</li>
-                                        </ul>
-                                    )}
-                                </div>
-
-                                <div className="electronics py-1.5 pl-3">
-                                    <div
-                                        className="flex justify-between items-center cursor-pointer"
-                                        onClick={toggleElectronics}
-                                    >
-                                        <h3 className="font-medium">Electronics</h3>
-                                        <span className="font-medium md:text-lg text-base">
-                                            {isElectronicsOpen ? (
-                                                <IoIosArrowUp />
-                                            ) : (
-                                                <IoIosArrowDown />
-                                            )}
-                                        </span>
-                                    </div>
-
-                                    {isElectronicsOpen && (
-                                        <ul className="pl-4 pt-1 space-y-1 font-medium list-disc">
-                                            <li className="text-sm text-gray-700">All Electronics</li>
-                                            <li className="text-sm text-gray-700">Mobiles</li>
-                                            <li className="text-sm text-gray-700">
-                                                Laptop & Computers
-                                            </li>
-                                            <li className="text-sm text-gray-700">Home Appliances</li>
-                                            <li className="text-sm text-gray-700">Cameras</li>
-                                            <li className="text-sm text-gray-700">Audio & Video</li>
-                                        </ul>
-                                    )}
-                                </div>
-
-                                <div className="personal-care py-1.5 pl-3">
-                                    <div
-                                        className="flex justify-between items-center cursor-pointer"
-                                        onClick={togglePersonalCare}
-                                    >
-                                        <h3 className="font-medium">Personal Care</h3>
-                                        <span className="font-medium md:text-lg text-base">
-                                            {isPersonalCareOpen ? (
-                                                <IoIosArrowUp />
-                                            ) : (
-                                                <IoIosArrowDown />
-                                            )}
-                                        </span>
-                                    </div>
-
-                                    {isPersonalCareOpen && (
-                                        <ul className="pl-4 pt-1 space-y-1 font-medium list-disc">
-                                            <li className="text-sm text-gray-700">
-                                                All Personal Care
-                                            </li>
-                                            <li className="text-sm text-gray-700">Skincare</li>
-                                            <li className="text-sm text-gray-700">Haircare</li>
-                                            <li className="text-sm text-gray-700">Bath & Body</li>
-                                            <li className="text-sm text-gray-700">Oral Care</li>
-                                            <li className="text-sm text-gray-700">Makeup</li>
-                                        </ul>
-                                    )}
-                                </div>
-
-                                <div className="home-kitchen py-1.5 pl-3">
-                                    <div
-                                        className="flex justify-between items-center cursor-pointer"
-                                        onClick={toggleHomeKitchen}
-                                    >
-                                        <h3 className="font-medium">Home & Kitchen</h3>
-                                        <span className="font-medium md:text-lg text-base">
-                                            {isHomeKitchenOpen ? (
-                                                <IoIosArrowUp />
-                                            ) : (
-                                                <IoIosArrowDown />
-                                            )}
-                                        </span>
-                                    </div>
-
-                                    {isHomeKitchenOpen && (
-                                        <ul className="pl-4 pt-1 space-y-1 font-medium list-disc">
-                                            <li className="text-sm text-gray-700">
-                                                All Home & Kitchen
-                                            </li>
-                                            <li className="text-sm text-gray-700">Furniture</li>
-                                            <li className="text-sm text-gray-700">Home Decor</li>
-                                            <li className="text-sm text-gray-700">Kitchenware</li>
-                                            <li className="text-sm text-gray-700">Bedding</li>
-                                            <li className="text-sm text-gray-700">Lighting</li>
-                                        </ul>
-                                    )}
-                                </div>
-
-                                <div className="sports py-1.5 pl-3">
-                                    <div
-                                        className="flex justify-between items-center cursor-pointer"
-                                        onClick={toggleSports}
-                                    >
-                                        <h3 className="font-medium">Sports</h3>
-                                        <span className="font-medium md:text-lg text-base">
-                                            {isSportsOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
-                                        </span>
-                                    </div>
-
-                                    {isSportsOpen && (
-                                        <ul className="pl-4 pt-1 space-y-1 font-medium list-disc">
-                                            <li className="text-sm text-gray-700">All Sports</li>
-                                            <li className="text-sm text-gray-700">Fitness</li>
-                                            <li className="text-sm text-gray-700">Outdoor</li>
-                                            <li className="text-sm text-gray-700">Indoor</li>
-                                            <li className="text-sm text-gray-700">Sportswear</li>
-                                            <li className="text-sm text-gray-700">Accessories</li>
-                                        </ul>
-                                    )}
-                                </div>
-
-                                <div className="groceries py-1.5 pl-3">
-                                    <div
-                                        className="flex justify-between items-center cursor-pointer"
-                                        onClick={toggleGroceries}
-                                    >
-                                        <h3 className="font-medium">Groceries</h3>
-                                        <span className="font-medium md:text-lg text-base">
-                                            {isGroceriesOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
-                                        </span>
-                                    </div>
-
-                                    {isGroceriesOpen && (
-                                        <ul className="pl-4 pt-1 space-y-1 font-medium list-disc">
-                                            <li className="text-sm text-gray-700">All Groceries</li>
-                                            <li className="text-sm text-gray-700">Beverages</li>
-                                            <li className="text-sm text-gray-700">Snacks</li>
-                                            <li className="text-sm text-gray-700">Packaged Food</li>
-                                            <li className="text-sm text-gray-700">
-                                                Baking Essentials
-                                            </li>
-                                            <li className="text-sm text-gray-700">Dairy & Eggs</li>
-                                        </ul>
-                                    )}
-                                </div>
-                            </>
+                            <ul className="font-medium pt-1.5 space-y-2.5">
+                                <li
+                                    className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
+                                    onClick={() => handleCategory("fashion")}
+                                >
+                                    <span className="text-base rounded-full border-2 border-blue-600 p-1">
+                                        <GiAmpleDress />
+                                    </span>
+                                    <span>Fashion</span>
+                                </li>
+                                <li
+                                    className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
+                                    onClick={() => handleCategory("electronics")}
+                                >
+                                    <span className="text-base rounded-full border-2 border-blue-600 p-1">
+                                        <MdElectricalServices />
+                                    </span>
+                                    <span>Electronics</span>
+                                </li>
+                                <li
+                                    className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
+                                    onClick={() => handleCategory("personalcare")}
+                                >
+                                    <span className="text-base rounded-full border-2 border-blue-600 p-1">
+                                        <FaHandSparkles />
+                                    </span>
+                                    <span>Personal Care</span>
+                                </li>
+                                <li
+                                    className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
+                                    onClick={() => handleCategory("home")}
+                                >
+                                    <span className="text-lg rounded-full border-2 border-blue-600 p-1">
+                                        <MdOutlineFoodBank />
+                                    </span>
+                                    <span>Home & Kitchen</span>
+                                </li>
+                                <li
+                                    className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
+                                    onClick={() => handleCategory("sports")}
+                                >
+                                    <span className="text-base rounded-full border-2 border-blue-600 p-1">
+                                        <IoGameController />
+                                    </span>
+                                    <span>Sports & Games</span>
+                                </li>
+                                <li
+                                    className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
+                                    onClick={() => handleCategory("groceries")}
+                                >
+                                    <span className="text-base rounded-full border-2 border-blue-600 p-1">
+                                        <FaBowlFood />
+                                    </span>
+                                    <span>Groceries</span>
+                                </li>
+                            </ul>
                         )}
                     </div>
 
@@ -399,14 +291,22 @@ const Products = () => {
                             <div>
                                 <ReactStars
                                     count={5}
-                                    size={22}
+                                    size={24}
+                                    value={rating}
                                     isHalf={true}
                                     activeColor="blue"
-                                    onChange={(newRating) => console.log(newRating)}
+                                    onChange={(newRating) => handleRatings(newRating)}
                                 />
                             </div>
                         )}
                     </div>
+
+                    <button
+                        className="rounded mt-1 bg-blue-600 p-2 font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 text-sm"
+                        onClick={clearFilters}
+                    >
+                        Clear All Filters
+                    </button>
                 </aside>
 
                 <div className="product-section w-full">

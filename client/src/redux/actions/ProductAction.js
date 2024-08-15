@@ -28,14 +28,18 @@ const extractErrorMessage = (htmlString) => {
 
 // Get all products
 const getAllProducts =
-    (keyword = "", currentPage = 1, price = [1, 100000]) =>
+    (keyword = "", currentPage = 1, category, rating = 0, price = [1, 100000]) =>
         async (dispatch) => {
             try {
                 dispatch({ type: ALL_PRODUCT_REQUEST });
 
-                const { data } = await axios.get(
-                    `http://localhost:8000/api/v1/products?keyword=${keyword}&page=${currentPage}&price[gte]=${price[0]}&price[lte]=${price[1]}`
-                );
+                let apiLink = `http://localhost:8000/api/v1/products?keyword=${keyword}&page=${currentPage}&rating[gte]=${rating}&price[gte]=${price[0]}&price[lte]=${price[1]}`;
+
+                if (category) {
+                    apiLink = `http://localhost:8000/api/v1/products?keyword=${keyword}&page=${currentPage}&category=${category}&rating[gte]=${rating}&price[gte]=${price[0]}&price[lte]=${price[1]}`;
+                }
+
+                const { data } = await axios.get(apiLink);
 
                 dispatch({
                     type: ALL_PRODUCT_SUCCESS,

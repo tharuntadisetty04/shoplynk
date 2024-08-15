@@ -7,11 +7,11 @@ import mongoose from "mongoose";
 
 //create a product
 const createProduct = asyncHandler(async (req, res) => {
-    const { name, description, price, images, category, subCategory, stock } =
+    const { name, description, price, images, category, stock } =
         req.body;
 
     if (
-        [name, description, category, subCategory].some(
+        [name, description, category].some(
             (field) => field?.trim() === ""
         )
     ) {
@@ -23,8 +23,7 @@ const createProduct = asyncHandler(async (req, res) => {
         !description ||
         !price ||
         !images ||
-        !category ||
-        !subCategory
+        !category
     ) {
         throw new ApiError(400, "Please enter the required fields");
     }
@@ -41,13 +40,16 @@ const createProduct = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Stock limit cannot exceed 4 characters");
     }
 
+    if (!["fashion", "electronics", "home"].includes(category)) {
+        throw new ApiError(400, "Invalid category provided");
+    }
+
     const product = await Product.create({
         name: name,
         description: description,
         price: price,
         images: images,
         category: category.toLowerCase(),
-        subCategory: subCategory.toLowerCase(),
         stock: stock,
         owner: req.user._id,
     });
