@@ -7,24 +7,13 @@ import mongoose from "mongoose";
 
 //create a product
 const createProduct = asyncHandler(async (req, res) => {
-    const { name, description, price, images, category, stock } =
-        req.body;
+    const { name, description, price, images, category, stock } = req.body;
 
-    if (
-        [name, description, category].some(
-            (field) => field?.trim() === ""
-        )
-    ) {
+    if ([name, description, category].some((field) => field?.trim() === "")) {
         throw new ApiError(400, "Required fields are empty");
     }
 
-    if (
-        !name ||
-        !description ||
-        !price ||
-        !images ||
-        !category
-    ) {
+    if (!name || !description || !price || !images || !category) {
         throw new ApiError(400, "Please enter the required fields");
     }
 
@@ -40,7 +29,16 @@ const createProduct = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Stock limit cannot exceed 4 characters");
     }
 
-    if (!["fashion", "electronics", "home"].includes(category)) {
+    if (
+        ![
+            "fashion",
+            "electronics",
+            "personalcare",
+            "home",
+            "sports",
+            "groceries",
+        ].includes(category)
+    ) {
         throw new ApiError(400, "Invalid category provided");
     }
 
@@ -76,7 +74,9 @@ const getAllProducts = asyncHandler(async (req, res) => {
         .search()
         .filter();
 
-    const filteredProductsCount = await productFilters.data.clone().countDocuments();
+    const filteredProductsCount = await productFilters.data
+        .clone()
+        .countDocuments();
 
     productFilters = productFilters.pagination(resultPerPage);
 

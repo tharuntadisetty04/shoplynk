@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import TitleHelmet from "../utils/TitleHelmet";
 import ProductCard from "../utils/ProductCard";
 import ProductNotFound from "./ProductNotFound";
@@ -20,13 +20,14 @@ import { FaBowlFood, FaHandSparkles } from "react-icons/fa6";
 const Products = () => {
     const { keyword } = useParams();
     const dispatch = useDispatch();
+    const location = useLocation();
     const { loading, error, products, productsCount, filteredProductsCount } =
         useSelector((state) => state.products);
 
     const resultPerPage = 12;
     const [currentPage, setCurrentPage] = useState(1);
     const [price, setPrice] = useState([]);
-    const [category, setCategory] = useState("");
+    const [category, setCategory] = useState(location.state?.category || "");
     const [rating, setRating] = useState(0);
 
     const [isPriceOpen, setIsPriceOpen] = useState(false);

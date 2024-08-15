@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import heroImg from "../../assets/hero-img.png";
 import heroImg2 from "../../assets/hero-img2.png";
 import { Link, useNavigate } from "react-router-dom";
@@ -23,6 +23,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const Home = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { loading, error, products } = useSelector((state) => state.products);
     const errorHandled = useRef(false);
 
@@ -35,6 +36,11 @@ const Home = () => {
 
         dispatch(getAllProducts());
     }, [dispatch, error]);
+
+    const handleCategory = (category) => {
+        dispatch(getAllProducts("", 1, category, 0, [1, 100000]));
+        navigate("/products", { state: { category } });
+    };
 
     let bestSellingProducts = [];
     let featuredProducts = [];
@@ -120,7 +126,8 @@ const Home = () => {
 
                 <div className="gap-6 grid place-items-center lg:grid-cols-6 md:grid-cols-3 grid-cols-2">
                     <div
-                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
+                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2 cursor-pointer"
+                        onClick={() => handleCategory("fashion")}
                     >
                         <div className="font-medium md:text-5xl text-4xl">
                             <GiAmpleDress />
@@ -129,7 +136,8 @@ const Home = () => {
                     </div>
 
                     <div
-                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
+                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2 cursor-pointer"
+                        onClick={() => handleCategory("electronics")}
                     >
                         <div className="font-medium md:text-5xl text-4xl">
                             <MdElectricalServices />
@@ -138,7 +146,8 @@ const Home = () => {
                     </div>
 
                     <div
-                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
+                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2 cursor-pointer"
+                        onClick={() => handleCategory("personalcare")}
                     >
                         <div className="font-medium md:text-5xl text-4xl">
                             <FaHandSparkles />
@@ -147,7 +156,8 @@ const Home = () => {
                     </div>
 
                     <div
-                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
+                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2 cursor-pointer"
+                        onClick={() => handleCategory("home")}
                     >
                         <div className="font-medium md:text-[3.7rem] text-4xl">
                             <MdOutlineFoodBank />
@@ -156,7 +166,8 @@ const Home = () => {
                     </div>
 
                     <div
-                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
+                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2 cursor-pointer"
+                        onClick={() => handleCategory("sports")}
                     >
                         <div className="font-medium md:text-5xl text-4xl">
                             <IoGameController />
@@ -165,7 +176,8 @@ const Home = () => {
                     </div>
 
                     <div
-                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded md:hover:scale-105 flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2"
+                        className="w-36 md:w-48 h-36 md:h-44 border-2 border-slate-200 hover:-translate-y-2 hover:bg-inherit bg-slate-200 duration-200 rounded flex flex-col justify-center items-center hover:shadow-md hover:text-blue-600 gap-2 cursor-pointer"
+                        onClick={() => handleCategory("groceries")}
                     >
                         <div className="font-medium md:text-5xl text-4xl">
                             <FaBowlFood />

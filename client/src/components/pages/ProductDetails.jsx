@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import PageLoader from "../layout/PageLoader";
 import { Link } from "react-router-dom";
@@ -35,13 +35,11 @@ const ProductDetails = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     const [selectedReview, setSelectedReview] = useState(null);
-    const errorHandled = useRef(false);
 
     useEffect(() => {
-        if (error && !errorHandled.current) {
+        if (error) {
             toast.error(error);
             dispatch(clearErrors());
-            errorHandled.current = true;
         }
 
         dispatch(getProductDetails(id));
@@ -107,7 +105,7 @@ const ProductDetails = () => {
 
     const increaseQuantity = () => {
         if (quantity >= product.stock) {
-            toast.warning("Stock limit exceeded");
+            toast.warning(`Stock limit exceeded. Max: ${product.stock}`);
         } else {
             setQuantity(quantity + 1);
         }
