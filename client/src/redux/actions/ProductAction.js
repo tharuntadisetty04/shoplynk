@@ -10,6 +10,9 @@ import {
     SIMILAR_PRODUCTS_REQUEST,
     SIMILAR_PRODUCTS_SUCCESS,
     SIMILAR_PRODUCTS_FAIL,
+    BEST_PRODUCTS_REQUEST,
+    BEST_PRODUCTS_SUCCESS,
+    BEST_PRODUCTS_FAIL,
 } from "../constants/ProductConstant";
 
 const extractErrorMessage = (htmlString) => {
@@ -78,6 +81,29 @@ const getProductDetails = (id) => async (dispatch) => {
     }
 };
 
+// Get best selling products
+const getBestSellingProducts = (id) => async (dispatch) => {
+    try {
+        dispatch({ type: BEST_PRODUCTS_REQUEST });
+
+        const { data } = await axios.get(
+            `http://localhost:8000/api/v1/products/best-products`
+        );
+
+        dispatch({
+            type: BEST_PRODUCTS_SUCCESS,
+            payload: data,
+        });
+    } catch (error) {
+        const errorMessage = extractErrorMessage(error.response.data);
+
+        dispatch({
+            type: BEST_PRODUCTS_FAIL,
+            payload: errorMessage,
+        });
+    }
+};
+
 // Get similar products
 const getSimilarProducts = (id) => async (dispatch) => {
     try {
@@ -106,4 +132,10 @@ const clearErrors = () => async (dispatch) => {
     dispatch({ type: CLEAR_ERRORS });
 };
 
-export { getAllProducts, getProductDetails, getSimilarProducts, clearErrors };
+export {
+    getAllProducts,
+    getProductDetails,
+    getSimilarProducts,
+    getBestSellingProducts,
+    clearErrors,
+};

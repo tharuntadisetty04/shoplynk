@@ -9,6 +9,9 @@ import {
     SIMILAR_PRODUCTS_REQUEST,
     SIMILAR_PRODUCTS_SUCCESS,
     SIMILAR_PRODUCTS_FAIL,
+    BEST_PRODUCTS_REQUEST,
+    BEST_PRODUCTS_SUCCESS,
+    BEST_PRODUCTS_FAIL,
 } from "../constants/ProductConstant";
 
 // all products reducer
@@ -125,4 +128,46 @@ const similarProductsReducer = (state = similarProductsState, action) => {
     }
 };
 
-export { productsReducer, productDetailsReducer, similarProductsReducer };
+// best selling products reducer
+const bestProductsState = {
+    loading: false,
+    bestProducts: [],
+    error: null,
+};
+
+const bestProductsReducer = (state = bestProductsState, action) => {
+    switch (action.type) {
+        case BEST_PRODUCTS_REQUEST:
+            return {
+                ...state,
+                loading: true,
+            };
+        case BEST_PRODUCTS_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                bestProducts: action.payload.data,
+                error: null,
+            };
+        case BEST_PRODUCTS_FAIL:
+            return {
+                ...state,
+                loading: false,
+                error: action.payload,
+            };
+        case CLEAR_ERRORS:
+            return {
+                ...state,
+                error: null,
+            };
+        default:
+            return state;
+    }
+};
+
+export {
+    productsReducer,
+    productDetailsReducer,
+    similarProductsReducer,
+    bestProductsReducer,
+};

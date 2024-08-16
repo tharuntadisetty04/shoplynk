@@ -140,6 +140,34 @@ const getSimilarProducts = asyncHandler(async (req, res, next) => {
     }
 });
 
+// get best selling products
+const getBestSellingProducts = asyncHandler(async (req, res, next) => {
+    const resultPerPage = 8;
+
+    const products = new ProductSearch(
+        Product.find({
+            rating: { $gte: 4 },
+        }),
+        req.query
+    ).pagination(resultPerPage);
+
+    const bestProducts = await products.data;
+
+    if (!bestProducts) {
+        throw new ApiError(404, "Products not found");
+    }
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                bestProducts,
+                "Best selling products fetched successfully"
+            )
+        );
+});
+
 //get product details
 const getProductDetails = asyncHandler(async (req, res, next) => {
     const productId = req.params?.id;
@@ -424,4 +452,5 @@ export {
     deleteReview,
     getSellerProducts,
     getSimilarProducts,
+    getBestSellingProducts,
 };

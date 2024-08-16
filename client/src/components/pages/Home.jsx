@@ -17,7 +17,11 @@ import ProductCard from "../utils/ProductCard";
 import TitleHelmet from "../utils/TitleHelmet";
 import ItemLoader from "../layout/ItemLoader";
 import { useDispatch, useSelector } from "react-redux";
-import { clearErrors, getAllProducts } from "../../redux/actions/ProductAction";
+import {
+    clearErrors,
+    getAllProducts,
+    getBestSellingProducts,
+} from "../../redux/actions/ProductAction";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -25,6 +29,11 @@ const Home = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { loading, error, products } = useSelector((state) => state.products);
+    const {
+        loading: bestProductsLoading,
+        error: bestProductsError,
+        bestProducts,
+    } = useSelector((state) => state.bestProducts);
     const errorHandled = useRef(false);
 
     useEffect(() => {
@@ -35,6 +44,7 @@ const Home = () => {
         }
 
         dispatch(getAllProducts());
+        dispatch(getBestSellingProducts());
     }, [dispatch, error]);
 
     const handleCategory = (category) => {
@@ -42,13 +52,13 @@ const Home = () => {
         navigate("/products", { state: { category } });
     };
 
-    let bestSellingProducts = [];
-    let featuredProducts = [];
+    if (bestProductsError) {
+        toast.error(bestProductsError);
+        dispatch(clearErrors());
+    }
 
+    let featuredProducts = [];
     if (products) {
-        bestSellingProducts = products
-            .filter((product) => product.rating >= 4)
-            .slice(0, 4);
         featuredProducts = products.slice(0, 8);
     }
 
@@ -202,12 +212,12 @@ const Home = () => {
                     </Link>
                 </div>
 
-                {loading ? (
+                {bestProductsLoading ? (
                     <ItemLoader />
                 ) : (
                     <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 place-items-center gap-8">
-                        {bestSellingProducts &&
-                            bestSellingProducts.map((product) => (
+                        {bestProducts &&
+                            bestProducts.map((product) => (
                                 <ProductCard key={product._id} product={product} />
                             ))}
                     </div>
@@ -297,7 +307,9 @@ const Home = () => {
                         </div>
 
                         <div className="flex flex-col md:items-center">
-                            <h2 className="font-medium text-xl text-center">Flexible Payment</h2>
+                            <h2 className="font-medium text-xl text-center">
+                                Flexible Payment
+                            </h2>
                             <p className="text-gray-600 md:text-center">
                                 Multiple secure payment options
                             </p>

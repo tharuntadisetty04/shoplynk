@@ -1,5 +1,6 @@
 import { combineReducers } from "@reduxjs/toolkit";
 import {
+    bestProductsReducer,
     productDetailsReducer,
     productsReducer,
     similarProductsReducer,
@@ -9,6 +10,7 @@ const rootReducer = combineReducers({
     products: productsReducer,
     productDetails: productDetailsReducer,
     similarProducts: similarProductsReducer,
+    bestProducts: bestProductsReducer,
 });
 
 export default rootReducer;

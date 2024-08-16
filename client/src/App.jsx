@@ -8,14 +8,14 @@ import {
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import PageLoader from "./components/layout/PageLoader";
-import NotFound from "./components/pages/PageNotFound";
-import SearchPage from "./components/pages/SearchPage";
+import PageNotFound from "./components/pages/PageNotFound";
 
 const Home = lazy(() => import("./components/pages/Home"));
 const Products = lazy(() => import("./components/pages/Products"));
 const About = lazy(() => import("./components/pages/About"));
 const Contact = lazy(() => import("./components/pages/Contact"));
 const ProductDetails = lazy(() => import("./components/pages/ProductDetails"));
+const SearchPage = lazy(() => import("./components/pages/SearchPage"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -43,7 +43,7 @@ function App() {
               <Route path="/products/:id" element={<ProductDetails />} />
               <Route path="/products/search" element={<SearchPage />} />
               <Route path="/products/search/:keyword" element={<Products />} />
-              <Route path="*" element={<NotFound />} />
+              <Route path="*" element={<PageNotFound />} />
             </Routes>
           </Suspense>
         </main>
