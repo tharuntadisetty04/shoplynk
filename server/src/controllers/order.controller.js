@@ -67,33 +67,28 @@ const newOrder = asyncHandler(async (req, res) => {
 
 //get single order
 const getSingleOrder = asyncHandler(async (req, res) => {
-    const order = await Order.findById(req.params.id)
+    const sellerId = req.user._id;
+    const order = await Order.findById(req.params?.id)
         .populate("user", "username email")
+        .populate("orderItems.productDetails", "name owner")
         .lean();
 
     if (!order) {
         throw new ApiError(404, "Order not found with the given ID");
     }
 
-    const productId = order.orderItems.map((item) => item.productDetails);
+    const sellerItems = order.orderItems.filter((item) =>
+        item.productDetails.owner.equals(sellerId)
+    );
 
-    const products = await Product.aggregate([
-        {
-            $match: {
-                _id: { $in: productId },
-                owner: req.user._id,
-            },
-        },
-        {
-            $project: {
-                _id: 1,
-            },
-        },
-    ]);
-
-    if (!products || products.length === 0) {
-        throw new ApiError(403, "Order does not belong to this seller");
+    if (!sellerItems) {
+        throw new ApiError(
+            403,
+            "Order does not contain products owned by this seller"
+        );
     }
+
+    order.orderItems = sellerItems;
 
     res.status(200).json(
         new ApiResponse(200, order, "Order details fetched successfully")
@@ -104,26 +99,41 @@ const getSingleOrder = asyncHandler(async (req, res) => {
 const getSellerOrders = asyncHandler(async (req, res) => {
     const sellerId = req.user._id;
 
-    const products = await Product.find({ owner: sellerId });
-
-    if (!products || products.length === 0) {
-        throw new ApiError(404, "Seller has no products");
-    }
-
-    const productIds = products.map((product) => product._id);
-
-    const orders = await Order.find({
-        "orderItems.productDetails": { $in: productIds },
-    })
-        .populate("orderItems.productDetails", "name price")
+    const orders = await Order.find({})
+        .populate("orderItems.productDetails", "name owner")
         .populate("user", "username email");
 
-    if (!orders || orders.length === 0) {
+    if (!orders) {
+        throw new ApiError(404, "No orders found.");
+    }
+
+    const filteredOrders = orders
+        .map((order) => {
+            const sellerItems = order.orderItems.filter((item) =>
+                item.productDetails.owner.equals(sellerId)
+            );
+
+            if (sellerItems.length > 0) {
+                return {
+                    ...order.toObject(),
+                    orderItems: sellerItems,
+                };
+            }
+
+            return null;
+        })
+        .filter((order) => order !== null);
+
+    if (!filteredOrders) {
         throw new ApiError(404, "No orders found for this seller.");
     }
 
     res.status(200).json(
-        new ApiResponse(200, orders, "All orders fetched successfully")
+        new ApiResponse(
+            200,
+            filteredOrders,
+            "Seller orders fetched successfully"
+        )
     );
 });
 
@@ -144,86 +154,140 @@ const getCurrentUserOrders = asyncHandler(async (req, res) => {
 const updateOrder = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
+    const sellerId = req.user._id;
 
     if (!["Processing", "Shipped", "Delivered"].includes(status)) {
         throw new ApiError(400, "Invalid status provided");
     }
 
     const order = await Order.findById(id)
-        .populate("user", "username email")
-        .populate("orderItems.productDetails", "name price");
+        .populate("orderItems.productDetails", "name owner")
+        .populate("user", "username email");
 
     if (!order) {
-        throw new ApiError(404, "Order not found with this Id");
+        throw new ApiError(404, "Order not found with this ID");
     }
 
-    const productId = order.orderItems.map((item) => item.productDetails._id);
+    const sellerItems = order.orderItems.filter((item) =>
+        item.productDetails.owner.equals(sellerId)
+    );
 
-    const products = await Product.find({
-        _id: { $in: productId },
-        owner: req.user._id,
-    });
-
-    if (!products || products.length === 0) {
-        throw new ApiError(403, "Order does not belong to this seller");
+    if (!sellerItems) {
+        throw new ApiError(
+            403,
+            "Order does not contain products owned by this seller"
+        );
     }
 
-    if (order.orderStatus === "Delivered") {
-        throw new ApiError(400, "You have already delivered this order");
+    const alreadyDelivered = sellerItems.some(
+        (item) => item.orderStatus === "Delivered"
+    );
+
+    if (status === "Delivered" && alreadyDelivered) {
+        throw new ApiError(400, "The order has already been delivered");
     }
 
     if (status === "Shipped") {
-        for (const item of order.orderItems) {
+        for (const item of sellerItems) {
             await updateStock(item.productDetails._id, item.quantity);
         }
     }
 
-    order.orderStatus = status;
+    order.orderItems = order.orderItems.map((item) => {
+        if (item.productDetails.owner.equals(sellerId)) {
+            return {
+                ...item.toObject(),
+                orderStatus: status,
+            };
+        }
+        return item;
+    });
 
     if (status === "Delivered") {
-        order.deliveredAt = Date.now();
+        order.orderItems = order.orderItems.map((item) => {
+            if (item.productDetails.owner.equals(sellerId)) {
+                return {
+                    ...item.toObject(),
+                    orderStatus: status,
+                    deliveredAt: Date.now(),
+                };
+            }
+            return item;
+        });
     }
 
-    try {
-        const updatedOrder = await order.save({ validateBeforeSave: false });
+    await order.save({ validateBeforeSave: false });
 
-        res.status(200).json(
-            new ApiResponse(
-                200,
-                updatedOrder,
-                "Order status updated successfully"
-            )
-        );
-    } catch (error) {
-        throw new ApiError(500, `Error saving order: ${error.message}`);
-    }
+    const sellerOrderItems = order.orderItems
+        .filter((item) => item.productDetails.owner.equals(sellerId))
+        .map((item) => ({
+            ...item.toObject(),
+            productDetails: {
+                name: item.productDetails.name,
+                owner: item.productDetails.owner,
+            },
+        }));
+
+    const updatedOrder = { ...order.toObject(), orderItems: sellerOrderItems };
+
+    res.status(200).json(
+        new ApiResponse(200, updatedOrder, "Order status updated successfully")
+    );
 });
 
+// Helper function to update stock
 async function updateStock(productId, quantity) {
     const product = await Product.findById(productId);
 
     if (!product) {
-        throw new ApiError(404, `Product not found with ID: ${id}`);
+        throw new ApiError(404, `Product not found with ID: ${productId}`);
+    }
+
+    if (product.stock < quantity) {
+        throw new ApiError(
+            400,
+            `Insufficient stock for product ID: ${productId}`
+        );
     }
 
     product.stock -= quantity;
-
     await product.save({ validateBeforeSave: false });
 }
 
 //delete order
 const deleteOrder = asyncHandler(async (req, res) => {
-    const { id } = req.params;
+    const sellerId = req.user._id;
+    const orderId = req.params.id;
 
-    const order = await Order.findByIdAndDelete(id);
+    const order = await Order.findById(orderId).populate(
+        "orderItems.productDetails",
+        "owner"
+    );
 
     if (!order) {
-        throw new ApiError(404, `Order not found with ID: ${id}`);
+        throw new ApiError(404, `Order not found with ID: ${orderId}`);
     }
 
-    res.status(200).json(
-        new ApiResponse(200, {}, "Order deleted successfully")
+    const remainingItems = order.orderItems.filter(
+        (item) => !item.productDetails.owner.equals(sellerId)
     );
+
+    if (!remainingItems) {
+        await order.deleteOne();
+        res.status(200).json(
+            new ApiResponse(200, {}, "Order deleted successfully")
+        );
+    } else {
+        order.orderItems = remainingItems;
+        await order.save();
+        res.status(200).json(
+            new ApiResponse(
+                200,
+                order,
+                "Seller's items removed from order successfully"
+            )
+        );
+    }
 });
 
 export {

@@ -51,6 +51,12 @@ const orderSchema = new Schema(
                     ref: "Product",
                     required: true,
                 },
+                orderStatus: {
+                    type: String,
+                    required: true,
+                    default: "Processing",
+                },
+                deliveredAt: Date,
             },
         ],
         user: {
@@ -92,12 +98,6 @@ const orderSchema = new Schema(
             required: true,
             default: 0,
         },
-        orderStatus: {
-            type: String,
-            required: true,
-            default: "Processing",
-        },
-        deliveredAt: Date,
     },
     { timestamps: true }
 );

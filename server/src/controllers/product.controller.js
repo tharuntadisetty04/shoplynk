@@ -21,8 +21,8 @@ const createProduct = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Price must be a non-negative number");
     }
 
-    if (price.toString().length > 7) {
-        throw new ApiError(400, "Price cannot exceed 7 characters");
+    if (price.toString().length > 6) {
+        throw new ApiError(400, "Price cannot exceed 6 characters");
     }
 
     if (stock.toString().length > 4) {
@@ -185,8 +185,8 @@ const updateProduct = asyncHandler(async (req, res, next) => {
         throw new ApiError(400, "Price must be a non-negative number");
     }
 
-    if (price.toString().length > 7) {
-        throw new ApiError(400, "Price cannot exceed 7 characters");
+    if (price.toString().length > 6) {
+        throw new ApiError(400, "Price cannot exceed 6 characters");
     }
 
     if (stock.toString().length > 4) {

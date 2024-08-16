@@ -14,7 +14,7 @@ const productSchema = new Schema(
         price: {
             type: Number,
             required: true,
-            maxLength: [7, "Price cannot exceed 7 characters"],
+            maxLength: [6, "Price cannot exceed 6 characters"],
         },
         rating: {
             type: Number,
