@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import signUpImg from "../../assets/signup-img.jpg";
+import registerSeller from "../../assets/register-seller.jpg";
 import { Link } from "react-router-dom";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 
-const SignUp = () => {
+const RegisterSeller = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -19,7 +19,7 @@ const SignUp = () => {
         <div className="signup-section w-full h-full lg:h-[90svh] px-8 md:px-16 flex lg:flex-row flex-col-reverse items-center justify-evenly mb-6 lg:mb-0">
             <div className="login-img">
                 <img
-                    src={signUpImg}
+                    src={registerSeller}
                     alt="SignUp Image"
                     className="mix-blend-multiply lg:block hidden"
                     width={580}
@@ -28,7 +28,7 @@ const SignUp = () => {
 
             <div className="signup-form w-fit md:w-96">
                 <h2 className="text-2xl md:text-4xl font-bold text-center mb-3 text-blue-600">
-                    Sign Up
+                    Register Seller
                 </h2>
 
                 <div className="flex flex-col gap-4 border-2 border-slate-200 rounded p-4 bg-slate-200">
@@ -38,7 +38,7 @@ const SignUp = () => {
                         </label>
                         <input
                             type="text"
-                            placeholder="Enter Full Name"
+                            placeholder="Enter Full Name or Business Name"
                             className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                             required
                         />
@@ -75,7 +75,10 @@ const SignUp = () => {
                     </div>
 
                     <div className="flex gap-1 flex-col relative">
-                        <label htmlFor="confirm-password" className="font-medium text-lg pl-0.5">
+                        <label
+                            htmlFor="confirm-password"
+                            className="font-medium text-lg pl-0.5"
+                        >
                             Confirm Password
                         </label>
                         <input
@@ -92,24 +95,18 @@ const SignUp = () => {
                         </span>
                     </div>
 
-                    <div className="font-medium text-sm text-center flex flex-col gap-0.5">
-                        <span>By clicking Sign Up you agree to our</span>
-                        <span>
-                            <span className="hover:text-blue-600 cursor-pointer font-semibold">
-                                Terms & Conditions{" "}
-                            </span>
-                            and
-                            <span className="hover:text-blue-600 cursor-pointer font-semibold">
-                                {" "}Privacy Policy
-                            </span>
-                        </span>
+                    <div className="pl-1 flex gap-2 items-center">
+                        <input type="checkbox" id="seller" checked={true} />
+                        <label htmlFor="seller" className="font-medium">
+                            Register me as a Seller
+                        </label>
                     </div>
 
                     <button
                         type="submit"
                         className="rounded bg-blue-600 px-3.5 py-2.5 font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200"
                     >
-                        Sign Up
+                        Register
                     </button>
 
                     <div className="text-center">
@@ -127,4 +124,4 @@ const SignUp = () => {
     );
 };
 
-export default SignUp;
+export default RegisterSeller;

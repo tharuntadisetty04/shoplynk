@@ -17,7 +17,7 @@ const Login = () => {
                     src={loginImg}
                     alt="Login Image"
                     className="mix-blend-multiply lg:block hidden"
-                    width={600}
+                    width={580}
                 />
             </div>
 
