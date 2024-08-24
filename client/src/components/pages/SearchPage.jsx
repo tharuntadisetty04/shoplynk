@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaMicrophoneLines, FaMicrophoneLinesSlash } from "react-icons/fa6";
+import TitleHelmet from "../utils/TitleHelmet";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -33,7 +36,7 @@ const SearchPage = () => {
         };
 
         recognition.onerror = (event) => {
-            console.error("Speech recognition error: ", event.error);
+            toast.error("Speech recognition error: ", event.error);
         };
 
         return () => {
@@ -53,6 +56,23 @@ const SearchPage = () => {
 
     return (
         <div className="search-box w-full lg:h-[27rem] md:h-[70svh] h-[45svh]">
+            <TitleHelmet
+                title={"Search | ShopLynk"}
+            />
+
+            <ToastContainer
+                position="top-right"
+                autoClose={2500}
+                hideProgressBar={false}
+                newestOnTop
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+            />
+
             <form
                 onSubmit={handleFormSubmit}
                 className="w-full h-full flex md:flex-row flex-col items-center justify-center gap-4 lg:px-0 md:px-16 px-8 py-10"

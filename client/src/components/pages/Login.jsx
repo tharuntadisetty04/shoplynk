@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import loginImg from "../../assets/login-img.jpg";
 import { Link } from "react-router-dom";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
+import TitleHelmet from "../utils/TitleHelmet";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -10,9 +13,28 @@ const Login = () => {
         setShowPassword((prevState) => !prevState);
     };
 
+    const handleLoginForm = (e) => {
+        e.preventDefault();
+    };
+
     return (
-        <div className="login-section w-full h-[55svh] lg:h-[90svh] px-8 md:px-16 flex lg:flex-row flex-col-reverse items-center justify-evenly mb-6 lg:mb-0">
-            <div className="login-img">
+        <div className="login-section w-full h-[75svh] lg:h-[90svh] px-8 md:px-16 flex lg:flex-row flex-col-reverse items-center justify-center gap-8 -mb-6 lg:mb-0">
+            <TitleHelmet title={"Login | ShopLynk"} />
+
+            <ToastContainer
+                position="top-right"
+                autoClose={2500}
+                hideProgressBar={false}
+                newestOnTop
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+            />
+
+            <div className="login-img -ml-10">
                 <img
                     src={loginImg}
                     alt="Login Image"
@@ -21,7 +43,10 @@ const Login = () => {
                 />
             </div>
 
-            <div className="login-form w-fit md:w-96 lg:-mt-8 mt-0">
+            <form
+                className="login-form w-fit md:w-96 lg:-mt-8 mt-0"
+                onSubmit={handleLoginForm}
+            >
                 <h2 className="text-2xl md:text-4xl font-bold text-center mb-3 text-blue-600">
                     Login
                 </h2>
@@ -57,12 +82,14 @@ const Login = () => {
                         </span>
                     </div>
 
-                    <Link
-                        to="/forgot-password"
-                        className="font-medium text-end hover:text-blue-600"
-                    >
-                        Forgot Password?
-                    </Link>
+                    <span className="font-medium text-end">
+                        <Link
+                            to="/forgot-password"
+                            className="inline-block hover:text-blue-600"
+                        >
+                            Forgot Password?
+                        </Link>
+                    </span>
 
                     <button
                         type="submit"
@@ -81,7 +108,7 @@ const Login = () => {
                         </Link>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
     );
 };
