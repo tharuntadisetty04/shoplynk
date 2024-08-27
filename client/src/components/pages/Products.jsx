@@ -145,203 +145,205 @@ const Products = () => {
                 transition:Slide
             />
 
-            <div className="flex justify-between items-center mb-4 -mt-4">
-                <h2 className="text-2xl font-bold">
-                    All <span className="text-blue-600">Products</span>
-                </h2>
+            {products && products.length === 0 ? (
+                <ProductNotFound />
+            ) : (
+                <>
+                    <div className="flex justify-between items-center mb-4 -mt-4">
+                        <h2 className="text-2xl font-bold">
+                            All <span className="text-blue-600">Products</span>
+                        </h2>
 
-                <p className="font-medium lg:pt-0 pt-1">
-                    {window.innerWidth < 600 ? "" : "Showing"}{" "}
-                    <span className="text-blue-600">
-                        {startIndex} - {endIndex}
-                    </span>{" "}
-                    of <span className="text-blue-600">{filteredProductsCount}</span>
-                </p>
-            </div>
+                        <p className="font-medium lg:pt-0 pt-1">
+                            {window.innerWidth < 600 ? "" : "Showing"}{" "}
+                            <span className="text-blue-600">
+                                {startIndex} - {endIndex}
+                            </span>{" "}
+                            of <span className="text-blue-600">{filteredProductsCount}</span>
+                        </p>
+                    </div>
 
-            <div className="flex flex-col lg:flex-row items-start justify-between lg:gap-16 gap-8">
-                <aside className="options-section flex flex-col gap-2 h-full lg:sticky lg:top-2 w-full lg:w-1/4 rounded px-4 py-2 border-2 border-slate-200">
-                    <h2 className="text-xl font-semibold border-b-2 border-slate-200 py-2">
-                        Filters
-                    </h2>
+                    <div className="flex flex-col lg:flex-row items-start justify-between lg:gap-16 gap-8">
+                        <aside className="options-section flex flex-col gap-2 h-full lg:sticky lg:top-2 w-full lg:w-1/4 rounded px-4 py-2 border-2 border-slate-200">
+                            <h2 className="text-xl font-semibold border-b-2 border-slate-200 py-2">
+                                Filters
+                            </h2>
 
-                    <div className="price">
-                        <div
-                            className="flex justify-between items-center cursor-pointer"
-                            onClick={togglePrice}
-                        >
-                            <h3 className="font-semibold text-lg">Price</h3>
-                            <span className="font-medium md:text-lg text-base">
-                                {isPriceOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
-                            </span>
-                        </div>
-
-                        {isPriceOpen && (
-                            <div className="flex flex-col gap-3 pr-4 py-3">
-                                <div className="flex items-center">
-                                    <input
-                                        type="text"
-                                        value={price[0]}
-                                        className="w-1/2 text-sm outline-none px-1.5 py-1 rounded border-2 border-slate-200 focus:border-blue-600 duration-200"
-                                        onChange={handleMinPrice}
-                                        placeholder="Min"
-                                    />
-                                    <span className="px-2 text-md font-medium">to</span>
-                                    <input
-                                        type="text"
-                                        value={price[1]}
-                                        className="w-1/2 text-sm outline-none px-1.5 py-1 rounded border-2 border-slate-200 focus:border-blue-600 duration-200"
-                                        onChange={handleMaxPrice}
-                                        placeholder="Max"
-                                    />
+                            <div className="price">
+                                <div
+                                    className="flex justify-between items-center cursor-pointer"
+                                    onClick={togglePrice}
+                                >
+                                    <h3 className="font-semibold text-lg">Price</h3>
+                                    <span className="font-medium md:text-lg text-base">
+                                        {isPriceOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
+                                    </span>
                                 </div>
 
-                                <button
-                                    className="rounded bg-blue-600 p-2 font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 text-sm"
-                                    onClick={handlePriceChange}
-                                >
-                                    Apply Price
-                                </button>
+                                {isPriceOpen && (
+                                    <div className="flex flex-col gap-3 pr-4 py-3">
+                                        <div className="flex items-center">
+                                            <input
+                                                type="text"
+                                                value={price[0]}
+                                                className="w-1/2 text-sm outline-none px-1.5 py-1 rounded border-2 border-slate-200 focus:border-blue-600 duration-200"
+                                                onChange={handleMinPrice}
+                                                placeholder="Min"
+                                            />
+                                            <span className="px-2 text-md font-medium">to</span>
+                                            <input
+                                                type="text"
+                                                value={price[1]}
+                                                className="w-1/2 text-sm outline-none px-1.5 py-1 rounded border-2 border-slate-200 focus:border-blue-600 duration-200"
+                                                onChange={handleMaxPrice}
+                                                placeholder="Max"
+                                            />
+                                        </div>
+
+                                        <button
+                                            className="rounded bg-blue-600 p-2 font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 text-sm"
+                                            onClick={handlePriceChange}
+                                        >
+                                            Apply Price
+                                        </button>
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
 
-                    <div className="categories">
-                        <div
-                            className="flex justify-between items-center cursor-pointer"
-                            onClick={toggleCategory}
-                        >
-                            <h3 className="font-semibold text-lg">Categories</h3>
-                            <span className="font-medium md:text-lg text-base">
-                                {isCategoryOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
-                            </span>
-                        </div>
+                            <div className="categories">
+                                <div
+                                    className="flex justify-between items-center cursor-pointer"
+                                    onClick={toggleCategory}
+                                >
+                                    <h3 className="font-semibold text-lg">Categories</h3>
+                                    <span className="font-medium md:text-lg text-base">
+                                        {isCategoryOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
+                                    </span>
+                                </div>
 
-                        {isCategoryOpen && (
-                            <ul className="font-medium pt-1.5 space-y-2.5">
-                                <li
-                                    className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
-                                    onClick={() => handleCategory("fashion")}
-                                >
-                                    <span className="text-base rounded-full border-2 border-blue-600 p-1">
-                                        <GiAmpleDress />
-                                    </span>
-                                    <span>Fashion</span>
-                                </li>
-                                <li
-                                    className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
-                                    onClick={() => handleCategory("electronics")}
-                                >
-                                    <span className="text-base rounded-full border-2 border-blue-600 p-1">
-                                        <MdElectricalServices />
-                                    </span>
-                                    <span>Electronics</span>
-                                </li>
-                                <li
-                                    className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
-                                    onClick={() => handleCategory("personalcare")}
-                                >
-                                    <span className="text-base rounded-full border-2 border-blue-600 p-1">
-                                        <FaHandSparkles />
-                                    </span>
-                                    <span>Personal Care</span>
-                                </li>
-                                <li
-                                    className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
-                                    onClick={() => handleCategory("home")}
-                                >
-                                    <span className="text-lg rounded-full border-2 border-blue-600 p-1">
-                                        <MdOutlineFoodBank />
-                                    </span>
-                                    <span>Home & Kitchen</span>
-                                </li>
-                                <li
-                                    className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
-                                    onClick={() => handleCategory("sports")}
-                                >
-                                    <span className="text-base rounded-full border-2 border-blue-600 p-1">
-                                        <IoGameController />
-                                    </span>
-                                    <span>Sports & Games</span>
-                                </li>
-                                <li
-                                    className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
-                                    onClick={() => handleCategory("groceries")}
-                                >
-                                    <span className="text-base rounded-full border-2 border-blue-600 p-1">
-                                        <FaBowlFood />
-                                    </span>
-                                    <span>Groceries</span>
-                                </li>
-                            </ul>
-                        )}
-                    </div>
-
-                    <div className="ratings">
-                        <div
-                            className="flex justify-between items-center cursor-pointer"
-                            onClick={toggleRatings}
-                        >
-                            <h3 className="font-semibold text-lg">Ratings</h3>
-                            <span className="font-medium md:text-lg text-base">
-                                {isRatingsOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
-                            </span>
-                        </div>
-
-                        {isRatingsOpen && (
-                            <div>
-                                <ReactStars
-                                    count={5}
-                                    size={24}
-                                    value={rating}
-                                    isHalf={true}
-                                    activeColor="blue"
-                                    onChange={(newRating) => handleRatings(newRating)}
-                                />
+                                {isCategoryOpen && (
+                                    <ul className="font-medium pt-1.5 space-y-2.5">
+                                        <li
+                                            className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
+                                            onClick={() => handleCategory("fashion")}
+                                        >
+                                            <span className="text-base rounded-full border-2 border-blue-600 p-1">
+                                                <GiAmpleDress />
+                                            </span>
+                                            <span>Fashion</span>
+                                        </li>
+                                        <li
+                                            className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
+                                            onClick={() => handleCategory("electronics")}
+                                        >
+                                            <span className="text-base rounded-full border-2 border-blue-600 p-1">
+                                                <MdElectricalServices />
+                                            </span>
+                                            <span>Electronics</span>
+                                        </li>
+                                        <li
+                                            className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
+                                            onClick={() => handleCategory("personalcare")}
+                                        >
+                                            <span className="text-base rounded-full border-2 border-blue-600 p-1">
+                                                <FaHandSparkles />
+                                            </span>
+                                            <span>Personal Care</span>
+                                        </li>
+                                        <li
+                                            className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
+                                            onClick={() => handleCategory("home")}
+                                        >
+                                            <span className="text-lg rounded-full border-2 border-blue-600 p-1">
+                                                <MdOutlineFoodBank />
+                                            </span>
+                                            <span>Home & Kitchen</span>
+                                        </li>
+                                        <li
+                                            className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
+                                            onClick={() => handleCategory("sports")}
+                                        >
+                                            <span className="text-base rounded-full border-2 border-blue-600 p-1">
+                                                <IoGameController />
+                                            </span>
+                                            <span>Sports & Games</span>
+                                        </li>
+                                        <li
+                                            className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
+                                            onClick={() => handleCategory("groceries")}
+                                        >
+                                            <span className="text-base rounded-full border-2 border-blue-600 p-1">
+                                                <FaBowlFood />
+                                            </span>
+                                            <span>Groceries</span>
+                                        </li>
+                                    </ul>
+                                )}
                             </div>
-                        )}
-                    </div>
 
-                    <button
-                        className="rounded mt-1 bg-blue-600 p-2 font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 text-sm"
-                        onClick={clearFilters}
-                    >
-                        Clear All Filters
-                    </button>
-                </aside>
+                            <div className="ratings">
+                                <div
+                                    className="flex justify-between items-center cursor-pointer"
+                                    onClick={toggleRatings}
+                                >
+                                    <h3 className="font-semibold text-lg">Ratings</h3>
+                                    <span className="font-medium md:text-lg text-base">
+                                        {isRatingsOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
+                                    </span>
+                                </div>
 
-                <div className="product-section w-full">
-                    {products.length === 0 ? (
-                        <ProductNotFound />
-                    ) : (
-                        <div className="products-grid grid place-items-center lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-y-8">
-                            {products &&
-                                products.map((product) => (
-                                    <ProductCard key={product._id} product={product} />
-                                ))}
+                                {isRatingsOpen && (
+                                    <div>
+                                        <ReactStars
+                                            count={5}
+                                            size={24}
+                                            value={rating}
+                                            isHalf={true}
+                                            activeColor="blue"
+                                            onChange={(newRating) => handleRatings(newRating)}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+
+                            <button
+                                className="rounded mt-1 bg-blue-600 p-2 font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 text-sm"
+                                onClick={clearFilters}
+                            >
+                                Clear All Filters
+                            </button>
+                        </aside>
+
+                        <div className="product-section w-full">
+                            <div className="products-grid grid place-items-center lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-y-8">
+                                {products &&
+                                    products.map((product) => (
+                                        <ProductCard key={product._id} product={product} />
+                                    ))}
+                            </div>
+
+                            <div className="pagination-box flex items-center justify-center lg:justify-end mt-6 text-sm font-medium">
+                                {resultPerPage < filteredProductsCount && (
+                                    <Pagination
+                                        activePage={currentPage}
+                                        itemsCountPerPage={resultPerPage}
+                                        totalItemsCount={productsCount}
+                                        onChange={setCurrentPageNo}
+                                        nextPageText="Next"
+                                        prevPageText="Prev"
+                                        itemClass="page-item text-sm px-3 py-1.5 text-blue-600 font-medium hover:cursor-pointer duration-200 hover:bg-blue-600 hover:text-neutral-100 rounded"
+                                        linkClass="flex items-center justify-center w-full h-full"
+                                        activeClass="bg-blue-600 text-neutral-100 rounded"
+                                        activeLinkClass="font-semibold"
+                                        innerClass="flex gap-1 items-center"
+                                        disabledClass="hover:cursor-not-allowed opacity-50"
+                                    />
+                                )}
+                            </div>
                         </div>
-                    )}
-
-                    <div className="pagination-box flex items-center justify-center lg:justify-end mt-6 text-sm font-medium">
-                        {resultPerPage < filteredProductsCount && (
-                            <Pagination
-                                activePage={currentPage}
-                                itemsCountPerPage={resultPerPage}
-                                totalItemsCount={productsCount}
-                                onChange={setCurrentPageNo}
-                                nextPageText="Next"
-                                prevPageText="Prev"
-                                itemClass="page-item text-sm px-3 py-1.5 text-blue-600 font-medium hover:cursor-pointer duration-200 hover:bg-blue-600 hover:text-neutral-100 rounded"
-                                linkClass="flex items-center justify-center w-full h-full"
-                                activeClass="bg-blue-600 text-neutral-100 rounded"
-                                activeLinkClass="font-semibold"
-                                innerClass="flex gap-1 items-center"
-                                disabledClass="hover:cursor-not-allowed opacity-50"
-                            />
-                        )}
                     </div>
-                </div>
-            </div>
+                </>
+            )}
         </div>
     );
 };

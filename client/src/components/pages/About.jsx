@@ -47,9 +47,7 @@ const About = () => {
 
     return (
         <div className="about w-full h-full">
-            <TitleHelmet
-                title={"About | ShopLynk"}
-            />
+            <TitleHelmet title={"About | ShopLynk"} />
 
             <ToastContainer
                 position="top-right"

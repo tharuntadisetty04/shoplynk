@@ -3,18 +3,38 @@ import loginImg from "../../assets/login-img.jpg";
 import { Link } from "react-router-dom";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import TitleHelmet from "../utils/TitleHelmet";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const loginSchema = z.object({
+    email: z.string().email("Invalid email address"),
+    password: z
+        .string()
+        .min(8, "Password must be at least 8 characters long")
+        .max(30, "Password cannot exceed 30 characters"),
+});
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm({
+        resolver: zodResolver(loginSchema),
+    });
 
     const togglePasswordVisibility = () => {
         setShowPassword((prevState) => !prevState);
     };
 
-    const handleLoginForm = (e) => {
-        e.preventDefault();
+    const onSubmit = (data) => {
+        console.log(data);
+        toast.success("Login successful!");
     };
 
     return (
@@ -45,7 +65,7 @@ const Login = () => {
 
             <form
                 className="login-form w-fit md:w-96 lg:-mt-8 mt-0"
-                onSubmit={handleLoginForm}
+                onSubmit={handleSubmit(onSubmit)}
             >
                 <h2 className="text-2xl md:text-4xl font-bold text-center mb-3 text-blue-600">
                     Login
@@ -60,8 +80,13 @@ const Login = () => {
                             type="email"
                             placeholder="Enter Email"
                             className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
-                            required={true}
+                            {...register("email")}
                         />
+                        {errors.email && (
+                            <p className="text-red-500 text-sm font-medium pl-1">
+                                {errors.email.message}
+                            </p>
+                        )}
                     </div>
 
                     <div className="flex gap-1 flex-col relative">
@@ -72,8 +97,13 @@ const Login = () => {
                             type={showPassword ? "text" : "password"}
                             placeholder="Enter Password"
                             className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
-                            required={true}
+                            {...register("password")}
                         />
+                        {errors.password && (
+                            <p className="text-red-500 text-sm font-medium pl-1">
+                                {errors.password.message}
+                            </p>
+                        )}
                         <span
                             onClick={togglePasswordVisibility}
                             className="absolute right-3 top-11 cursor-pointer text-xl"
@@ -97,16 +127,16 @@ const Login = () => {
                     >
                         Login
                     </button>
+                </div>
 
-                    <div className="text-center">
-                        Don't have an account?
-                        <Link
-                            to="/signup"
-                            className="pl-1 font-semibold hover:text-blue-600"
-                        >
-                            Sign Up
-                        </Link>
-                    </div>
+                <div className="text-center text-slate-700 mt-2">
+                    Don't have an account?
+                    <Link
+                        to="/signup"
+                        className="pl-1 font-medium text-blue-600 hover:text-blue-500 hover:underline duration-200"
+                    >
+                        Sign Up
+                    </Link>
                 </div>
             </form>
         </div>

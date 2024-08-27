@@ -56,9 +56,7 @@ const SearchPage = () => {
 
     return (
         <div className="search-box w-full lg:h-[27rem] md:h-[70svh] h-[45svh]">
-            <TitleHelmet
-                title={"Search | ShopLynk"}
-            />
+            <TitleHelmet title={"Search | ShopLynk"} />
 
             <ToastContainer
                 position="top-right"
