@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import signUpImg from "../../assets/signup-img.jpg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import TitleHelmet from "../utils/TitleHelmet";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useDispatch, useSelector } from "react-redux";
+import { registerUser } from "../../redux/actions/UserAction";
 
 const signUpSchema = z
     .object({
@@ -30,6 +32,13 @@ const signUpSchema = z
     });
 
 const SignUp = () => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const { loading, error, isAuthenticated, user } = useSelector(
+        (state) => state.user
+    );
+
     const [step, setStep] = useState(1);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -49,7 +58,7 @@ const SignUp = () => {
             email: "",
             password: "",
             confirmPassword: "",
-            role: "",
+            role: "buyer",
             avatar: "",
         },
     });
@@ -92,8 +101,19 @@ const SignUp = () => {
     };
 
     const onSubmit = (data) => {
-        console.log(data);
+        dispatch(registerUser(data));
     };
+
+    useEffect(() => {
+        if (error) {
+            toast.error(error);
+            dispatch(clearErrors());
+        }
+
+        if (isAuthenticated) {
+            navigate("/");
+        }
+    }, [dispatch, error, isAuthenticated, navigate]);
 
     return (
         <div className="signup-section w-full h-[75svh] lg:h-[90svh] px-8 md:px-16 flex lg:flex-row flex-col-reverse items-center justify-center gap-8 -mb-6 lg:mb-0">
@@ -142,7 +162,9 @@ const SignUp = () => {
                                 </label>
                                 <input
                                     type="text"
-                                    {...register("username")}
+                                    {...register("username", {
+                                        required: "Full Name is required",
+                                    })}
                                     placeholder="Enter Full Name"
                                     className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                                 />
@@ -159,7 +181,7 @@ const SignUp = () => {
                                 </label>
                                 <input
                                     type="email"
-                                    {...register("email")}
+                                    {...register("email", { required: "Email is required" })}
                                     placeholder="Enter Email"
                                     className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                                 />
@@ -205,32 +227,42 @@ const SignUp = () => {
 
                     {step === 2 && (
                         <>
-                            <div className="flex w-full justify-betweens items-center gap-3 -mb-1.5">
-                                <p className="font-medium text-[1.15rem] pl-0.5">Role:</p>
+                            <div className="flex flex-col">
+                                <div className="flex w-full items-center gap-3 -mb-1.5">
+                                    <p className="font-medium text-[1.15rem] pl-0.5">Role:</p>
 
-                                <div className="flex gap-1">
-                                    <input
-                                        type="radio"
-                                        name="role"
-                                        id="buyer"
-                                        value="buyer"
-                                        {...register("role")}
-                                    />
-                                    <label htmlFor="buyer" className="font-medium">
-                                        Buyer
-                                    </label>
+                                    <div className="flex gap-1">
+                                        <input
+                                            type="radio"
+                                            name="role"
+                                            id="buyer"
+                                            value="buyer"
+                                            {...register("role", { required: "Role is required" })}
+                                            defaultChecked={true}
+                                        />
+                                        <label htmlFor="buyer" className="font-medium">
+                                            Buyer
+                                        </label>
+                                    </div>
+                                    <div className="flex gap-1">
+                                        <input
+                                            type="radio"
+                                            name="role"
+                                            id="seller"
+                                            value="seller"
+                                            {...register("role", { required: "Role is required" })}
+                                        />
+                                        <label htmlFor="seller" className="font-medium">
+                                            Seller
+                                        </label>
+                                    </div>
                                 </div>
-                                <div className="flex gap-1">
-                                    <input
-                                        type="radio"
-                                        name="role"
-                                        id="seller"
-                                        value="seller"
-                                        {...register("role")}
-                                    />
-                                    <label htmlFor="seller" className="font-medium">
-                                        Seller
-                                    </label>
+                                <div>
+                                    {errors.role && (
+                                        <span className="text-red-500 text-sm font-medium pl-1">
+                                            {errors.role.message}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
 
@@ -243,7 +275,9 @@ const SignUp = () => {
                                 </label>
                                 <input
                                     type={showPassword ? "text" : "password"}
-                                    {...register("password")}
+                                    {...register("password", {
+                                        required: "Password is required",
+                                    })}
                                     placeholder="Enter Password"
                                     className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                                 />

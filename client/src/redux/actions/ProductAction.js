@@ -14,20 +14,7 @@ import {
     BEST_PRODUCTS_SUCCESS,
     BEST_PRODUCTS_FAIL,
 } from "../constants/ProductConstant";
-
-const extractErrorMessage = (htmlString) => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlString, "text/html");
-    const preTag = doc.querySelector("pre");
-
-    let errorMessage = "Unknown error occurred.";
-    if (preTag) {
-        const message = preTag.innerHTML.split("<br>")[0];
-        errorMessage = message.trim();
-    }
-
-    return errorMessage;
-};
+import { extractErrorMessage } from "../../components/utils/ExtractErrorMessage";
 
 // Get all products
 const getAllProducts =

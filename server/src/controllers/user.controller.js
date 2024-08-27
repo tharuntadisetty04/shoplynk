@@ -7,6 +7,7 @@ import sendEmail from "../utils/sendEmail.js";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+import { uploadToCloudinary } from "../utils/cloudinary.js";
 
 //generate tokens
 const generateTokens = async (userId) => {
@@ -54,13 +55,37 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(409, "User with email already exists");
     }
 
+    let avatarLocalPath;
+    if (req.file) {
+        avatarLocalPath = req.file.path;
+    }
+
+    let avatar;
+    try {
+        if (avatarLocalPath) {
+            avatar = await uploadToCloudinary(avatarLocalPath);
+            console.log("Uploaded avatar response:", avatar);
+
+            if (!avatar) {
+                throw new ApiError(400, "Proceeding with Default avatar");
+            }
+        } else {
+            throw new ApiError(400, "Avatar file is missing or not uploaded");
+        }
+    } catch (error) {
+        throw new ApiError(
+            500,
+            error.message || "Failed to upload avatar file to cloud"
+        );
+    }
+
     const newUser = {
         username,
         email,
         password,
         avatar: {
-            public_id: "sample avatar id",
-            url: "sample avatar url",
+            public_id: avatar.public_id,
+            url: avatar.secure_url,
         },
         role: role ? role.toLowerCase() : "buyer",
     };
@@ -126,7 +151,9 @@ const loginUser = asyncHandler(async (req, res) => {
         .json(
             new ApiResponse(
                 200,
-                { user: loggedInUser, accessToken, refreshToken },
+                // { user: loggedInUser, accessToken, refreshToken },
+                // { user: loggedInUser },
+                loggedInUser,
                 "User logged in successfully"
             )
         );
