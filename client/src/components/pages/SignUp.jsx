@@ -9,7 +9,7 @@ import TitleHelmet from "../utils/TitleHelmet";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch, useSelector } from "react-redux";
-import { registerUser } from "../../redux/actions/UserAction";
+import { clearErrors, registerUser } from "../../redux/actions/UserAction";
 
 const signUpSchema = z
     .object({

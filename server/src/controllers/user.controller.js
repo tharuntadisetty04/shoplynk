@@ -64,10 +64,9 @@ const registerUser = asyncHandler(async (req, res) => {
     try {
         if (avatarLocalPath) {
             avatar = await uploadToCloudinary(avatarLocalPath);
-            console.log("Uploaded avatar response:", avatar);
 
             if (!avatar) {
-                throw new ApiError(400, "Proceeding with Default avatar");
+                throw new ApiError(400, "Failed to upload avatar file to cloud");
             }
         } else {
             throw new ApiError(400, "Avatar file is missing or not uploaded");
