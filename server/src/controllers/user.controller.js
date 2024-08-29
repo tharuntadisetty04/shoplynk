@@ -66,7 +66,10 @@ const registerUser = asyncHandler(async (req, res) => {
             avatar = await uploadToCloudinary(avatarLocalPath);
 
             if (!avatar) {
-                throw new ApiError(400, "Failed to upload avatar file to cloud");
+                throw new ApiError(
+                    400,
+                    "Failed to upload avatar file to cloud"
+                );
             }
         } else {
             throw new ApiError(400, "Avatar file is missing or not uploaded");
@@ -99,8 +102,26 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(500, "User registration failed");
     }
 
+    const { accessToken, refreshToken } = await generateTokens(
+        isUserCreated._id
+    );
+
+    const options = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+    };
+
+    const checkTokenOptions = {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === "production",
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    };
+
     return res
         .status(201)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .cookie("checkToken", true, checkTokenOptions)
         .json(
             new ApiResponse(200, isUserCreated, "User registered successfully")
         );
@@ -140,18 +161,24 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
+    };
+
+    const checkTokenOptions = {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === "production",
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     };
 
     return res
         .status(200)
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
+        .cookie("checkToken", true, checkTokenOptions)
         .json(
             new ApiResponse(
                 200,
                 // { user: loggedInUser, accessToken, refreshToken },
-                // { user: loggedInUser },
                 loggedInUser,
                 "User logged in successfully"
             )
@@ -160,27 +187,18 @@ const loginUser = asyncHandler(async (req, res) => {
 
 //logout user
 const logoutUser = asyncHandler(async (req, res) => {
-    await User.findByIdAndUpdate(
-        req.user._id,
-        {
-            $unset: {
-                refreshToken: 1,
-            },
-        },
-        {
-            new: true,
-        }
-    );
+    await User.findByIdAndUpdate(req.user._id, { $unset: { refreshToken: 1 } });
 
-    const options = {
+    const cookieOptions = {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
     };
 
     return res
         .status(200)
-        .clearCookie("accessToken", options)
-        .clearCookie("refreshToken", options)
+        .clearCookie("accessToken", cookieOptions)
+        .clearCookie("refreshToken", cookieOptions)
+        .clearCookie("checkToken", { ...cookieOptions, httpOnly: false })
         .json(
             new ApiResponse(200, {}, `User: ${req.user.username} logged out`)
         );
@@ -295,17 +313,25 @@ const resetPassword = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
+    };
+
+    const checkTokenOptions = {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === "production",
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     };
 
     return res
         .status(200)
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
+        .cookie("checkToken", true, checkTokenOptions)
         .json(
             new ApiResponse(
                 200,
-                { user: loggedInUser, accessToken, refreshToken },
+                // { user: loggedInUser, accessToken, refreshToken },
+                loggedInUser,
                 "Password has been reset and user logged in successfully"
             )
         );
@@ -480,15 +506,22 @@ const renewAccessToken = asyncHandler(async (req, res) => {
 
         const options = {
             httpOnly: true,
-            secure: true,
+            secure: process.env.NODE_ENV === "production",
         };
 
         const { accessToken, newRefreshToken } = await generateTokens(user._id);
+
+        const checkTokenOptions = {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === "production",
+            expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        };
 
         return res
             .status(200)
             .cookie("accessToken", accessToken, options)
             .cookie("refreshToken", newRefreshToken, options)
+            .cookie("checkToken", true, checkTokenOptions)
             .json(
                 new ApiResponse(
                     200,

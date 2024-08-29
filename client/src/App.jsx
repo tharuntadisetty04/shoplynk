@@ -9,6 +9,8 @@ import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import PageLoader from "./components/layout/PageLoader";
 import PageNotFound from "./components/pages/PageNotFound";
+import store from "./redux/store";
+import { loadUser } from "./redux/actions/UserAction";
 
 const Home = lazy(() => import("./components/pages/Home"));
 const Products = lazy(() => import("./components/pages/Products"));
@@ -29,11 +31,18 @@ function ScrollToTop() {
   return null;
 }
 
+function LoadUser() {
+  useEffect(() => {
+    store.dispatch(loadUser());
+  }, []);
+}
+
 function App() {
   return (
     <div className="bg-neutral-100 text-gray-900">
       <Router>
         <Navbar />
+        <LoadUser />
         <main>
           <Suspense fallback={<PageLoader />}>
             <ScrollToTop />

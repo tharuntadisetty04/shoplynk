@@ -3,15 +3,30 @@ import { Link, useLocation } from "react-router-dom";
 import { FaRegUser } from "react-icons/fa6";
 import { FiShoppingCart, FiMenu, FiX } from "react-icons/fi";
 import { IoIosSearch } from "react-icons/io";
+import avatarImg from "/avatar.png";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutUser } from "../../redux/actions/UserAction";
 
 const Navbar = () => {
+    const dispatch = useDispatch();
+    const { isAuthenticated, user } = useSelector((state) => state.user);
+
     const [menuOpen, setMenuOpen] = useState(false);
+    const [profileMenuOpen, setProfileMenuOpen] = useState(false);
     const location = useLocation();
 
     const isActive = (path) =>
         location.pathname === path
             ? "text-blue-600"
             : "hover:text-blue-600 duration-200";
+
+    const openProfileModal = () => {
+        setProfileMenuOpen((prev) => !prev);
+    };
+
+    const logout = () => {
+        dispatch(logoutUser());
+    };
 
     return (
         <header>
@@ -59,13 +74,46 @@ const Navbar = () => {
                     >
                         <FiShoppingCart />
                     </Link>
-                    <Link
-                        aria-label="User"
-                        to="/login"
-                        className="hover:text-blue-600 text-xl duration-200 pl-1"
-                    >
-                        <FaRegUser />
-                    </Link>
+
+                    {isAuthenticated ? (
+                        <div
+                            className="border-2 border-blue-600 rounded-full h-8 w-8 ml-1 cursor-pointer"
+                            onClick={openProfileModal}
+                        >
+                            <img
+                                src={user.avatar.url ? user.avatar.url : avatarImg}
+                                alt="Profile"
+                                width={50}
+                                className="rounded-full w-full h-full object-cover"
+                            />
+
+                            {profileMenuOpen && !menuOpen && (
+                                <ul className="rounded shadow-md bg-neutral-100 border-2 border-slate-200 w-fit py-2 px-4 relative top-2 right-9 space-y-1">
+                                    <li className="font-medium hover:text-blue-600 duration-200">
+                                        <Link to="/profile">Profile</Link>
+                                    </li>
+                                    <li className="font-medium hover:text-blue-600 duration-200">
+                                        {user && user.role === "seller" ? (
+                                            <Link to="/admin/dashboard">Dashboard</Link>
+                                        ) : (
+                                            <Link to="/some">Some</Link>
+                                        )}
+                                    </li>
+                                    <li className="font-medium hover:text-blue-600 duration-200">
+                                        <span onClick={logout}>Logout</span>
+                                    </li>
+                                </ul>
+                            )}
+                        </div>
+                    ) : (
+                        <Link
+                            aria-label="User"
+                            to="/login"
+                            className="hover:text-blue-600 text-xl duration-200 pl-1"
+                        >
+                            <FaRegUser />
+                        </Link>
+                    )}
 
                     <button
                         aria-label="Menu"
