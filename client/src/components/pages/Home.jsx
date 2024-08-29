@@ -34,6 +34,7 @@ const Home = () => {
         error: bestProductsError,
         bestProducts,
     } = useSelector((state) => state.bestProducts);
+    const { isAuthenticated } = useSelector((state) => state.user);
     const errorHandled = useRef(false);
 
     useEffect(() => {
@@ -104,13 +105,14 @@ const Home = () => {
                         >
                             Shop Now
                         </Link>
-
-                        <Link
-                            to="/signup"
-                            className="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200"
-                        >
-                            Become a Seller
-                        </Link>
+                        {!isAuthenticated && (
+                            <Link
+                                to="/signup"
+                                className="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200"
+                            >
+                                Sign Up
+                            </Link>
+                        )}
                     </div>
                 </div>
 

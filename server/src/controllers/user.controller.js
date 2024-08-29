@@ -114,7 +114,7 @@ const registerUser = asyncHandler(async (req, res) => {
     const checkTokenOptions = {
         httpOnly: false,
         secure: process.env.NODE_ENV === "production",
-        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        // expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     };
 
     return res
@@ -167,7 +167,7 @@ const loginUser = asyncHandler(async (req, res) => {
     const checkTokenOptions = {
         httpOnly: false,
         secure: process.env.NODE_ENV === "production",
-        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        // expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     };
 
     return res
@@ -189,16 +189,22 @@ const loginUser = asyncHandler(async (req, res) => {
 const logoutUser = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(req.user._id, { $unset: { refreshToken: 1 } });
 
-    const cookieOptions = {
+    const options = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
     };
 
+    const checkTokenOptions = {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === "production",
+        // expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    };
+
     return res
         .status(200)
-        .clearCookie("accessToken", cookieOptions)
-        .clearCookie("refreshToken", cookieOptions)
-        .clearCookie("checkToken", { ...cookieOptions, httpOnly: false })
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+        .clearCookie("checkToken", checkTokenOptions)
         .json(
             new ApiResponse(200, {}, `User: ${req.user.username} logged out`)
         );
@@ -319,7 +325,7 @@ const resetPassword = asyncHandler(async (req, res) => {
     const checkTokenOptions = {
         httpOnly: false,
         secure: process.env.NODE_ENV === "production",
-        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        // expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     };
 
     return res
@@ -514,7 +520,7 @@ const renewAccessToken = asyncHandler(async (req, res) => {
         const checkTokenOptions = {
             httpOnly: false,
             secure: process.env.NODE_ENV === "production",
-            expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+            // expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
         };
 
         return res

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FaRegUser } from "react-icons/fa6";
 import { FiShoppingCart, FiMenu, FiX } from "react-icons/fi";
@@ -6,6 +6,11 @@ import { IoIosSearch } from "react-icons/io";
 import avatarImg from "/avatar.png";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../redux/actions/UserAction";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { FaUser, FaBagShopping } from "react-icons/fa6";
+import { MdDashboard } from "react-icons/md";
+import { IoLogOutOutline } from "react-icons/io5";
 
 const Navbar = () => {
     const dispatch = useDispatch();
@@ -13,6 +18,7 @@ const Navbar = () => {
 
     const [menuOpen, setMenuOpen] = useState(false);
     const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+    const profileMenuRef = useRef(null);
     const location = useLocation();
 
     const isActive = (path) =>
@@ -20,13 +26,43 @@ const Navbar = () => {
             ? "text-blue-600"
             : "hover:text-blue-600 duration-200";
 
-    const openProfileModal = () => {
+    const toggleProfileModal = () => {
         setProfileMenuOpen((prev) => !prev);
     };
 
+    const handleClickOutside = (event) => {
+        if (
+            profileMenuRef.current &&
+            !profileMenuRef.current.contains(event.target)
+        ) {
+            setProfileMenuOpen(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     const logout = () => {
         dispatch(logoutUser());
+        toast.success("User logged out successfully!");
     };
+
+    <ToastContainer
+        position="top-right"
+        autoClose={2500}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+    />;
 
     return (
         <header>
@@ -77,8 +113,9 @@ const Navbar = () => {
 
                     {isAuthenticated ? (
                         <div
-                            className="border-2 border-blue-600 rounded-full h-8 w-8 ml-1 cursor-pointer"
-                            onClick={openProfileModal}
+                            className="relative border-2 border-slate-300 hover:border-blue-600 duration-200 rounded-full h-8 w-8 ml-1 cursor-pointer"
+                            onClick={toggleProfileModal}
+                            ref={profileMenuRef}
                         >
                             <img
                                 src={user.avatar.url ? user.avatar.url : avatarImg}
@@ -87,22 +124,47 @@ const Navbar = () => {
                                 className="rounded-full w-full h-full object-cover"
                             />
 
-                            {profileMenuOpen && !menuOpen && (
-                                <ul className="rounded shadow-md bg-neutral-100 border-2 border-slate-200 w-fit py-2 px-4 relative top-2 right-9 space-y-1">
-                                    <li className="font-medium hover:text-blue-600 duration-200">
-                                        <Link to="/profile">Profile</Link>
-                                    </li>
-                                    <li className="font-medium hover:text-blue-600 duration-200">
-                                        {user && user.role === "seller" ? (
-                                            <Link to="/admin/dashboard">Dashboard</Link>
-                                        ) : (
-                                            <Link to="/some">Some</Link>
-                                        )}
-                                    </li>
-                                    <li className="font-medium hover:text-blue-600 duration-200">
-                                        <span onClick={logout}>Logout</span>
-                                    </li>
-                                </ul>
+                            {profileMenuOpen && (
+                                <div className="absolute rounded shadow-md bg-neutral-100 border-2 border-slate-200 w-fit py-2 px-4 top-10 right-0 space-y-1">
+                                    <Link
+                                        to="/profile"
+                                        className="font-medium hover:text-blue-600 duration-200 flex items-center justify-start gap-1.5"
+                                    >
+                                        <span className="text-sm">
+                                            <FaUser />
+                                        </span>
+                                        <span>Profile</span>
+                                    </Link>
+                                    <Link
+                                        to="/orders"
+                                        className="font-medium hover:text-blue-600 duration-200 flex items-center justify-start gap-1.5"
+                                    >
+                                        <span className="text-sm">
+                                            <FaBagShopping />
+                                        </span>
+                                        <span>Orders</span>
+                                    </Link>
+                                    {user && user.role === "seller" && (
+                                        <Link
+                                            to="/admin/dashboard"
+                                            className="font-medium hover:text-blue-600 duration-200 flex items-center justify-start gap-1.5"
+                                        >
+                                            <span className="text-sm">
+                                                <MdDashboard />
+                                            </span>
+                                            <span>Dashboard</span>
+                                        </Link>
+                                    )}
+                                    <div
+                                        className="font-medium hover:text-blue-600 duration-200 flex items-center justify-start gap-1.5"
+                                        onClick={logout}
+                                    >
+                                        <span className="font-semibold text-[1.11rem] -mr-[0.12rem]">
+                                            <IoLogOutOutline />
+                                        </span>
+                                        <span>Logout</span>
+                                    </div>
+                                </div>
                             )}
                         </div>
                     ) : (

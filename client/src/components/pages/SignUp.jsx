@@ -10,6 +10,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch, useSelector } from "react-redux";
 import { clearErrors, registerUser } from "../../redux/actions/UserAction";
+import PageLoader from "../layout/PageLoader";
 
 const signUpSchema = z
     .object({
@@ -111,11 +112,14 @@ const SignUp = () => {
         }
 
         if (isAuthenticated) {
-            navigate("/");
+            toast.success("User registered successfully!");
+            setTimeout(() => {
+                navigate("/");
+            }, 1200);
         }
     }, [dispatch, error, isAuthenticated, navigate]);
 
-    return (
+    return !loading ? (
         <div className="signup-section w-full h-[75svh] lg:h-[90svh] px-8 md:px-16 flex lg:flex-row flex-col-reverse items-center justify-center gap-8 -mb-6 lg:mb-0">
             <TitleHelmet title={"Sign Up | ShopLynk"} />
 
@@ -237,10 +241,16 @@ const SignUp = () => {
                                             name="role"
                                             id="buyer"
                                             value="buyer"
-                                            {...register("role", { required: "Role is required" })}
+                                            {...register("role", {
+                                                required: "Role is required",
+                                            })}
                                             defaultChecked={true}
+                                            className="cursor-pointer"
                                         />
-                                        <label htmlFor="buyer" className="font-medium">
+                                        <label
+                                            htmlFor="buyer"
+                                            className="font-medium cursor-pointer"
+                                        >
                                             Buyer
                                         </label>
                                     </div>
@@ -250,9 +260,15 @@ const SignUp = () => {
                                             name="role"
                                             id="seller"
                                             value="seller"
-                                            {...register("role", { required: "Role is required" })}
+                                            {...register("role", {
+                                                required: "Role is required",
+                                            })}
+                                            className="cursor-pointer"
                                         />
-                                        <label htmlFor="seller" className="font-medium">
+                                        <label
+                                            htmlFor="seller"
+                                            className="font-medium cursor-pointer"
+                                        >
                                             Seller
                                         </label>
                                     </div>
@@ -351,6 +367,8 @@ const SignUp = () => {
                 </div>
             </form>
         </div>
+    ) : (
+        <PageLoader />
     );
 };
 

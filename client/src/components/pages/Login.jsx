@@ -10,6 +10,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
 import { clearErrors, loginUser } from "../../redux/actions/UserAction";
+import PageLoader from "../layout/PageLoader";
 
 const loginSchema = z.object({
     email: z.string().email("Invalid email address"),
@@ -23,7 +24,7 @@ const Login = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { loading, error, isAuthenticated, user } = useSelector(
+    const { loading, error, isAuthenticated } = useSelector(
         (state) => state.user
     );
 
@@ -52,11 +53,14 @@ const Login = () => {
         }
 
         if (isAuthenticated) {
-            navigate("/");
+            toast.success("User logged in successfully!");
+            setTimeout(() => {
+                navigate("/");
+            }, 1000);
         }
     }, [dispatch, error, isAuthenticated, navigate]);
 
-    return (
+    return !loading ? (
         <div className="login-section w-full h-[75svh] lg:h-[90svh] px-8 md:px-16 flex lg:flex-row flex-col-reverse items-center justify-center gap-8 -mb-6 lg:mb-0">
             <TitleHelmet title={"Login | ShopLynk"} />
 
@@ -159,6 +163,8 @@ const Login = () => {
                 </div>
             </form>
         </div>
+    ) : (
+        <PageLoader />
     );
 };
 
