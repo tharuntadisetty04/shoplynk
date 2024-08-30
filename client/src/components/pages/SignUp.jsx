@@ -36,7 +36,7 @@ const SignUp = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { loading, error, isAuthenticated, user } = useSelector(
+    const { loading, error, isAuthenticated } = useSelector(
         (state) => state.user
     );
 
@@ -112,10 +112,9 @@ const SignUp = () => {
         }
 
         if (isAuthenticated) {
-            toast.success("User registered successfully!");
-            setTimeout(() => {
-                navigate("/");
-            }, 1200);
+            navigate("/", {
+                state: { toastMessage: "User registered successfully!" },
+            });
         }
     }, [dispatch, error, isAuthenticated, navigate]);
 

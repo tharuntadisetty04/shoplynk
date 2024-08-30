@@ -9,13 +9,13 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Pagination from "react-js-pagination";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
-import PageLoader from "../layout/PageLoader";
 import ReactStars from "react-rating-stars-component";
 import debounce from "lodash/debounce";
 import { GiAmpleDress } from "react-icons/gi";
 import { IoGameController } from "react-icons/io5";
 import { MdOutlineFoodBank, MdElectricalServices } from "react-icons/md";
 import { FaBowlFood, FaHandSparkles } from "react-icons/fa6";
+import ItemLoader from "../layout/ItemLoader";
 
 const Products = () => {
     const { keyword } = useParams();
@@ -59,10 +59,6 @@ const Products = () => {
             getAllProducts(keyword, currentPage, category, rating, priceRange)
         );
     };
-
-    if (loading) {
-        return <PageLoader />;
-    }
 
     const setCurrentPageNo = (pageNumber) => {
         setCurrentPage(pageNumber);
@@ -145,7 +141,9 @@ const Products = () => {
                 transition:Slide
             />
 
-            {products && products.length === 0 ? (
+            {loading ? (
+                <ItemLoader />
+            ) : products.length === 0 ? (
                 <ProductNotFound />
             ) : (
                 <>

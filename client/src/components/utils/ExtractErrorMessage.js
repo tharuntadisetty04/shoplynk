@@ -5,7 +5,7 @@ export const extractErrorMessage = (htmlString) => {
 
     let errorMessage = "Unknown error occurred.";
     if (preTag) {
-        const message = preTag.innerHTML.split("<br>")[0];
+        const message = preTag.innerHTML.split("<br>")[0].split("Error: ")[1];
         errorMessage = message.trim();
     }
 

@@ -23,7 +23,6 @@ const loginSchema = z.object({
 const Login = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
     const { loading, error, isAuthenticated } = useSelector(
         (state) => state.user
     );
@@ -53,10 +52,9 @@ const Login = () => {
         }
 
         if (isAuthenticated) {
-            toast.success("User logged in successfully!");
-            setTimeout(() => {
-                navigate("/");
-            }, 1000);
+            navigate("/", {
+                state: { toastMessage: "User logged in successfully!" },
+            });
         }
     }, [dispatch, error, isAuthenticated, navigate]);
 

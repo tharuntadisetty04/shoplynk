@@ -24,10 +24,14 @@ import {
 } from "../../redux/actions/ProductAction";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useLocation } from "react-router-dom";
 
 const Home = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
+    const { toastMessage } = location.state || "";
+
     const { loading, error, products } = useSelector((state) => state.products);
     const {
         loading: bestProductsLoading,
@@ -44,19 +48,25 @@ const Home = () => {
             errorHandled.current = true;
         }
 
+        if (bestProductsError) {
+            toast.error(bestProductsError);
+            dispatch(clearErrors());
+        }
+
         dispatch(getAllProducts());
         dispatch(getBestSellingProducts());
-    }, [dispatch, error]);
+    }, [dispatch, error, bestProductsError]);
+
+    useEffect(() => {
+        if (toastMessage) {
+            toast.success(toastMessage);
+        }
+    }, [toastMessage]);
 
     const handleCategory = (category) => {
         dispatch(getAllProducts("", 1, category, 0, [1, 100000]));
         navigate("/products", { state: { category } });
     };
-
-    if (bestProductsError) {
-        toast.error(bestProductsError);
-        dispatch(clearErrors());
-    }
 
     let featuredProducts = [];
     if (products) {
