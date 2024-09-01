@@ -18,7 +18,7 @@ import { extractErrorMessage } from "../../components/utils/ExtractErrorMessage"
 
 // Get all products
 const getAllProducts =
-    (keyword = "", currentPage = 1, category, rating = 0, price = [1, 100000]) =>
+    (keyword = "", currentPage = 1, category, rating = 0, price = [1, 900000]) =>
         async (dispatch) => {
             try {
                 dispatch({ type: ALL_PRODUCT_REQUEST });
