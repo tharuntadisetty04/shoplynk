@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TitleHelmet from "../utils/TitleHelmet";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 import aboutImg from "../../assets/about-img.jpg";
@@ -9,9 +9,24 @@ import { RiMoneyRupeeCircleLine } from "react-icons/ri";
 import { FiShoppingBag } from "react-icons/fi";
 import { TbMoneybag } from "react-icons/tb";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { useDispatch, useSelector } from "react-redux";
+import { clearErrors } from "../../redux/actions/UserAction";
+import ItemLoader from "../layout/ItemLoader";
 
 const About = () => {
+    const dispatch = useDispatch();
+    const { loading, error, isAuthenticated, user } = useSelector(
+        (state) => state.user
+    );
+
     const [openIndex, setOpenIndex] = useState(null);
+
+    useEffect(() => {
+        if (error) {
+            toast.error(error);
+            dispatch(clearErrors());
+        }
+    }, [dispatch, error]);
 
     const faqData = [
         {
@@ -45,7 +60,9 @@ const About = () => {
         setOpenIndex(openIndex === index ? null : index);
     };
 
-    return (
+    return loading ? (
+        <ItemLoader />
+    ) : (
         <div className="about w-full h-full">
             <TitleHelmet title={"About | ShopLynk"} />
 
@@ -87,14 +104,23 @@ const About = () => {
                         </p>
                     </div>
 
-                    <div className="flex gap-4">
+                    {isAuthenticated && user.role === "seller" ? (
+                        ""
+                    ) : isAuthenticated && user.role === "buyer" ? (
                         <Link
-                            to="/signup"
-                            className="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200"
+                            to="/update-role"
+                            className="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 w-fit"
                         >
                             Become a Seller
                         </Link>
-                    </div>
+                    ) : (
+                        <Link
+                            to="/signup"
+                            className="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 w-fit"
+                        >
+                            Become a Seller
+                        </Link>
+                    )}
                 </div>
 
                 <div className="right-section mt-4 md:mt-0 w-fit">

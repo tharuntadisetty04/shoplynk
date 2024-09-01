@@ -65,7 +65,12 @@ const Home = () => {
 
     const handleCategory = (category) => {
         dispatch(getAllProducts("", 1, category, 0, [1, 100000]));
-        navigate("/products", { state: { category } });
+        navigate("/products", {
+            state: {
+                category,
+                activeCategory: category
+            }
+        });
     };
 
     let featuredProducts = [];

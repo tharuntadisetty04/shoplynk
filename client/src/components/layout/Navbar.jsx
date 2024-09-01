@@ -135,15 +135,6 @@ const Navbar = () => {
                                         </span>
                                         <span>Profile</span>
                                     </Link>
-                                    <Link
-                                        to="/orders"
-                                        className="font-medium hover:text-blue-600 duration-200 flex items-center justify-start gap-1.5"
-                                    >
-                                        <span className="text-sm">
-                                            <FaBagShopping />
-                                        </span>
-                                        <span>Orders</span>
-                                    </Link>
                                     {user && user.role === "seller" && (
                                         <Link
                                             to="/admin/dashboard"
@@ -155,6 +146,19 @@ const Navbar = () => {
                                             <span>Dashboard</span>
                                         </Link>
                                     )}
+                                    <Link
+                                        to="/orders"
+                                        className="font-medium hover:text-blue-600 duration-200 flex items-center justify-start gap-1.5"
+                                    >
+                                        <span className="text-sm">
+                                            <FaBagShopping />
+                                        </span>
+                                        {user.role === "seller" ? (
+                                            <span>My Orders</span>
+                                        ) : (
+                                            <span>Orders</span>
+                                        )}
+                                    </Link>
                                     <div
                                         className="font-medium hover:text-blue-600 duration-200 flex items-center justify-start gap-1.5"
                                         onClick={logout}

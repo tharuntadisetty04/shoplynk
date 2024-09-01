@@ -119,7 +119,7 @@ const SignUp = () => {
     }, [dispatch, error, isAuthenticated, navigate]);
 
     return !loading ? (
-        <div className="signup-section w-full h-[75svh] lg:h-[90svh] px-8 md:px-16 flex lg:flex-row flex-col-reverse items-center justify-center gap-8 -mb-6 lg:mb-0">
+        <div className="signup-section w-full lg:h-[90svh] px-8 md:px-16 flex lg:flex-row flex-col-reverse items-center justify-center gap-8 -mb-6 lg:mb-0">
             <TitleHelmet title={"Sign Up | ShopLynk"} />
 
             <ToastContainer

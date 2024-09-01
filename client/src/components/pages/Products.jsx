@@ -29,6 +29,9 @@ const Products = () => {
     const [price, setPrice] = useState([]);
     const [category, setCategory] = useState(location.state?.category || "");
     const [rating, setRating] = useState(0);
+    const [activeCategory, setActiveCategory] = useState(
+        location.state?.activeCategory || ""
+    );
 
     const [isPriceOpen, setIsPriceOpen] = useState(false);
     const [isCategoryOpen, setIsCategoryOpen] = useState(false);
@@ -44,7 +47,7 @@ const Products = () => {
 
     const handlePriceChange = () => {
         const defaultMinPrice = 1;
-        const defaultMaxPrice = 100000;
+        const defaultMaxPrice = 900000;
 
         const minPrice = price[0] || defaultMinPrice;
         const maxPrice = price[1] || defaultMaxPrice;
@@ -65,28 +68,42 @@ const Products = () => {
     };
 
     const handleMinPrice = (e) => {
-        const value = Number(e.target.value);
+        const value = e.target.value;
 
-        if (isNaN(value) || value < 1) {
+        if (value === "") {
+            setPrice("");
+            return;
+        }
+
+        const parsedValue = parseInt(value, 10);
+
+        if (isNaN(parsedValue) || parsedValue < 1) {
             toast.warning("Enter a valid minimum price");
             setPrice([1, price[1]]);
-        } else if (value > 100000) {
+        } else if (parsedValue > 900000) {
             toast.warning("Price limit exceeded");
             setPrice([1, price[1]]);
         } else {
-            setPrice([Number(value), price[1]]);
+            setPrice([Number(parsedValue), price[1]]);
         }
     };
 
     const handleMaxPrice = (e) => {
-        const value = Number(e.target.value);
+        const value = e.target.value;
 
-        if (isNaN(value) || value < 1) {
+        if (value === "") {
+            setPrice("");
+            return;
+        }
+
+        const parsedValue = parseInt(value, 10);
+
+        if (isNaN(parsedValue) || parsedValue < 1) {
             toast.warning("Enter a valid maximum price");
-            setPrice([price[0], 100000]);
-        } else if (value > 100000) {
+            setPrice([price[0], 900000]);
+        } else if (parsedValue > 900000) {
             toast.warning("Price limit exceeded");
-            setPrice([price[0], 100000]);
+            setPrice([price[0], 900000]);
         } else {
             setPrice([price[0], Number(value)]);
         }
@@ -94,6 +111,7 @@ const Products = () => {
 
     const handleCategory = (category) => {
         setCategory(category);
+        setActiveCategory(category);
     };
 
     const handleRatings = (rating) => {
@@ -101,11 +119,12 @@ const Products = () => {
     };
 
     const clearFilters = debounce(() => {
-        setPrice([1, 100000]);
+        setPrice([1, 900000]);
         setCategory("");
+        setActiveCategory("");
         setRating(0);
         setCurrentPage(1);
-        dispatch(getAllProducts(keyword, currentPage, "", 0, [1, 100000]));
+        dispatch(getAllProducts(keyword, currentPage, "", 0, [1, 900000]));
     }, 200);
 
     const togglePrice = () => {
@@ -144,7 +163,7 @@ const Products = () => {
             {loading ? (
                 <ItemLoader />
             ) : products.length === 0 ? (
-                <ProductNotFound />
+                <ProductNotFound clearFilters={clearFilters} />
             ) : (
                 <>
                     <div className="flex justify-between items-center mb-4 -mt-4">
@@ -222,7 +241,8 @@ const Products = () => {
                                 {isCategoryOpen && (
                                     <ul className="font-medium pt-1.5 space-y-2.5">
                                         <li
-                                            className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
+                                            className={`hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200 ${activeCategory === "fashion" && "text-blue-600"
+                                                }`}
                                             onClick={() => handleCategory("fashion")}
                                         >
                                             <span className="text-base rounded-full border-2 border-blue-600 p-1">
@@ -231,7 +251,8 @@ const Products = () => {
                                             <span>Fashion</span>
                                         </li>
                                         <li
-                                            className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
+                                            className={`hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200 ${activeCategory === "electronics" && "text-blue-600"
+                                                }`}
                                             onClick={() => handleCategory("electronics")}
                                         >
                                             <span className="text-base rounded-full border-2 border-blue-600 p-1">
@@ -240,7 +261,8 @@ const Products = () => {
                                             <span>Electronics</span>
                                         </li>
                                         <li
-                                            className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
+                                            className={`hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200 ${activeCategory === "personalcare" && "text-blue-600"
+                                                }`}
                                             onClick={() => handleCategory("personalcare")}
                                         >
                                             <span className="text-base rounded-full border-2 border-blue-600 p-1">
@@ -249,7 +271,8 @@ const Products = () => {
                                             <span>Personal Care</span>
                                         </li>
                                         <li
-                                            className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
+                                            className={`hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200 ${activeCategory === "home" && "text-blue-600"
+                                                }`}
                                             onClick={() => handleCategory("home")}
                                         >
                                             <span className="text-lg rounded-full border-2 border-blue-600 p-1">
@@ -258,7 +281,8 @@ const Products = () => {
                                             <span>Home & Kitchen</span>
                                         </li>
                                         <li
-                                            className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
+                                            className={`hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200 ${activeCategory === "sports" && "text-blue-600"
+                                                }`}
                                             onClick={() => handleCategory("sports")}
                                         >
                                             <span className="text-base rounded-full border-2 border-blue-600 p-1">
@@ -267,7 +291,8 @@ const Products = () => {
                                             <span>Sports & Games</span>
                                         </li>
                                         <li
-                                            className="hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200"
+                                            className={`hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200 ${activeCategory === "groceries" && "text-blue-600"
+                                                }`}
                                             onClick={() => handleCategory("groceries")}
                                         >
                                             <span className="text-base rounded-full border-2 border-blue-600 p-1">
@@ -305,7 +330,7 @@ const Products = () => {
                             </div>
 
                             <button
-                                className="rounded mt-1 bg-blue-600 p-2 font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 text-sm"
+                                className="rounded my-1 bg-blue-600 p-2 font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 text-sm"
                                 onClick={clearFilters}
                             >
                                 Clear All Filters
