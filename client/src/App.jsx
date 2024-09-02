@@ -20,6 +20,8 @@ const ProductDetails = lazy(() => import("./components/pages/ProductDetails"));
 const SearchPage = lazy(() => import("./components/pages/SearchPage"));
 const Login = lazy(() => import("./components/pages/Login"));
 const SignUp = lazy(() => import("./components/pages/SignUp"));
+const Profile = lazy(() => import("./components/pages/Profile"));
+const UpdateRole = lazy(() => import("./components/pages/UpdateRole"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -56,6 +58,8 @@ function App() {
               <Route path="/products/search/:keyword" element={<Products />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/profile/edit" element={<Profile />} />
               <Route path="*" element={<PageNotFound />} />
             </Routes>
           </Suspense>
