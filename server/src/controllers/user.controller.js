@@ -418,13 +418,13 @@ const updateProfile = asyncHandler(async (req, res) => {
 
 //update from buyer to seller role
 const updateUserRole = asyncHandler(async (req, res) => {
-    const { username, email, role } = req.body;
+    const { username, email } = req.body;
 
     if ([username, email].some((field) => !field || field.trim() === "")) {
         throw new ApiError(400, "Required fields are empty");
     }
 
-    if (!username || !email || !role) {
+    if (!username || !email) {
         throw new ApiError(400, "Please enter the required fields");
     }
 
@@ -445,7 +445,7 @@ const updateUserRole = asyncHandler(async (req, res) => {
             $set: {
                 username,
                 email,
-                role: role.toLowerCase() || "seller",
+                role: "seller",
             },
         },
         {

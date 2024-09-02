@@ -117,12 +117,21 @@ const Navbar = () => {
                             onClick={toggleProfileModal}
                             ref={profileMenuRef}
                         >
-                            <img
-                                src={user.avatar.url ? user.avatar.url : avatarImg}
-                                alt="Profile"
-                                width={50}
-                                className="rounded-full w-full h-full object-cover"
-                            />
+                            {isAuthenticated && user?.avatar?.url ? (
+                                <img
+                                    src={user.avatar.url}
+                                    alt="Profile"
+                                    width={50}
+                                    className="rounded-full w-full h-full object-cover"
+                                />
+                            ) : (
+                                <img
+                                    src={avatarImg}
+                                    alt="Default Avatar"
+                                    width={50}
+                                    className="rounded-full w-full h-full object-cover"
+                                />
+                            )}
 
                             {profileMenuOpen && (
                                 <div className="absolute rounded shadow-md bg-neutral-100 border-2 border-slate-200 w-fit py-2 px-4 top-10 right-0 space-y-1">

@@ -11,6 +11,9 @@ import {
     REGISTER_USER_FAIL,
     REGISTER_USER_REQUEST,
     REGISTER_USER_SUCCESS,
+    UPDATE_ROLE_FAIL,
+    UPDATE_ROLE_REQUEST,
+    UPDATE_ROLE_SUCCESS,
 } from "../constants/UserConstant";
 
 const initialUserState = {
@@ -29,9 +32,15 @@ const userReducer = (state = initialUserState, action) => {
                 loading: true,
                 isAuthenticated: false,
             };
+        case UPDATE_ROLE_REQUEST:
+            return {
+                loading: true,
+                isAuthenticated: true,
+            };
         case LOGIN_SUCCESS:
         case REGISTER_USER_SUCCESS:
         case LOAD_USER_SUCCESS:
+        case UPDATE_ROLE_SUCCESS:
             return {
                 ...state,
                 loading: false,
@@ -48,6 +57,7 @@ const userReducer = (state = initialUserState, action) => {
                 error: action.payload,
             };
         case LOAD_USER_FAIL:
+        case UPDATE_ROLE_FAIL:
             return {
                 loading: false,
                 user: null,
