@@ -22,13 +22,15 @@ const Profile = () => {
     const { loading, error, user, isAuthenticated } = useSelector(
         (state) => state.user
     );
+
     const [activeTab, setActiveTab] = useState("personalInformation");
     const [authCheckLoading, setAuthCheckLoading] = useState(true);
 
     useEffect(() => {
         if (error) {
-            toast.error(error);
-            dispatch(clearErrors());
+            toast.error(error, {
+                onClose: () => dispatch(clearErrors()),
+            });
         }
 
         if (loading === false) {

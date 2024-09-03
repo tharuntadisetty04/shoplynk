@@ -38,10 +38,10 @@ const ProductDetails = () => {
 
     useEffect(() => {
         if (error) {
-            toast.error(error);
-            dispatch(clearErrors());
+            toast.error(error, {
+                onClose: () => dispatch(clearErrors()),
+            });
         }
-
         dispatch(getProductDetails(id));
     }, [dispatch, id, error]);
 

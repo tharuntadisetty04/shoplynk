@@ -35,7 +35,6 @@ const signUpSchema = z
 const SignUp = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
     const { loading, error, isAuthenticated } = useSelector(
         (state) => state.user
     );
@@ -107,8 +106,9 @@ const SignUp = () => {
 
     useEffect(() => {
         if (error) {
-            toast.error(error);
-            dispatch(clearErrors());
+            toast.error(error, {
+                onClose: () => dispatch(clearErrors()),
+            });
         }
 
         if (isAuthenticated) {
@@ -299,7 +299,7 @@ const SignUp = () => {
                                 />
                                 <span
                                     onClick={togglePasswordVisibility}
-                                    className="absolute right-3 top-11 cursor-pointer text-xl"
+                                    className="absolute right-3 top-11 cursor-pointer text-xl text-gray-500 hover:text-gray-700 duration-200"
                                 >
                                     {showPassword ? <IoMdEyeOff /> : <IoMdEye />}
                                 </span>
@@ -325,7 +325,7 @@ const SignUp = () => {
                                 />
                                 <span
                                     onClick={toggleConfirmPasswordVisibility}
-                                    className="absolute right-3 top-11 cursor-pointer text-xl"
+                                    className="absolute right-3 top-11 cursor-pointer text-xl text-gray-500 hover:text-gray-700 duration-200"
                                 >
                                     {showConfirmPassword ? <IoMdEyeOff /> : <IoMdEye />}
                                 </span>

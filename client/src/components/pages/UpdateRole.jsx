@@ -52,9 +52,11 @@ const UpdateRole = () => {
 
     useEffect(() => {
         if (error) {
-            toast.error(error);
-            dispatch(clearErrors());
+            toast.error(error, {
+                onClose: () => dispatch(clearErrors()),
+            });
         }
+
         if (isAuthenticated && user.role === "seller") {
             navigate("/", {
                 state: { toastMessage: "User role updated successfully!" },
@@ -84,17 +86,17 @@ const UpdateRole = () => {
                 transition:Slide
             />
 
-            <div className="lg:-ml-44 lg:block hidden">
+            <div className="lg:-ml-44 lg:block hidden lg:-mt-6">
                 <img
                     src={shopImg}
                     alt="Shop Image"
-                    width={350}
+                    width={400}
                     className="mix-blend-multiply"
                 />
             </div>
 
             <form
-                className="update-seller-form w-fit md:w-80 shadow-md rounded mt-1"
+                className="update-seller-form w-fit md:w-80 shadow-md rounded lg:-mt-4"
                 onSubmit={handleSubmit(onSubmit)}
             >
                 <div className="flex flex-col gap-4 border-2 border-slate-200 rounded p-4 bg-slate-200">

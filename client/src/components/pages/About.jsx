@@ -18,12 +18,14 @@ const About = () => {
     const { loading, error, isAuthenticated, user } = useSelector(
         (state) => state.user
     );
+
     const [openIndex, setOpenIndex] = useState(null);
 
     useEffect(() => {
         if (error) {
-            toast.error(error);
-            dispatch(clearErrors());
+            toast.error(error, {
+                onClose: () => dispatch(clearErrors()),
+            });
         }
     }, [dispatch, error]);
 

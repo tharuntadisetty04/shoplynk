@@ -32,6 +32,7 @@ const UpdateProfile = () => {
     const { loading, error, isUpdated } = useSelector(
         (state) => state.userProfile
     );
+
     const [avatarPreview, setAvatarPreview] = useState("/avatar.png");
 
     const {
@@ -79,8 +80,9 @@ const UpdateProfile = () => {
 
     useEffect(() => {
         if (error) {
-            toast.error(error);
-            dispatch(clearErrors());
+            toast.error(error, {
+                onClose: () => dispatch(clearErrors()),
+            });
         }
 
         if (isUpdated) {
@@ -99,7 +101,7 @@ const UpdateProfile = () => {
             <ItemLoader />
         </div>
     ) : (
-        <div className="flex flex-col lg:flex-row items-start gap-6 lg:gap-20 lg:pl-5">
+        <div className="flex flex-col lg:flex-row items-center lg:items-start gap-6 lg:gap-20 lg:pl-10">
             <TitleHelmet title={"Update Profile | ShopLynk"} />
 
             <ToastContainer
@@ -125,7 +127,7 @@ const UpdateProfile = () => {
             </div>
 
             <form
-                className="update-seller-form w-80 shadow-md rounded"
+                className="update-profile-form w-80 shadow-md rounded"
                 onSubmit={handleSubmit(onSubmit)}
             >
                 <div className="flex flex-col gap-4 border-2 border-slate-200 rounded p-4 bg-slate-200">

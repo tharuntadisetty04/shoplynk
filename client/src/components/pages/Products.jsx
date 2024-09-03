@@ -39,8 +39,9 @@ const Products = () => {
 
     useEffect(() => {
         if (error) {
-            toast.error(error);
-            dispatch(clearErrors());
+            toast.error(error, {
+                onClose: () => dispatch(clearErrors()),
+            });
         }
         dispatch(getAllProducts(keyword, currentPage, category, rating));
     }, [dispatch, error, keyword, currentPage, category, rating]);

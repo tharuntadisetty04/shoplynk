@@ -9,6 +9,7 @@ import { clearErrors } from "../../redux/actions/UserAction";
 const PersonalInformation = ({ setActiveTab }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
     const { loading, error, user, isAuthenticated } = useSelector(
         (state) => state.user
     );
@@ -16,8 +17,9 @@ const PersonalInformation = ({ setActiveTab }) => {
 
     useEffect(() => {
         if (error) {
-            toast.error(error);
-            dispatch(clearErrors());
+            toast.error(error, {
+                onClose: () => dispatch(clearErrors()),
+            });
         }
 
         if (loading === false) {
@@ -34,7 +36,7 @@ const PersonalInformation = ({ setActiveTab }) => {
             <ItemLoader />
         </div>
     ) : (
-        <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-20 lg:pl-5">
+        <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-20 lg:pl-10">
             <ToastContainer
                 position="top-right"
                 autoClose={2500}
