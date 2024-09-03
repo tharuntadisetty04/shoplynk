@@ -26,7 +26,6 @@ const Login = () => {
     const { loading, error, isAuthenticated } = useSelector(
         (state) => state.user
     );
-
     const [showPassword, setShowPassword] = useState(false);
 
     const {
@@ -73,6 +72,7 @@ const Login = () => {
                 draggable
                 pauseOnHover
                 theme="colored"
+                transition:Slide
             />
 
             <div className="login-img -ml-10">

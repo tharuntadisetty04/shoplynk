@@ -18,7 +18,6 @@ const About = () => {
     const { loading, error, isAuthenticated, user } = useSelector(
         (state) => state.user
     );
-
     const [openIndex, setOpenIndex] = useState(null);
 
     useEffect(() => {
@@ -77,6 +76,7 @@ const About = () => {
                 draggable
                 pauseOnHover
                 theme="colored"
+                transition:Slide
             />
 
             {/* hero section */}

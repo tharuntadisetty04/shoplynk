@@ -5,7 +5,7 @@ import {
     productsReducer,
     similarProductsReducer,
 } from "./ProductReducer";
-import { userReducer } from "./UserReducer";
+import { profileReducer, userReducer } from "./UserReducer";
 
 const rootReducer = combineReducers({
     products: productsReducer,
@@ -13,6 +13,7 @@ const rootReducer = combineReducers({
     similarProducts: similarProductsReducer,
     bestProducts: bestProductsReducer,
     user: userReducer,
+    userProfile: profileReducer,
 });
 
 export default rootReducer;

@@ -8,6 +8,7 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
+import cloudinary from "cloudinary";
 
 //generate tokens
 const generateTokens = async (userId) => {
@@ -380,37 +381,60 @@ const updateProfile = asyncHandler(async (req, res) => {
     }
 
     if (!validator.isEmail(email)) {
-        throw new ApiError(400, "Please Enter a valid Email");
+        throw new ApiError(400, "Please enter a valid email address");
     }
 
     if (username.length > 30 || username.length < 3) {
-        throw new ApiError(
-            400,
-            "Username length must be between 3 and 30 characters"
-        );
+        throw new ApiError(400, "Username must be between 3 and 30 characters");
     }
 
-    const newUser = await User.findByIdAndUpdate(
-        req.user?._id,
-        {
-            $set: {
-                username: username,
-                email: email,
-            },
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    if (user.avatar && user.avatar.public_id) {
+        await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+    }
+
+    let avatarLocalPath;
+    if (req.file) {
+        avatarLocalPath = req.file.path;
+    }
+
+    let avatar;
+    if (avatarLocalPath) {
+        avatar = await uploadToCloudinary(avatarLocalPath);
+
+        if (!avatar) {
+            throw new ApiError(400, "Failed to upload avatar file to cloud");
+        }
+    } else {
+        throw new ApiError(400, "Avatar file is missing or not uploaded");
+    }
+
+    const newUserData = {
+        username,
+        email,
+        avatar: {
+            public_id: avatar.public_id,
+            url: avatar.secure_url,
         },
-        { new: true }
-    ).select("-password");
+    };
 
-    if (!newUser) {
-        throw new ApiError(500, "Account updation failed");
-    }
+    const updatedUser = await User.findByIdAndUpdate(req.user.id, newUserData, {
+        new: true,
+        runValidators: true,
+        useFindAndModify: false,
+    });
 
     return res
         .status(200)
         .json(
             new ApiResponse(
                 200,
-                newUser,
+                updatedUser,
                 "Account details updated successfully"
             )
         );

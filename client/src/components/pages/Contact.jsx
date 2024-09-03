@@ -18,7 +18,6 @@ const Contact = () => {
 
     const handleForm = (e) => {
         e.preventDefault();
-
         const { name, email, phone, message } = formData;
 
         if (name && email && phone && message) {
@@ -50,6 +49,7 @@ const Contact = () => {
                 draggable
                 pauseOnHover
                 theme="colored"
+                transition:Slide
             />
 
             <h1 className="lg:text-4xl md:text-3xl text-2xl font-bold text-center mb-6">

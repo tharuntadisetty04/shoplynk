@@ -12,6 +12,9 @@ import {
     REGISTER_USER_FAIL,
     REGISTER_USER_REQUEST,
     REGISTER_USER_SUCCESS,
+    UPDATE_PROFILE_FAIL,
+    UPDATE_PROFILE_REQUEST,
+    UPDATE_PROFILE_SUCCESS,
     UPDATE_ROLE_FAIL,
     UPDATE_ROLE_REQUEST,
     UPDATE_ROLE_SUCCESS,
@@ -165,6 +168,37 @@ const updateUserRole = (userData) => async (dispatch) => {
     }
 };
 
+// Update profile
+const updateUserProfile = (userData) => async (dispatch) => {
+    try {
+        dispatch({ type: UPDATE_PROFILE_REQUEST });
+
+        const config = {
+            headers: { "Content-Type": "multipart/form-data" },
+            withCredentials: true,
+        };
+
+        const { data } = await axios.patch(
+            "http://localhost:8000/api/v1/user/update-profile",
+            userData,
+            config
+        );
+
+        dispatch({
+            type: UPDATE_PROFILE_SUCCESS,
+            payload: data,
+        });
+    } catch (error) {
+        const errorMessage =
+            extractErrorMessage(error.response.data) || error.message;
+
+        dispatch({
+            type: UPDATE_PROFILE_FAIL,
+            payload: errorMessage,
+        });
+    }
+};
+
 // Clear errors
 const clearErrors = () => (dispatch) => {
     dispatch({ type: CLEAR_ERRORS });
@@ -177,4 +211,5 @@ export {
     loadUser,
     logoutUser,
     updateUserRole,
+    updateUserProfile,
 };

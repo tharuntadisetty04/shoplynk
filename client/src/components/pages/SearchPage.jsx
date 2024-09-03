@@ -69,6 +69,7 @@ const SearchPage = () => {
                 draggable
                 pauseOnHover
                 theme="colored"
+                transition:Slide
             />
 
             <form

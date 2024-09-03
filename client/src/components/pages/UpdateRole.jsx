@@ -42,9 +42,6 @@ const UpdateRole = () => {
 
     const onSubmit = (data) => {
         dispatch(updateUserRole(data));
-        navigate("/", {
-            state: { toastMessage: "User role updated successfully!", },
-        });
     };
 
     useEffect(() => {
@@ -52,7 +49,12 @@ const UpdateRole = () => {
             toast.error(error);
             dispatch(clearErrors());
         }
-    }, [dispatch, error]);
+        if (user.role === "seller") {
+            navigate("/", {
+                state: { toastMessage: "User role updated successfully!" },
+            });
+        }
+    }, [dispatch, error, navigate, user]);
 
     return loading ? (
         <ItemLoader />
@@ -71,7 +73,7 @@ const UpdateRole = () => {
                 draggable
                 pauseOnHover
                 theme="colored"
-                transition="Slide"
+                transition:Slide
             />
 
             <div className="lg:-ml-44 lg:block hidden">

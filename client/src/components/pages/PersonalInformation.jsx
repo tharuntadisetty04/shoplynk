@@ -22,7 +22,7 @@ const PersonalInformation = () => {
 
         if (loading === false) {
             if (!isAuthenticated) {
-                navigate("/");
+                navigate("/login");
             } else {
                 setAuthCheckLoading(false);
             }
@@ -44,7 +44,7 @@ const PersonalInformation = () => {
                 draggable
                 pauseOnHover
                 theme="colored"
-                transition="Slide"
+                transition:Slide
             />
 
             <div className="avatar">

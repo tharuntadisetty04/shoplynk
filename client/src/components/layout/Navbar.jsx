@@ -62,6 +62,7 @@ const Navbar = () => {
         draggable
         pauseOnHover
         theme="colored"
+        transition:Slide
     />;
 
     return (

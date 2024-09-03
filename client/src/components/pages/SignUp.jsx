@@ -133,6 +133,7 @@ const SignUp = () => {
                 draggable
                 pauseOnHover
                 theme="colored"
+                transition:Slide
             />
 
             <div className="login-img -ml-10">

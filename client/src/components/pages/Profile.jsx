@@ -63,15 +63,15 @@ const Profile = () => {
                 draggable
                 pauseOnHover
                 theme="colored"
-                transition="Slide"
+                transition:Slide
             />
 
             <div className="mx-auto flex lg:flex-row flex-col justify-between lg:items-start items-center gap-4">
                 <div className="side-bar lg:w-[15rem] lg:flex lg:flex-col lg:justify-between w-full grid grid-cols-2 gap-4">
                     <div
                         className={`rounded-md border-2 border-slate-200 font-medium py-2 px-3 flex items-center gap-1.5 hover:bg-blue-600 hover:text-neutral-100 duration-200 cursor-pointer ${activeTab === "personalInformation"
-                                ? "bg-blue-600 text-neutral-100"
-                                : ""
+                            ? "bg-blue-600 text-neutral-100"
+                            : ""
                             }`}
                         onClick={() => setActiveTab("personalInformation")}
                     >
@@ -105,8 +105,8 @@ const Profile = () => {
 
                     <div
                         className={`rounded-md border-2 border-slate-200 font-medium py-2 px-3 flex items-center gap-1.5 hover:bg-blue-600 hover:text-neutral-100 duration-200 cursor-pointer ${activeTab === "updatePassword"
-                                ? "bg-blue-600 text-neutral-100"
-                                : ""
+                            ? "bg-blue-600 text-neutral-100"
+                            : ""
                             }`}
                         onClick={() => setActiveTab("updatePassword")}
                     >
