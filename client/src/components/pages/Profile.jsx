@@ -14,6 +14,7 @@ import { IoMdLock } from "react-icons/io";
 import PersonalInformation from "./PersonalInformation";
 import UpdatePassword from "./UpdatePassword";
 import UpdateRole from "./UpdateRole";
+import UpdateProfile from "./UpdateProfile";
 
 const Profile = () => {
     const navigate = useNavigate();
@@ -143,9 +144,12 @@ const Profile = () => {
                 </div>
 
                 <div className="content w-4/5">
-                    {activeTab === "personalInformation" && <PersonalInformation />}
+                    {activeTab === "personalInformation" && (
+                        <PersonalInformation setActiveTab={setActiveTab} />
+                    )}
                     {activeTab === "updatePassword" && <UpdatePassword />}
                     {activeTab === "updateRole" && <UpdateRole />}
+                    {activeTab === "updateProfile" && <UpdateProfile />}
                 </div>
             </div>
         </div>

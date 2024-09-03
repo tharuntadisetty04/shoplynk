@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import avatarImg from "/avatar.png";
 import ItemLoader from "../layout/ItemLoader";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { clearErrors } from "../../redux/actions/UserAction";
 
-const PersonalInformation = () => {
+const PersonalInformation = ({ setActiveTab }) => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const { loading, error, user, isAuthenticated } = useSelector(
         (state) => state.user
     );
-
     const [authCheckLoading, setAuthCheckLoading] = useState(true);
 
     useEffect(() => {
@@ -27,12 +27,14 @@ const PersonalInformation = () => {
                 setAuthCheckLoading(false);
             }
         }
-    }, [loading, error, isAuthenticated, navigate]);
+    }, [loading, error, isAuthenticated, navigate, dispatch]);
 
     return loading || authCheckLoading ? (
-        <ItemLoader />
+        <div className="bg-transparent -mt-[3.4rem] -ml-28">
+            <ItemLoader />
+        </div>
     ) : (
-        <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-16 lg:pl-[6rem]">
+        <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-20 lg:pl-5">
             <ToastContainer
                 position="top-right"
                 autoClose={2500}
@@ -73,12 +75,12 @@ const PersonalInformation = () => {
                     </p>
                 </div>
 
-                <Link
-                    to="/profile/edit"
+                <button
                     className="rounded text-center bg-blue-600 px-3.5 py-2.5 font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200"
+                    onClick={() => setActiveTab("updateProfile")}
                 >
                     Edit Profile
-                </Link>
+                </button>
             </div>
         </div>
     );

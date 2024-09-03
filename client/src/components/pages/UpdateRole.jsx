@@ -25,20 +25,26 @@ const UpdateRoleSchema = z.object({
 const UpdateRole = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { loading, error, user } = useSelector((state) => state.user);
+    const { loading, error, user, isAuthenticated } = useSelector(
+        (state) => state.user
+    );
 
     const {
         register,
         handleSubmit,
+        setValue,
         formState: { errors },
     } = useForm({
         resolver: zodResolver(UpdateRoleSchema),
-        defaultValues: {
-            username: user.username,
-            email: user.email,
-            termsAccepted: false,
-        },
     });
+
+    useEffect(() => {
+        if (user) {
+            setValue("username", user.username || "");
+            setValue("email", user.email || "");
+            setValue("termsAccepted", false);
+        }
+    }, [user, setValue]);
 
     const onSubmit = (data) => {
         dispatch(updateUserRole(data));
@@ -49,7 +55,7 @@ const UpdateRole = () => {
             toast.error(error);
             dispatch(clearErrors());
         }
-        if (user.role === "seller") {
+        if (isAuthenticated && user.role === "seller") {
             navigate("/", {
                 state: { toastMessage: "User role updated successfully!" },
             });
@@ -57,7 +63,9 @@ const UpdateRole = () => {
     }, [dispatch, error, navigate, user]);
 
     return loading ? (
-        <ItemLoader />
+        <div className="bg-transparent -mt-[3.4rem] -ml-28">
+            <ItemLoader />
+        </div>
     ) : (
         <div className="update-role w-full h-full flex items-center justify-center lg:gap-16 lg:-mt-3">
             <TitleHelmet title={"Update Role | ShopLynk"} />
