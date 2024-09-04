@@ -1,5 +1,9 @@
 import {
     CLEAR_ERRORS,
+    CLEAR_MESSAGE,
+    FORGOT_PASSWORD_FAIL,
+    FORGOT_PASSWORD_REQUEST,
+    FORGOT_PASSWORD_SUCCESS,
     LOAD_USER_FAIL,
     LOAD_USER_REQUEST,
     LOAD_USER_SUCCESS,
@@ -11,6 +15,9 @@ import {
     REGISTER_USER_FAIL,
     REGISTER_USER_REQUEST,
     REGISTER_USER_SUCCESS,
+    RESET_PASSWORD_FAIL,
+    RESET_PASSWORD_REQUEST,
+    RESET_PASSWORD_SUCCESS,
     UPDATE_PASSWORD_FAIL,
     UPDATE_PASSWORD_REQUEST,
     UPDATE_PASSWORD_RESET,
@@ -139,4 +146,54 @@ const profileReducer = (state = profileState, action) => {
     }
 };
 
-export { userReducer, profileReducer };
+const passwordsState = {
+    loading: false,
+    message: "",
+    error: null,
+};
+
+const passwordsReducer = (state = passwordsState, action) => {
+    switch (action.type) {
+        case FORGOT_PASSWORD_REQUEST:
+        case RESET_PASSWORD_REQUEST:
+            return {
+                ...state,
+                loading: true,
+                error: null,
+            };
+        case FORGOT_PASSWORD_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                message: action.payload.message,
+            };
+        case RESET_PASSWORD_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                success: action.payload.success,
+                user: action.payload.data,
+            };
+        case FORGOT_PASSWORD_FAIL:
+        case RESET_PASSWORD_FAIL:
+            return {
+                ...state,
+                loading: false,
+                error: action.payload,
+            };
+        case CLEAR_ERRORS:
+            return {
+                ...state,
+                error: null,
+            };
+        case CLEAR_MESSAGE:
+            return {
+                ...state,
+                message: "",
+            };
+        default:
+            return state;
+    }
+};
+
+export { userReducer, profileReducer, passwordsReducer };

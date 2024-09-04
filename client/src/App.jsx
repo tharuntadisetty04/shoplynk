@@ -21,6 +21,8 @@ const SearchPage = lazy(() => import("./components/pages/SearchPage"));
 const Login = lazy(() => import("./components/pages/Login"));
 const SignUp = lazy(() => import("./components/pages/SignUp"));
 const Profile = lazy(() => import("./components/pages/Profile"));
+const ForgotPassword = lazy(() => import("./components/pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./components/pages/ResetPassword"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -58,6 +60,8 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/password/reset/:token" element={<ResetPassword />} />
               <Route path="*" element={<PageNotFound />} />
             </Routes>
           </Suspense>
