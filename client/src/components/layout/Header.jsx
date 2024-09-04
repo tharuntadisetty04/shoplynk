@@ -12,10 +12,11 @@ import { FaUser, FaBagShopping } from "react-icons/fa6";
 import { MdDashboard } from "react-icons/md";
 import { IoLogOutOutline } from "react-icons/io5";
 
-const Navbar = () => {
+const Header = () => {
     const dispatch = useDispatch();
     const { isAuthenticated, user } = useSelector((state) => state.user);
-
+    // const cartItems = useSelector((state) => state.cart.cartItems);
+    const cartItems = 2;
     const [menuOpen, setMenuOpen] = useState(false);
     const [profileMenuOpen, setProfileMenuOpen] = useState(false);
     const profileMenuRef = useRef(null);
@@ -107,9 +108,14 @@ const Navbar = () => {
                     <Link
                         aria-label="Cart"
                         to="/cart"
-                        className="hover:text-blue-600 text-xl duration-200"
+                        className="hover:text-blue-600 text-xl duration-200 relative"
                     >
                         <FiShoppingCart />
+                        {cartItems > 0 && (
+                            <span className="absolute bottom-[0.7rem] left-[0.7rem] bg-blue-600 text-neutral-100 rounded-full h-4 w-4 flex items-center justify-center text-xs">
+                                {cartItems}
+                            </span>
+                        )}
                     </Link>
 
                     {isAuthenticated ? (
@@ -222,4 +228,4 @@ const Navbar = () => {
     );
 };
 
-export default Navbar;
+export default Header;
