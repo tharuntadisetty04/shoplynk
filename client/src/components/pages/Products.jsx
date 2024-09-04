@@ -15,7 +15,7 @@ import { GiAmpleDress } from "react-icons/gi";
 import { IoGameController } from "react-icons/io5";
 import { MdOutlineFoodBank, MdElectricalServices } from "react-icons/md";
 import { FaBowlFood, FaHandSparkles } from "react-icons/fa6";
-import ItemLoader from "../layout/ItemLoader";
+import PageLoader from "../layout/PageLoader";
 
 const Products = () => {
     const { keyword } = useParams();
@@ -162,7 +162,7 @@ const Products = () => {
             />
 
             {loading ? (
-                <ItemLoader />
+                <PageLoader />
             ) : products.length === 0 ? (
                 <ProductNotFound clearFilters={clearFilters} />
             ) : (
@@ -182,7 +182,7 @@ const Products = () => {
                     </div>
 
                     <div className="flex flex-col lg:flex-row items-start justify-between lg:gap-16 gap-8">
-                        <aside className="options-section flex flex-col gap-2 h-full lg:sticky lg:top-2 w-full lg:w-1/4 rounded px-4 py-2 border-2 border-slate-200">
+                        <aside className="options-section flex flex-col gap-2 h-full lg:sticky lg:top-2 w-full md:w-2/3 lg:w-1/4 rounded px-4 py-2 border-2 border-slate-200 mx-auto">
                             <h2 className="text-xl font-semibold border-b-2 border-slate-200 py-2">
                                 Filters
                             </h2>

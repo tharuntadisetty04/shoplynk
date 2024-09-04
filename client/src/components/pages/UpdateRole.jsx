@@ -69,7 +69,7 @@ const UpdateRole = () => {
             <ItemLoader />
         </div>
     ) : (
-        <div className="update-role w-full h-full flex items-center justify-center lg:gap-16 lg:-mt-3">
+        <div className="update-role w-full h-full flex lg:flex-row flex-col items-center justify-center lg:gap-16 lg:-mt-3">
             <TitleHelmet title={"Update Role | ShopLynk"} />
 
             <ToastContainer
@@ -86,7 +86,7 @@ const UpdateRole = () => {
                 transition:Slide
             />
 
-            <div className="lg:-ml-44 lg:block hidden lg:-mt-6">
+            <div className="lg:-ml-44 md:block hidden lg:-mt-6">
                 <img
                     src={shopImg}
                     alt="Shop Image"
@@ -96,7 +96,7 @@ const UpdateRole = () => {
             </div>
 
             <form
-                className="update-seller-form w-fit md:w-80 shadow-md rounded lg:-mt-4"
+                className="update-seller-form w-fit md:w-full lg:w-80 shadow-md rounded lg:-mt-4"
                 onSubmit={handleSubmit(onSubmit)}
             >
                 <div className="flex flex-col gap-4 border-2 border-slate-200 rounded p-4 bg-slate-200">

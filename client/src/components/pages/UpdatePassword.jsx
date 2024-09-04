@@ -85,7 +85,7 @@ const UpdatePassword = () => {
             <ItemLoader />
         </div>
     ) : (
-        <div className="update-password w-full h-96 flex items-center justify-center lg:gap-16 lg:-mt-3 lg:-ml-4">
+        <div className="update-password w-full lg:h-96 flex lg:flex-row flex-col items-center justify-center lg:gap-16 lg:-mt-3 lg:-ml-4">
             <TitleHelmet title={"Update Password | ShopLynk"} />
 
             <ToastContainer
@@ -102,7 +102,7 @@ const UpdatePassword = () => {
                 transition:Slide
             />
 
-            <div className="lg:-ml-44 lg:-mt-6 lg:block hidden">
+            <div className="lg:-ml-44 lg:-mt-6 md:block hidden">
                 <img
                     src={updatePasswordImg}
                     alt="Update Password Image"
@@ -112,7 +112,7 @@ const UpdatePassword = () => {
             </div>
 
             <form
-                className="update-password-form w-[22rem] shadow-md rounded"
+                className="update-password-form lg:w-[22rem] w-full shadow-md rounded mt-4 md:mt-0"
                 onSubmit={handleSubmit(onSubmit)}
             >
                 <div className="flex flex-col gap-4 border-2 border-slate-200 rounded p-4 bg-slate-200">

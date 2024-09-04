@@ -119,7 +119,7 @@ const SignUp = () => {
     }, [dispatch, error, isAuthenticated, navigate]);
 
     return !loading ? (
-        <div className="signup-section w-full lg:h-[90svh] px-8 md:px-16 flex lg:flex-row flex-col-reverse items-center justify-center gap-8 -mb-6 lg:mb-0">
+        <div className="signup-section w-full lg:h-[90svh] px-8 md:px-16 flex lg:flex-row flex-col-reverse items-center justify-center lg:gap-8">
             <TitleHelmet title={"Sign Up | ShopLynk"} />
 
             <ToastContainer
@@ -136,11 +136,11 @@ const SignUp = () => {
                 transition:Slide
             />
 
-            <div className="login-img -ml-10">
+            <div className="login-img lg:-ml-10">
                 <img
                     src={signUpImg}
                     alt="SignUp Image"
-                    className="mix-blend-multiply lg:block hidden"
+                    className="mix-blend-multiply md:block hidden"
                     width={580}
                 />
             </div>
@@ -201,7 +201,7 @@ const SignUp = () => {
                                     Avatar
                                 </label>
 
-                                <div className="flex gap-1.5 items-center">
+                                <div className="flex gap-3 items-center ml-8 md:ml-0">
                                     {avatarPreview && (
                                         <img
                                             src={avatarPreview}

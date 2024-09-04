@@ -127,7 +127,7 @@ const UpdateProfile = () => {
             </div>
 
             <form
-                className="update-profile-form w-80 shadow-md rounded"
+                className="update-profile-form lg:w-80 w-full shadow-md rounded"
                 onSubmit={handleSubmit(onSubmit)}
             >
                 <div className="flex flex-col gap-4 border-2 border-slate-200 rounded p-4 bg-slate-200">
@@ -170,7 +170,7 @@ const UpdateProfile = () => {
                             Avatar
                         </label>
 
-                        <div className="flex gap-1.5 items-center ml-2 md:mx-auto">
+                        <div className="lg:ml-2 md:ml-28 ml-32s">
                             <input
                                 type="file"
                                 name="avatar"

@@ -60,7 +60,7 @@ const Login = () => {
     }, [dispatch, error, isAuthenticated, navigate]);
 
     return !loading ? (
-        <div className="login-section w-full lg:h-[90svh] px-8 md:px-16 flex lg:flex-row flex-col-reverse items-center justify-center gap-8 -mb-6 lg:mb-0">
+        <div className="login-section w-full lg:h-[90svh] px-8 md:px-16 flex lg:flex-row flex-col-reverse items-center justify-center lg:gap-8">
             <TitleHelmet title={"Login | ShopLynk"} />
 
             <ToastContainer
@@ -77,11 +77,11 @@ const Login = () => {
                 transition:Slide
             />
 
-            <div className="login-img -ml-10">
+            <div className="login-img lg:-ml-10">
                 <img
                     src={loginImg}
                     alt="Login Image"
-                    className="mix-blend-multiply lg:block hidden"
+                    className="mix-blend-multiply md:block hidden"
                     width={580}
                 />
             </div>
