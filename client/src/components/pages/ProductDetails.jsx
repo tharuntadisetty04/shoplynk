@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import PageLoader from "../layout/PageLoader";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -20,6 +19,7 @@ import Modal from "react-modal";
 import TitleHelmet from "../utils/TitleHelmet";
 import SimilarProducts from "../utils/SimilarProducts";
 import ProductNotFound from "./ProductNotFound";
+import { addItemsToCart } from "../../redux/actions/cartAction";
 
 Modal.setAppElement("#root");
 
@@ -123,6 +123,11 @@ const ProductDetails = () => {
     const closeReviewModal = () => {
         setIsModalOpen(false);
         setIsReviewModalOpen(null);
+    };
+
+    const addToCart = () => {
+        dispatch(addItemsToCart(id, quantity));
+        toast.success("Item added to cart");
     };
 
     const ratingOptions = {
@@ -274,7 +279,7 @@ const ProductDetails = () => {
                             <input
                                 type="text"
                                 value={quantity}
-                                className="w-12 h-[1.92rem] text-center mx-2 border-2 border-blue-600 rounded outline-none bg-neutral-100"
+                                className="w-12 h-[1.92rem] text-center mx-2 border-2 border-blue-600 rounded outline-none bg-white"
                                 onChange={handleQuantityChange}
                             />
                             <button
@@ -284,7 +289,10 @@ const ProductDetails = () => {
                                 +
                             </button>
 
-                            <button className="rounded bg-blue-600 p-2 font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 lg:text-sm md:text-xs text-sm ml-4">
+                            <button
+                                className="rounded bg-blue-600 p-2 font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 lg:text-sm md:text-xs text-sm ml-4"
+                                onClick={addToCart}
+                            >
                                 Add to Cart
                             </button>
                         </div>

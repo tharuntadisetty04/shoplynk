@@ -5,7 +5,7 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
-import Navbar from "./components/layout/Navbar";
+import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
 import PageLoader from "./components/layout/PageLoader";
 import PageNotFound from "./components/pages/PageNotFound";
@@ -23,6 +23,7 @@ const SignUp = lazy(() => import("./components/pages/SignUp"));
 const Profile = lazy(() => import("./components/pages/Profile"));
 const ForgotPassword = lazy(() => import("./components/pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./components/pages/ResetPassword"));
+const Cart = lazy(() => import("./components/pages/Cart"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -44,7 +45,7 @@ function App() {
   return (
     <div className="bg-neutral-100 text-gray-900">
       <Router>
-        <Navbar />
+        <Header />
         <LoadUser />
         <main>
           <Suspense fallback={<PageLoader />}>
@@ -62,6 +63,7 @@ function App() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/password/reset/:token" element={<ResetPassword />} />
+              <Route path="/cart" element={<Cart />} />
               <Route path="*" element={<PageNotFound />} />
             </Routes>
           </Suspense>

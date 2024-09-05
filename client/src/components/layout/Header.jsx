@@ -15,8 +15,8 @@ import { IoLogOutOutline } from "react-icons/io5";
 const Header = () => {
     const dispatch = useDispatch();
     const { isAuthenticated, user } = useSelector((state) => state.user);
-    // const cartItems = useSelector((state) => state.cart.cartItems);
-    const cartItems = 2;
+    const cartItems = useSelector((state) => state.cart.cartItems);
+
     const [menuOpen, setMenuOpen] = useState(false);
     const [profileMenuOpen, setProfileMenuOpen] = useState(false);
     const profileMenuRef = useRef(null);
@@ -111,9 +111,9 @@ const Header = () => {
                         className="hover:text-blue-600 text-xl duration-200 relative"
                     >
                         <FiShoppingCart />
-                        {cartItems > 0 && (
+                        {cartItems && cartItems.length > 0 && (
                             <span className="absolute bottom-[0.7rem] left-[0.7rem] bg-blue-600 text-neutral-100 rounded-full h-4 w-4 flex items-center justify-center text-xs">
-                                {cartItems}
+                                {cartItems.length}
                             </span>
                         )}
                     </Link>

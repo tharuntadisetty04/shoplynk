@@ -1,8 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import ReactStars from "react-rating-stars-component";
+import { useDispatch, useSelector } from "react-redux";
+import { addItemsToCart } from "../../redux/actions/cartAction";
+import { toast } from "react-toastify";
 
 const ProductCard = ({ product }) => {
+    const dispatch = useDispatch();
+    const { cartItems } = useSelector((state) => state.cart);
+
     const options = {
         edit: false,
         color: "gray",
@@ -12,14 +18,18 @@ const ProductCard = ({ product }) => {
         size: 20,
     };
 
-    const getRandomDiscount = (min, max, decimalPlaces) => {
-        const random = Math.random() * (max - min) + min;
-        return parseFloat(random.toFixed(decimalPlaces));
-    };
-
-    const handleclick = (e) => {
+    const addToCart = (e) => {
         e.preventDefault();
-        alert("sdiuah");
+
+        dispatch(addItemsToCart(product._id, 1));
+
+        const isItemAddedToCart = cartItems.some(
+            (item) => item.product === product._id
+        );
+
+        if (isItemAddedToCart) {
+            toast.success("Item added to cart");
+        }
     };
 
     return (
@@ -56,7 +66,7 @@ const ProductCard = ({ product }) => {
 
                     <button
                         className="rounded-md bg-blue-600 p-2 font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 text-sm"
-                        onClick={handleclick}
+                        onClick={addToCart}
                     >
                         Add to Cart
                     </button>
