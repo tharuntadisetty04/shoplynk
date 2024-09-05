@@ -5,6 +5,7 @@ import {
     SAVE_SHIPPING_INFO,
 } from "../constants/CartConstant";
 
+// add to cart
 const addItemsToCart = (id, quantity) => async (dispatch, getState) => {
     const response = await axios.get(
         `http://localhost:8000/api/v1/products/product/${id}`
@@ -28,4 +29,16 @@ const addItemsToCart = (id, quantity) => async (dispatch, getState) => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
 };
 
-export { addItemsToCart };
+// remove from cart
+const removeCartItem = (id) => (dispatch, getState) => {
+    dispatch({
+        type: REMOVE_CART_ITEM,
+        payload: id,
+    });
+
+    const cartItems = getState().cart?.cartItems || [];
+
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+};
+
+export { addItemsToCart, removeCartItem };

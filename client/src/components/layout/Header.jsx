@@ -141,7 +141,7 @@ const Header = () => {
                             )}
 
                             {profileMenuOpen && (
-                                <div className="absolute rounded shadow-md bg-neutral-100 border-2 border-slate-200 w-fit py-2 px-4 top-10 right-0 space-y-1">
+                                <div className="absolute rounded shadow-md bg-neutral-100 border-2 border-slate-200 w-fit py-2 px-4 top-10 right-0 space-y-1 z-50">
                                     <Link
                                         to="/profile"
                                         className="font-medium hover:text-blue-600 duration-200 flex items-center justify-start gap-1.5"

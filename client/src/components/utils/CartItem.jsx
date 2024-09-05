@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { debounce } from "lodash";
-import { addItemsToCart } from "../../redux/actions/cartAction";
+import { addItemsToCart, removeCartItem } from "../../redux/actions/cartAction";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 
@@ -58,6 +58,11 @@ const CartItem = ({ item }) => {
         }
     };
 
+    const deleteCartItem = (id) => {
+        dispatch(removeCartItem(id));
+        toast.success("Item removed from Cart");
+    };
+
     return window.innerWidth > 500 ? (
         <div className="flex items-center justify-between p-4 mb-4 last:mb-0 border-b bg-white rounded">
             <Link
@@ -104,7 +109,7 @@ const CartItem = ({ item }) => {
 
             <button
                 className="text-2xl -mt-1 text-gray-700 hover:text-red-500 duration-200"
-                onClick={() => console.log("Remove Item")}
+                onClick={() => deleteCartItem(item.product)}
             >
                 <MdDeleteOutline />
             </button>
@@ -170,7 +175,7 @@ const CartItem = ({ item }) => {
 
             <button
                 className="text-xl text-gray-500 hover:text-red-500 ml-4 relative -top-3 right-6"
-                onClick={() => console.log("Remove Item")}
+                onClick={() => deleteCartItem(item.product)}
             >
                 <MdDeleteOutline />
             </button>
