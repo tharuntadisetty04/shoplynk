@@ -7,6 +7,7 @@ import {
 const cartState = {
     loading: false,
     cartItems: [],
+    shippingInfo: {},
     error: null,
 };
 
@@ -35,6 +36,11 @@ const cartReducer = (state = cartState, action) => {
             return {
                 ...state,
                 cartItems: state.cartItems.filter((i) => i.product !== action.payload),
+            };
+        case SAVE_SHIPPING_INFO:
+            return {
+                ...state,
+                shippingInfo: action.payload,
             };
         default:
             return state;

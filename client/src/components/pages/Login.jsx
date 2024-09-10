@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import loginImg from "../../assets/login-img.jpg";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import TitleHelmet from "../utils/TitleHelmet";
 import { ToastContainer, toast } from "react-toastify";
@@ -23,6 +23,7 @@ const loginSchema = z.object({
 const Login = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const { loading, error, isAuthenticated } = useSelector(
         (state) => state.user
@@ -45,6 +46,8 @@ const Login = () => {
         dispatch(loginUser(data.email, data.password));
     };
 
+    const redirect = location.search ? "/" + location.search.split("=")[1] : "/";
+
     useEffect(() => {
         if (error) {
             toast.error(error, {
@@ -53,11 +56,11 @@ const Login = () => {
         }
 
         if (isAuthenticated) {
-            navigate("/", {
+            navigate(redirect, {
                 state: { toastMessage: "User logged in successfully!" },
             });
         }
-    }, [dispatch, error, isAuthenticated, navigate]);
+    }, [dispatch, error, isAuthenticated, navigate, redirect]);
 
     return !loading ? (
         <div className="login-section w-full lg:h-[90svh] px-8 md:px-16 flex lg:flex-row flex-col-reverse items-center justify-center lg:gap-8">

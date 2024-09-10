@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import CartItem from "../utils/CartItem";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import TitleHelmet from "../utils/TitleHelmet";
 import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { MdOutlineRemoveShoppingCart } from "react-icons/md";
 
 const Cart = () => {
+    const navigate = useNavigate();
     const { cartItems } = useSelector((state) => state.cart);
+    const userLoggedIn = useSelector((state) => state.user.isAuthenticated);
     const [discountPercent, setDiscountPercent] = useState(0);
 
     const totalPrice = cartItems.reduce(
@@ -32,6 +35,14 @@ const Cart = () => {
     }, []);
 
     const discount = (totalPrice * discountPercent) / 100;
+
+    const checkoutHandler = () => {
+        if (userLoggedIn) {
+            navigate("/shipping");
+        } else {
+            navigate("/login?redirect=shipping");
+        }
+    };
 
     return cartItems.length > 0 ? (
         <div className="cart w-full h-full lg:min-h-[60svh] md:min-h-[65svh]">
@@ -99,7 +110,10 @@ const Cart = () => {
                         >
                             Shop More
                         </Link>
-                        <button className="px-4 py-2 bg-blue-600 text-neutral-100 rounded font-medium shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200">
+                        <button
+                            className="px-4 py-2 bg-blue-600 text-neutral-100 rounded font-medium shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200"
+                            onClick={checkoutHandler}
+                        >
                             Checkout
                         </button>
                     </div>

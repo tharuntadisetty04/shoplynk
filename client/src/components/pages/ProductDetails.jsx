@@ -162,7 +162,7 @@ const ProductDetails = () => {
             {loading ? (
                 <ItemLoader />
             ) : (
-                <div className="product w-full h-full lg:py-4 px-8 md:px-16 flex items-center justify-center md:flex-row flex-col lg:gap-8 md:gap-6 gap-4 md:mt-2">
+                <div className="product w-full h-full lg:pb-4 px-8 md:px-16 flex items-center justify-center md:flex-row flex-col lg:gap-8 md:gap-6 gap-4 md:mt-2">
                     {/* Left Column - Images */}
                     <div className="images flex lg:flex-row flex-col-reverse justify-center items-center lg:gap-8 gap-3">
                         <div className="other-img flex lg:flex-col lg:gap-3 gap-2 items-center justify-between">

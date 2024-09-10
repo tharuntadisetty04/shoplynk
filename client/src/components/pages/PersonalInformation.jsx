@@ -4,6 +4,7 @@ import avatarImg from "/avatar.png";
 import ItemLoader from "../layout/ItemLoader";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { clearErrors } from "../../redux/actions/UserAction";
 
 const PersonalInformation = ({ setActiveTab }) => {

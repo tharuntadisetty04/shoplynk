@@ -35,7 +35,7 @@ const Contact = () => {
     };
 
     return (
-        <div className="contact w-full h-full py-4 px-8 md:px-16 mx-auto">
+        <div className="contact w-full h-full pb-6 px-8 md:px-16 mx-auto">
             <TitleHelmet title={"Contact | ShopLynk"} />
 
             <ToastContainer
