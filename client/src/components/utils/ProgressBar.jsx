@@ -8,7 +8,7 @@ const ProgressBar = ({ currentStep }) => {
     ];
 
     return (
-        <div className="flex items-center justify-between mt-2 mb-6">
+        <div className="flex items-center justify-between mt-2 mb-4">
             {steps.map((step, index) => (
                 <React.Fragment key={step.step}>
                     <div className="flex flex-col items-center md:w-24 w-fit">

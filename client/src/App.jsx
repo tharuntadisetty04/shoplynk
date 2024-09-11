@@ -25,6 +25,7 @@ const ForgotPassword = lazy(() => import("./components/pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./components/pages/ResetPassword"));
 const Cart = lazy(() => import("./components/pages/Cart"));
 const ShippingInfo = lazy(() => import("./components/pages/ShippingInfo"));
+const ConfirmOrder = lazy(() => import("./components/pages/ConfirmOrder"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -66,6 +67,7 @@ function App() {
               <Route path="/password/reset/:token" element={<ResetPassword />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/shipping" element={<ShippingInfo />} />
+              <Route path="/order/confirm" element={<ConfirmOrder />} />
               <Route path="*" element={<PageNotFound />} />
             </Routes>
           </Suspense>
