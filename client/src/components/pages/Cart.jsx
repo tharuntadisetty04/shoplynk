@@ -34,8 +34,10 @@ const Cart = () => {
         }
     }, []);
 
+    const tax = totalPrice * 0.18;
+    const deliveryCharges = totalPrice < 5000 ? 0 : 200;
     const discount = (totalPrice * discountPercent) / 100;
-    const totalAmount = totalPrice + totalPrice * 0.18 - discount;
+    const totalAmount = totalPrice + tax + deliveryCharges - discount;
 
     const checkoutHandler = () => {
         if (userLoggedIn) {
@@ -93,12 +95,12 @@ const Cart = () => {
                         </div>
                         <div className="flex justify-between font-medium">
                             <span>Delivery Charges</span>
-                            <span className="text-blue-600">+ 0.00</span>
+                            <span className="text-blue-600">+ {deliveryCharges.toFixed(2)}</span>
                         </div>
                         <div className="flex justify-between font-medium">
                             <span>GST (18%)</span>
                             <span className="text-blue-600">
-                                + {(totalPrice * 0.18).toFixed(2)}
+                                + {tax.toFixed(2)}
                             </span>
                         </div>
                         <div className="flex justify-between font-medium">
