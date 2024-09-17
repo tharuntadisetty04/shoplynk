@@ -170,7 +170,7 @@ const UpdateProfile = () => {
                             Avatar
                         </label>
 
-                        <div className="lg:ml-2 md:ml-28 ml-32s">
+                        <div className="lg:ml-[0.25rem] md:ml-28">
                             <input
                                 type="file"
                                 name="avatar"

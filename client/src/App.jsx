@@ -26,6 +26,8 @@ const ResetPassword = lazy(() => import("./components/pages/ResetPassword"));
 const Cart = lazy(() => import("./components/pages/Cart"));
 const ShippingInfo = lazy(() => import("./components/pages/ShippingInfo"));
 const ConfirmOrder = lazy(() => import("./components/pages/ConfirmOrder"));
+const Payment = lazy(() => import("./components/pages/Payment"));
+const OrderSuccess = lazy(() => import("./components/pages/OrderSuccess"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -64,10 +66,15 @@ function App() {
               <Route path="/signup" element={<SignUp />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/password/reset/:token" element={<ResetPassword />} />
+              <Route
+                path="/password/reset/:token"
+                element={<ResetPassword />}
+              />
               <Route path="/cart" element={<Cart />} />
               <Route path="/shipping" element={<ShippingInfo />} />
               <Route path="/order/confirm" element={<ConfirmOrder />} />
+              <Route path="/order/payment" element={<Payment />} />
+              <Route path="/order/success" element={<OrderSuccess />} />
               <Route path="*" element={<PageNotFound />} />
             </Routes>
           </Suspense>

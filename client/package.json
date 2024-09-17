@@ -12,6 +12,8 @@
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
     "@reduxjs/toolkit": "^2.2.7",
+    "@stripe/react-stripe-js": "^2.8.0",
+    "@stripe/stripe-js": "^4.4.0",
     "axios": "^1.7.2",
     "country-state-city": "^3.2.1",
     "lodash": "^4.17.21",

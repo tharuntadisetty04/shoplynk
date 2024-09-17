@@ -25,13 +25,14 @@ const ShippingInfo = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { shippingInfo } = useSelector((state) => state.cart);
-    const { isAuthenticated } = useSelector((state) => state.user);
+    const { isAuthenticated, user } = useSelector((state) => state.user);
     const [selectedCountry, setSelectedCountry] = useState(
         shippingInfo?.country || ""
     );
 
     const [selectedState, setSelectedState] = useState(shippingInfo?.state || "");
     const [currentStep, setCurrentStep] = useState(1);
+    const [subStep, setSubStep] = useState(1);
 
     const {
         register,
@@ -56,6 +57,16 @@ const ShippingInfo = () => {
             navigate("/login?redirect=shipping");
         }
     }, []);
+
+    const nextHandler = (e) => {
+        e.preventDefault();
+        setSubStep(subStep + 1);
+    };
+
+    const backHandler = (e) => {
+        e.preventDefault();
+        setSubStep(subStep - 1);
+    };
 
     const onSubmit = (data) => {
         dispatch(saveShippingInfo(data));
@@ -91,171 +102,229 @@ const ShippingInfo = () => {
             <ProgressBar currentStep={currentStep} />
 
             <h2 className="text-2xl md:text-3xl font-bold text-center">
-                Shipping <span className="text-blue-600">Info</span>
+                {subStep === 2 ? (
+                    <p>
+                        Shipping <span className="text-blue-600">Info</span>
+                    </p>
+                ) : (
+                    <p>
+                        Customer <span className="text-blue-600">Details</span>
+                    </p>
+                )}
             </h2>
 
-            <div className="flex flex-col lg:flex-row items-center justify-start lg:gap-24 md:gap-4 w-full">
+            <div className="flex flex-col lg:flex-row items-center justify-center lg:gap-28 lg:-ml-12 md:gap-4 w-full">
                 <img
                     src={shippingImg}
                     alt="Shipping Image"
-                    width={window.innerWidth < 800 ? 600 : 800}
+                    width={window.innerWidth < 800 ? 600 : 700}
                     className="mix-blend-multiply md:block hidden"
                 />
 
                 <form
-                    className="bg-slate-200 rounded shadow-sm px-6 py-4 my-4 space-y-2"
+                    className="bg-slate-200 rounded shadow-sm px-6 py-4 my-4 space-y-2 w-96"
                     onSubmit={handleSubmit(onSubmit)}
                 >
-                    <div className="flex gap-1 flex-col">
-                        <label htmlFor="address" className="font-medium text-lg">
-                            Address
-                        </label>
+                    {subStep === 1 && (
+                        <>
+                            <div className="flex gap-1 flex-col pb-2">
+                                <label htmlFor="phoneNo" className="font-medium text-lg">
+                                    Full Name
+                                </label>
 
-                        <input
-                            type="text"
-                            id="address"
-                            className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
-                            placeholder="Enter address"
-                            {...register("address")}
-                        />
+                                <input
+                                    type="text"
+                                    value={user?.username || ""}
+                                    className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
+                                    placeholder="Enter Phone Number"
+                                    readOnly
+                                />
+                            </div>
 
-                        {errors.address && (
-                            <span className="text-red-500 text-sm font-medium pl-1">
-                                {errors.address.message}
-                            </span>
-                        )}
-                    </div>
+                            <div className="flex gap-1 flex-col pb-2">
+                                <label htmlFor="phoneNo" className="font-medium text-lg">
+                                    Email
+                                </label>
 
-                    <div className="flex gap-1 flex-col">
-                        <label htmlFor="city" className="font-medium text-lg">
-                            City
-                        </label>
+                                <input
+                                    type="text"
+                                    value={user?.email || ""}
+                                    className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
+                                    placeholder="Enter Phone Number"
+                                    readOnly
+                                />
+                            </div>
 
-                        <input
-                            type="text"
-                            id="city"
-                            className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
-                            placeholder="Enter City"
-                            {...register("city")}
-                        />
+                            <div className="flex gap-1 flex-col pb-2">
+                                <label htmlFor="phoneNo" className="font-medium text-lg">
+                                    Phone Number
+                                </label>
 
-                        {errors.city && (
-                            <span className="text-red-500 text-sm font-medium pl-1">
-                                {errors.city.message}
-                            </span>
-                        )}
-                    </div>
+                                <input
+                                    type="text"
+                                    id="phoneNo"
+                                    className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
+                                    placeholder="Enter Phone Number"
+                                    {...register("phoneNo")}
+                                />
 
-                    <div className="flex gap-1 flex-col">
-                        <label htmlFor="country" className="font-medium text-lg">
-                            Country
-                        </label>
-
-                        <select
-                            name="country"
-                            id="country"
-                            value={selectedCountry}
-                            {...register("country")}
-                            onChange={(e) => setSelectedCountry(e.target.value)}
-                            className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
-                        >
-                            <option value="" disabled>
-                                -- Select Country --
-                            </option>
-                            {Country &&
-                                Country.getAllCountries().map((ct) => (
-                                    <option key={ct.isoCode} value={ct.isoCode}>
-                                        {ct.name}
-                                    </option>
-                                ))}
-                        </select>
-
-                        {errors.country && (
-                            <span className="text-red-500 text-sm font-medium pl-1">
-                                {errors.country.message}
-                            </span>
-                        )}
-                    </div>
-
-                    {selectedCountry && (
-                        <div className="flex gap-1 flex-col">
-                            <label htmlFor="state" className="font-medium text-lg">
-                                State
-                            </label>
-
-                            <select
-                                name="state"
-                                id="state"
-                                value={selectedState}
-                                {...register("state")}
-                                onChange={(e) => setSelectedState(e.target.value)}
-                                className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
-                            >
-                                <option value="">Select State</option>
-                                {State &&
-                                    State.getStatesOfCountry(selectedCountry).map((st) => (
-                                        <option key={st.isoCode} value={st.isoCode}>
-                                            {st.name}
-                                        </option>
-                                    ))}
-                            </select>
-
-                            {errors.state && (
-                                <span className="text-red-500 text-sm font-medium pl-1">
-                                    {errors.state.message}
-                                </span>
-                            )}
-                        </div>
+                                {errors.phoneNo && (
+                                    <span className="text-red-500 text-sm font-medium pl-1">
+                                        {errors.phoneNo.message}
+                                    </span>
+                                )}
+                            </div>
+                            <div className="flex w-full justify-end">
+                                <button
+                                    className="bg-blue-600 hover:bg-blue-700 font-medium text-neutral-100 py-2 px-4 rounded duration-200 items-end"
+                                    onClick={nextHandler}
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        </>
                     )}
 
-                    <div className="flex gap-1 flex-col">
-                        <label htmlFor="pincode" className="font-medium text-lg">
-                            Pincode
-                        </label>
+                    {subStep === 2 && (
+                        <>
+                            <div className="flex gap-1 flex-col">
+                                <label htmlFor="address" className="font-medium text-lg">
+                                    Address
+                                </label>
 
-                        <input
-                            type="text"
-                            id="pincode"
-                            className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
-                            placeholder="Enter Pincode"
-                            {...register("pincode")}
-                        />
+                                <input
+                                    type="text"
+                                    id="address"
+                                    className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
+                                    placeholder="Enter address"
+                                    {...register("address")}
+                                />
 
-                        {errors.pincode && (
-                            <span className="text-red-500 text-sm font-medium pl-1">
-                                {errors.pincode.message}
-                            </span>
-                        )}
-                    </div>
+                                {errors.address && (
+                                    <span className="text-red-500 text-sm font-medium pl-1">
+                                        {errors.address.message}
+                                    </span>
+                                )}
+                            </div>
 
-                    <div className="flex gap-1 flex-col pb-2">
-                        <label htmlFor="phoneNo" className="font-medium text-lg">
-                            Phone Number
-                        </label>
+                            <div className="flex gap-1 flex-col">
+                                <label htmlFor="city" className="font-medium text-lg">
+                                    City
+                                </label>
 
-                        <input
-                            type="text"
-                            id="phoneNo"
-                            className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
-                            placeholder="Enter Phone Number"
-                            {...register("phoneNo")}
-                        />
+                                <input
+                                    type="text"
+                                    id="city"
+                                    className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
+                                    placeholder="Enter City"
+                                    {...register("city")}
+                                />
 
-                        {errors.phoneNo && (
-                            <span className="text-red-500 text-sm font-medium pl-1">
-                                {errors.phoneNo.message}
-                            </span>
-                        )}
-                    </div>
+                                {errors.city && (
+                                    <span className="text-red-500 text-sm font-medium pl-1">
+                                        {errors.city.message}
+                                    </span>
+                                )}
+                            </div>
 
-                    <div className="flex w-full justify-end">
-                        <button
-                            type="submit"
-                            className="bg-blue-600 hover:bg-blue-700 font-medium text-neutral-100 py-2 px-4 rounded duration-200 items-end"
-                        >
-                            Continue
-                        </button>
-                    </div>
+                            <div className="flex gap-1 flex-col">
+                                <label htmlFor="country" className="font-medium text-lg">
+                                    Country
+                                </label>
+
+                                <select
+                                    name="country"
+                                    id="country"
+                                    value={selectedCountry}
+                                    {...register("country")}
+                                    onChange={(e) => setSelectedCountry(e.target.value)}
+                                    className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
+                                >
+                                    <option value="" disabled>
+                                        -- Select Country --
+                                    </option>
+                                    {Country &&
+                                        Country.getAllCountries().map((ct) => (
+                                            <option key={ct.isoCode} value={ct.isoCode}>
+                                                {ct.name}
+                                            </option>
+                                        ))}
+                                </select>
+
+                                {errors.country && (
+                                    <span className="text-red-500 text-sm font-medium pl-1">
+                                        {errors.country.message}
+                                    </span>
+                                )}
+                            </div>
+
+                            {selectedCountry && (
+                                <div className="flex gap-1 flex-col">
+                                    <label htmlFor="state" className="font-medium text-lg">
+                                        State
+                                    </label>
+
+                                    <select
+                                        name="state"
+                                        id="state"
+                                        value={selectedState}
+                                        {...register("state")}
+                                        onChange={(e) => setSelectedState(e.target.value)}
+                                        className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
+                                    >
+                                        <option value="">Select State</option>
+                                        {State &&
+                                            State.getStatesOfCountry(selectedCountry).map((st) => (
+                                                <option key={st.isoCode} value={st.isoCode}>
+                                                    {st.name}
+                                                </option>
+                                            ))}
+                                    </select>
+
+                                    {errors.state && (
+                                        <span className="text-red-500 text-sm font-medium pl-1">
+                                            {errors.state.message}
+                                        </span>
+                                    )}
+                                </div>
+                            )}
+
+                            <div className="flex gap-1 flex-col">
+                                <label htmlFor="pincode" className="font-medium text-lg">
+                                    Pincode
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="pincode"
+                                    className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
+                                    placeholder="Enter Pincode"
+                                    {...register("pincode")}
+                                />
+
+                                {errors.pincode && (
+                                    <span className="text-red-500 text-sm font-medium pl-1">
+                                        {errors.pincode.message}
+                                    </span>
+                                )}
+                            </div>
+
+                            <div className="flex w-full justify-between pt-2">
+                                <button
+                                    className="bg-gray-600 hover:bg-gray-700 font-medium text-neutral-100 py-2 px-4 rounded duration-200 items-end"
+                                    onClick={backHandler}
+                                >
+                                    Back
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="bg-blue-600 hover:bg-blue-700 font-medium text-neutral-100 py-2 px-4 rounded duration-200 items-end"
+                                >
+                                    Continue
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </form>
             </div>
         </div>
