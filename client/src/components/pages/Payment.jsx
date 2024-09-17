@@ -20,6 +20,7 @@ import {
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
 import { clearErrors, createNewOrder } from "../../redux/actions/orderAction";
+import PageLoader from "../layout/PageLoader";
 
 const paymentSchema = z.object({
     cardHolderName: z.string().min(1, "Please enter card holder name"),
@@ -137,7 +138,9 @@ const Payment = () => {
         [stripe, elements, paymentData, user, shippingInfo, navigate]
     );
 
-    return (
+    return loading ? (
+        <PageLoader />
+    ) : (
         <div className="payment-page w-full h-full lg:min-h-[60svh] md:min-h-[65svh] px-8 md:px-16">
             <TitleHelmet title={"Payment | ShopLynk"} />
 

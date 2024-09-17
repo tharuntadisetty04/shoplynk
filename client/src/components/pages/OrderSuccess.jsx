@@ -5,7 +5,7 @@ import TitleHelmet from "../utils/TitleHelmet";
 
 const OrderSuccess = () => {
     return (
-        <div className="flex items-center justify-center lg:-ml-14 gap-20 w-full h-full lg:min-h-[60svh] md:min-h-[65svh] px-8 md:px-16">
+        <div className="flex md:flex-row flex-col items-center justify-center lg:-ml-12 lg:gap-20 w-full h-full lg:min-h-[60svh] md:min-h-[65svh] px-8 md:px-16 md:pb-0 pb-4">
             <TitleHelmet title={"Order Complete | ShopLynk"} />
 
             <div>
@@ -17,7 +17,7 @@ const OrderSuccess = () => {
                 />
             </div>
 
-            <div className="flex flex-col items-center justify-center">
+            <div className="flex flex-col items-center justify-center text-center">
                 <div className="text-6xl text-blue-600">
                     <IoMdCheckmarkCircleOutline />
                 </div>

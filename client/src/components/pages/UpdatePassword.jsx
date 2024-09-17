@@ -102,11 +102,11 @@ const UpdatePassword = () => {
                 transition:Slide
             />
 
-            <div className="lg:-ml-44 lg:-mt-6 md:block hidden">
+            <div className="lg:-ml-44 md:block hidden">
                 <img
                     src={updatePasswordImg}
                     alt="Update Password Image"
-                    width={400}
+                    width={450}
                     className="mix-blend-multiply"
                 />
             </div>

@@ -96,13 +96,13 @@ const UpdateRole = () => {
             </div>
 
             <form
-                className="update-seller-form w-fit md:w-full lg:w-80 shadow-md rounded lg:-mt-4"
+                className="update-seller-form w-fit md:w-full lg:w-80 shadow-md rounded lg:-mt-2"
                 onSubmit={handleSubmit(onSubmit)}
             >
                 <div className="flex flex-col gap-4 border-2 border-slate-200 rounded p-4 bg-slate-200">
                     <div className="flex gap-1 flex-col">
                         <label htmlFor="username" className="font-medium text-lg pl-0.5">
-                            Full Name
+                            Business Name
                         </label>
                         <input
                             type="text"

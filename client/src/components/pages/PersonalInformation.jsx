@@ -37,7 +37,7 @@ const PersonalInformation = ({ setActiveTab }) => {
             <ItemLoader />
         </div>
     ) : (
-        <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-20 lg:pl-10">
+        <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-20 lg:pl-14">
             <ToastContainer
                 position="top-right"
                 autoClose={2500}

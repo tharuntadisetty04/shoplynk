@@ -101,7 +101,7 @@ const UpdateProfile = () => {
             <ItemLoader />
         </div>
     ) : (
-        <div className="flex flex-col lg:flex-row items-center lg:items-start gap-6 lg:gap-20 lg:pl-10">
+        <div className="flex flex-col lg:flex-row items-center lg:items-start gap-6 lg:gap-20 lg:pl-14">
             <TitleHelmet title={"Update Profile | ShopLynk"} />
 
             <ToastContainer
