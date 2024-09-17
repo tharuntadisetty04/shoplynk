@@ -29,7 +29,7 @@ import {
     UPDATE_ROLE_REQUEST,
     UPDATE_ROLE_SUCCESS,
 } from "../constants/UserConstant";
-import { extractErrorMessage } from "../../components/utils/ExtractErrorMessage";
+import { extractErrorMessage } from "../ExtractErrorMessage";
 
 // Login user
 const loginUser = (email, password) => async (dispatch) => {

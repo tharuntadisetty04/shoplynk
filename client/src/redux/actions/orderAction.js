@@ -5,7 +5,7 @@ import {
     CREATE_ORDER_REQUEST,
     CREATE_ORDER_SUCCESS,
 } from "../constants/orderConstant";
-import { extractErrorMessage } from "../../components/utils/ExtractErrorMessage";
+import { extractErrorMessage } from "../ExtractErrorMessage";
 
 // create new order
 const createNewOrder = (order) => async (dispatch, getState) => {

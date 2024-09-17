@@ -14,7 +14,7 @@ import {
     BEST_PRODUCTS_SUCCESS,
     BEST_PRODUCTS_FAIL,
 } from "../constants/ProductConstant";
-import { extractErrorMessage } from "../../components/utils/ExtractErrorMessage";
+import { extractErrorMessage } from "../ExtractErrorMessage";
 
 // Get all products
 const getAllProducts =
