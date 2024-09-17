@@ -28,6 +28,7 @@ const ShippingInfo = lazy(() => import("./components/pages/ShippingInfo"));
 const ConfirmOrder = lazy(() => import("./components/pages/ConfirmOrder"));
 const Payment = lazy(() => import("./components/pages/Payment"));
 const OrderSuccess = lazy(() => import("./components/pages/OrderSuccess"));
+const Orders = lazy(() => import("./components/pages/Orders"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -71,6 +72,7 @@ function App() {
                 element={<ResetPassword />}
               />
               <Route path="/cart" element={<Cart />} />
+              <Route path="/orders" element={<Orders />} />
               <Route path="/shipping" element={<ShippingInfo />} />
               <Route path="/order/confirm" element={<ConfirmOrder />} />
               <Route path="/order/payment" element={<Payment />} />

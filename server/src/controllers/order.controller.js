@@ -70,7 +70,7 @@ const getSingleOrder = asyncHandler(async (req, res) => {
     const sellerId = req.user._id;
     const order = await Order.findById(req.params?.id)
         .populate("user", "username email")
-        .populate("orderItems.productDetails", "name owner")
+        .populate("orderItems.product", "name owner")
         .lean();
 
     if (!order) {
@@ -78,7 +78,7 @@ const getSingleOrder = asyncHandler(async (req, res) => {
     }
 
     const sellerItems = order.orderItems.filter((item) =>
-        item.productDetails.owner.equals(sellerId)
+        item.product.owner.equals(sellerId)
     );
 
     if (!sellerItems) {
@@ -100,7 +100,7 @@ const getSellerOrders = asyncHandler(async (req, res) => {
     const sellerId = req.user._id;
 
     const orders = await Order.find({})
-        .populate("orderItems.productDetails", "name owner")
+        .populate("orderItems.product", "name owner")
         .populate("user", "username email");
 
     if (!orders) {
@@ -110,7 +110,7 @@ const getSellerOrders = asyncHandler(async (req, res) => {
     const filteredOrders = orders
         .map((order) => {
             const sellerItems = order.orderItems.filter((item) =>
-                item.productDetails.owner.equals(sellerId)
+                item.product.owner.equals(sellerId)
             );
 
             if (sellerItems.length > 0) {
@@ -161,7 +161,7 @@ const updateOrder = asyncHandler(async (req, res) => {
     }
 
     const order = await Order.findById(id)
-        .populate("orderItems.productDetails", "name owner")
+        .populate("orderItems.product", "name owner")
         .populate("user", "username email");
 
     if (!order) {
@@ -169,7 +169,7 @@ const updateOrder = asyncHandler(async (req, res) => {
     }
 
     const sellerItems = order.orderItems.filter((item) =>
-        item.productDetails.owner.equals(sellerId)
+        item.product.owner.equals(sellerId)
     );
 
     if (!sellerItems) {
@@ -189,12 +189,12 @@ const updateOrder = asyncHandler(async (req, res) => {
 
     if (status === "Shipped") {
         for (const item of sellerItems) {
-            await updateStock(item.productDetails._id, item.quantity);
+            await updateStock(item.product._id, item.quantity);
         }
     }
 
     order.orderItems = order.orderItems.map((item) => {
-        if (item.productDetails.owner.equals(sellerId)) {
+        if (item.product.owner.equals(sellerId)) {
             return {
                 ...item.toObject(),
                 orderStatus: status,
@@ -205,7 +205,7 @@ const updateOrder = asyncHandler(async (req, res) => {
 
     if (status === "Delivered") {
         order.orderItems = order.orderItems.map((item) => {
-            if (item.productDetails.owner.equals(sellerId)) {
+            if (item.product.owner.equals(sellerId)) {
                 return {
                     ...item.toObject(),
                     orderStatus: status,
@@ -219,12 +219,12 @@ const updateOrder = asyncHandler(async (req, res) => {
     await order.save({ validateBeforeSave: false });
 
     const sellerOrderItems = order.orderItems
-        .filter((item) => item.productDetails.owner.equals(sellerId))
+        .filter((item) => item.product.owner.equals(sellerId))
         .map((item) => ({
             ...item.toObject(),
-            productDetails: {
-                name: item.productDetails.name,
-                owner: item.productDetails.owner,
+            product: {
+                name: item.product.name,
+                owner: item.product.owner,
             },
         }));
 
@@ -260,7 +260,7 @@ const deleteOrder = asyncHandler(async (req, res) => {
     const orderId = req.params.id;
 
     const order = await Order.findById(orderId).populate(
-        "orderItems.productDetails",
+        "orderItems.product",
         "owner"
     );
 
@@ -269,7 +269,7 @@ const deleteOrder = asyncHandler(async (req, res) => {
     }
 
     const remainingItems = order.orderItems.filter(
-        (item) => !item.productDetails.owner.equals(sellerId)
+        (item) => !item.product.owner.equals(sellerId)
     );
 
     if (!remainingItems) {
@@ -280,6 +280,7 @@ const deleteOrder = asyncHandler(async (req, res) => {
     } else {
         order.orderItems = remainingItems;
         await order.save();
+
         res.status(200).json(
             new ApiResponse(
                 200,

@@ -273,6 +273,7 @@ const ProductDetails = () => {
                             <button
                                 className="duration-200 border-2 border-blue-600 bg-white text-blue-700 hover:bg-blue-600 hover:text-neutral-100 hover:border-blue-600 px-3 rounded font-semibold text-xl"
                                 onClick={decreaseQuantity}
+                                disabled={product?.stock < 1}
                             >
                                 -
                             </button>
@@ -281,10 +282,12 @@ const ProductDetails = () => {
                                 value={quantity}
                                 className="w-12 h-[1.92rem] text-center mx-2 border-2 border-blue-600 rounded outline-none bg-white"
                                 onChange={handleQuantityChange}
+                                disabled={product?.stock < 1}
                             />
                             <button
                                 className="duration-200 border-2 border-blue-600 bg-white text-blue-700 hover:bg-blue-600 hover:text-neutral-100 hover:border-blue-600 px-3 rounded font-semibold text-xl"
                                 onClick={increaseQuantity}
+                                disabled={product?.stock < 1}
                             >
                                 +
                             </button>
@@ -292,6 +295,7 @@ const ProductDetails = () => {
                             <button
                                 className="rounded bg-blue-600 p-2 font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 lg:text-sm md:text-xs text-sm ml-4"
                                 onClick={addToCart}
+                                disabled={product?.stock < 1}
                             >
                                 Add to Cart
                             </button>
