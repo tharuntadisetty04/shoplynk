@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 const ProductCard = ({ product }) => {
     const dispatch = useDispatch();
     const { cartItems } = useSelector((state) => state.cart);
+    const discountPercent = localStorage.getItem("discountPercent");
 
     const options = {
         edit: false,
@@ -60,13 +61,14 @@ const ProductCard = ({ product }) => {
                     <div>
                         <span className="font-bold text-xl pr-1">₹{product.price}</span>
                         <span className="line-through text-sm text-gray-500 font-medium">
-                            ₹{product.price + product.price * 0.25}
+                            ₹{product.price + (product.price * discountPercent) / 100}
                         </span>
                     </div>
 
                     <button
                         className="rounded-md bg-blue-600 p-2 font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 text-sm"
                         onClick={addToCart}
+                        disabled={product?.stock < 1}
                     >
                         Add to Cart
                     </button>

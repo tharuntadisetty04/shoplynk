@@ -132,7 +132,7 @@ const Home = () => {
                 </div>
 
                 <div className="right-section mt-4 md:mt-0 w-fit">
-                    <img src={heroImg} alt="Shopping image" width={700} loading="lazy" />
+                    <img src={heroImg} alt="Shopping image" width={700} />
                 </div>
             </div>
 

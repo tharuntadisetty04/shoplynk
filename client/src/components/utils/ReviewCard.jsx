@@ -6,8 +6,14 @@ const ReviewModal = ({ review, isOpen, onClose }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60">
-            <div className="bg-neutral-100 p-6 rounded-lg max-w-md md:w-full w-[21rem]">
+        <div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            onClick={onClose}
+        >
+            <div
+                className="bg-neutral-100 p-6 rounded-lg max-w-md md:w-full w-[21rem]"
+                onClick={(e) => e.stopPropagation()}
+            >
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-semibold">Review by {review.name}</h2>
                     <button onClick={onClose} className="text-red-500 text-lg font-bold">

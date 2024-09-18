@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 
 const OrdersGrid = ({ orders }) => {
     const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
@@ -36,7 +35,7 @@ const OrdersGrid = ({ orders }) => {
     };
 
     return (
-        <div className="p-4">
+        <div className="lg:p-4 py-4">
             <div className="overflow-x-auto">
                 <table className="min-w-full table-auto bg-white rounded-lg shadow-md">
                     <thead className="bg-slate-200">
@@ -52,7 +51,7 @@ const OrdersGrid = ({ orders }) => {
                                         : " ▼"
                                     : null}
                             </th>
-                            <th className="p-2 text-left pl-4 sm:pl-28">Items</th>
+                            <th className="p-2 text-left pl-4 lg:pl-28">Items</th>
                             <th
                                 className="p-2 text-left cursor-pointer"
                                 onClick={() => requestSort("totalPrice")}
@@ -65,7 +64,7 @@ const OrdersGrid = ({ orders }) => {
                                     : null}
                             </th>
                             <th className="p-2 text-left">Order Status</th>
-                            <th className="p-2 text-left pl-4 sm:pl-28">Shipping Address</th>
+                            <th className="p-2 text-left pl-4 lg:pl-28">Shipping Address</th>
                             <th className="p-2 text-left">Payment Status</th>
                         </tr>
                     </thead>
@@ -73,14 +72,7 @@ const OrdersGrid = ({ orders }) => {
                     <tbody>
                         {currentItems.map((order) => (
                             <tr key={order._id} className="hover:bg-gray-50">
-                                <td className="p-2 border-b">
-                                    <Link
-                                        to={`/orders/${order._id}`}
-                                        className="w-fulls hover:text-blue-600"
-                                    >
-                                        {order._id}
-                                    </Link>
-                                </td>
+                                <td className="p-2 border-b">{order._id}</td>
                                 <td className="p-2 border-b">
                                     {order.orderItems.slice(0, 3).map((item, idx) => (
                                         <ul key={idx} className="list-disc">
@@ -117,12 +109,14 @@ const OrdersGrid = ({ orders }) => {
                                     {order.shippingInfo.country} - {order.shippingInfo.pincode}
                                 </td>
                                 <td
-                                    className={`p-2 border-b pl-5 ${order.paymentInfo.status === "succeeded"
+                                    className={`p-2 border-b lg:pl-7 ${order.paymentInfo.status === "succeeded"
                                         ? "text-green-600"
                                         : "text-red-600"
                                         }`}
                                 >
-                                    {order.paymentInfo.status}
+                                    {order.paymentInfo?.status === "succeeded"
+                                        ? "Success"
+                                        : "Failed"}
                                 </td>
                             </tr>
                         ))}

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
     clearErrors,
@@ -20,6 +19,7 @@ import TitleHelmet from "../utils/TitleHelmet";
 import SimilarProducts from "../utils/SimilarProducts";
 import ProductNotFound from "./ProductNotFound";
 import { addItemsToCart } from "../../redux/actions/cartAction";
+import CreateReviewModal from "../utils/CreateReviewModal";
 
 Modal.setAppElement("#root");
 
@@ -35,6 +35,8 @@ const ProductDetails = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     const [selectedReview, setSelectedReview] = useState(null);
+    const [isCreateReviewModalOpen, setIsCreateReviewModalOpen] = useState(false);
+    const discountPercent = localStorage.getItem("discountPercent")
 
     useEffect(() => {
         if (error) {
@@ -138,6 +140,14 @@ const ProductDetails = () => {
         activeColor: "blue",
         edit: false,
         isHalf: true,
+    };
+
+    const openCreateReviewModal = () => {
+        setIsCreateReviewModalOpen(true);
+    };
+
+    const closeCreateReviewModal = () => {
+        setIsCreateReviewModalOpen(false);
     };
 
     return (
@@ -261,7 +271,7 @@ const ProductDetails = () => {
                             <div className="text-2xl font-semibold md:mt-2 mt-1">
                                 <span>₹{product.price}</span>
                                 <span className="line-through text-lg text-gray-500 font-medium pl-2">
-                                    ₹{product.price + product.price * 0.25}
+                                    ₹{product.price + product.price * discountPercent / 100}
                                 </span>
                             </div>
                             <p className="text-gray-700 mt-1 text-base">
@@ -337,13 +347,18 @@ const ProductDetails = () => {
                         Product <span className="text-blue-600">Reviews</span>
                     </h2>
 
-                    <Link
-                        to="/submit-review"
+                    <button
                         className="rounded-md bg-blue-600 md:px-3.5 px-2 md:py-2 py-1.5 text-sm font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 text-center"
+                        onClick={openCreateReviewModal}
                     >
                         Submit Review
-                    </Link>
+                    </button>
                 </div>
+
+                <CreateReviewModal
+                    isOpen={isCreateReviewModalOpen}
+                    onModalClose={closeCreateReviewModal}
+                />
 
                 {loading ? (
                     <ItemLoader />

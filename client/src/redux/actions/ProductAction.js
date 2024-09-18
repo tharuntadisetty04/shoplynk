@@ -13,6 +13,9 @@ import {
     BEST_PRODUCTS_REQUEST,
     BEST_PRODUCTS_SUCCESS,
     BEST_PRODUCTS_FAIL,
+    NEW_REVIEW_REQUEST,
+    NEW_REVIEW_SUCCESS,
+    NEW_REVIEW_FAIL,
 } from "../constants/ProductConstant";
 import { extractErrorMessage } from "../ExtractErrorMessage";
 
@@ -114,6 +117,37 @@ const getSimilarProducts = (id) => async (dispatch) => {
     }
 };
 
+// create new review
+const createProductReview = (review) => async (dispatch) => {
+    try {
+        dispatch({ type: NEW_REVIEW_REQUEST });
+
+        const config = {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+        };
+
+        const { data } = await axios.post(
+            "http://localhost:8000/api/v1/products/review",
+            review,
+            config
+        );
+
+        dispatch({
+            type: NEW_REVIEW_SUCCESS,
+            payload: data,
+        });
+    } catch (error) {
+        const errorMessage =
+            extractErrorMessage(error.response.data) || error.message;
+
+        dispatch({
+            type: NEW_REVIEW_FAIL,
+            payload: errorMessage,
+        });
+    }
+};
+
 // Clear errors
 const clearErrors = () => async (dispatch) => {
     dispatch({ type: CLEAR_ERRORS });
@@ -125,4 +159,5 @@ export {
     getSimilarProducts,
     getBestSellingProducts,
     clearErrors,
+    createProductReview,
 };
