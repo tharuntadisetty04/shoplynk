@@ -29,7 +29,7 @@ const newOrderReducer = (state = intialOrderState, action) => {
             };
         case CREATE_ORDER_FAIL:
             return {
-                loading: true,
+                loading: false,
                 error: action.payload,
             };
         case CLEAR_ERRORS:
@@ -62,7 +62,7 @@ const currentUserOrdersReducer = (state = intialUserOrdersState, action) => {
             };
         case MY_ORDERS_FAIL:
             return {
-                loading: true,
+                loading: false,
                 error: action.payload,
             };
         case CLEAR_ERRORS:
