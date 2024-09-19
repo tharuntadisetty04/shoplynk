@@ -62,7 +62,9 @@ const About = () => {
     };
 
     return loading ? (
-        <ItemLoader />
+        <div className="py-4">
+            <ItemLoader />
+        </div>
     ) : (
         <div className="about w-full h-full">
             <TitleHelmet title={"About | ShopLynk"} />

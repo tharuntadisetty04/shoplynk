@@ -97,7 +97,7 @@ const UpdateProfile = () => {
     }, [dispatch, error, isUpdated, navigate]);
 
     return loading ? (
-        <div className="bg-transparent -mt-[3.4rem] -ml-28">
+        <div className="bg-transparent lg:-mt-[3.4rem] lg:-ml-28 -ml-2">
             <ItemLoader />
         </div>
     ) : (

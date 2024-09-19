@@ -29,6 +29,7 @@ const ConfirmOrder = lazy(() => import("./components/pages/ConfirmOrder"));
 const Payment = lazy(() => import("./components/pages/Payment"));
 const OrderSuccess = lazy(() => import("./components/pages/OrderSuccess"));
 const Orders = lazy(() => import("./components/pages/Orders"));
+const AdminDashboard = lazy(() => import("./components/pages/AdminDashboard"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -77,6 +78,7 @@ function App() {
               <Route path="/order/confirm" element={<ConfirmOrder />} />
               <Route path="/order/payment" element={<Payment />} />
               <Route path="/order/success" element={<OrderSuccess />} />
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="*" element={<PageNotFound />} />
             </Routes>
           </Suspense>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ReactStars from "react-rating-stars-component";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,7 +8,23 @@ import { toast } from "react-toastify";
 const ProductCard = ({ product }) => {
     const dispatch = useDispatch();
     const { cartItems } = useSelector((state) => state.cart);
-    const discountPercent = localStorage.getItem("discountPercent");
+    const [discountPercent, setDiscountPercent] = useState(0);
+
+    const getRandomDiscount = (min, max) => {
+        const random = Math.random() * (max - min) + min;
+        return parseInt(random);
+    };
+
+    useEffect(() => {
+        const savedDiscount = sessionStorage.getItem("discountPercent");
+        if (savedDiscount) {
+            setDiscountPercent(parseInt(savedDiscount));
+        } else {
+            const newDiscount = getRandomDiscount(5, 30);
+            sessionStorage.setItem("discountPercent", newDiscount);
+            setDiscountPercent(newDiscount);
+        }
+    }, []);
 
     const options = {
         edit: false,
@@ -61,7 +77,7 @@ const ProductCard = ({ product }) => {
                     <div>
                         <span className="font-bold text-xl pr-1">₹{product.price}</span>
                         <span className="line-through text-sm text-gray-500 font-medium">
-                            ₹{product.price + (product.price * discountPercent) / 100}
+                            ₹{product.price + product.price * (discountPercent / 100)}
                         </span>
                     </div>
 

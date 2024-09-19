@@ -36,7 +36,7 @@ const ProductDetails = () => {
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     const [selectedReview, setSelectedReview] = useState(null);
     const [isCreateReviewModalOpen, setIsCreateReviewModalOpen] = useState(false);
-    const discountPercent = localStorage.getItem("discountPercent")
+    const discountPercent = sessionStorage.getItem("discountPercent")
 
     useEffect(() => {
         if (error) {

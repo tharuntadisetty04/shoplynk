@@ -19,7 +19,7 @@ const ConfirmOrder = () => {
     );
     const tax = totalPrice * 0.18;
     const deliveryCharges = totalPrice < 5000 ? 0 : 200;
-    const discountPercent = localStorage.getItem("discountPercent");
+    const discountPercent = sessionStorage.getItem("discountPercent");
     const discount = (totalPrice * discountPercent) / 100;
     const totalAmount = totalPrice + tax + deliveryCharges - discount;
     const address = `${shippingInfo.address}, ${shippingInfo.city}, ${shippingInfo.state}, ${shippingInfo.pincode}, ${shippingInfo.country}`;

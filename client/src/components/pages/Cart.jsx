@@ -24,12 +24,12 @@ const Cart = () => {
     };
 
     useEffect(() => {
-        const savedDiscount = localStorage.getItem("discountPercent");
+        const savedDiscount = sessionStorage.getItem("discountPercent");
         if (savedDiscount) {
             setDiscountPercent(parseInt(savedDiscount));
         } else {
             const newDiscount = getRandomDiscount(5, 30);
-            localStorage.setItem("discountPercent", newDiscount);
+            sessionStorage.setItem("discountPercent", newDiscount);
             setDiscountPercent(newDiscount);
         }
     }, []);
