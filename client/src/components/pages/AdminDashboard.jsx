@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import TitleHelmet from "../utils/TitleHelmet";
-import { Slide, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MdDashboard, MdLibraryAdd, MdRateReview } from "react-icons/md";
 import { AiFillProduct } from "react-icons/ai";
@@ -10,6 +10,29 @@ import SellerProducts from "./SellerProducts";
 import CreateProduct from "./CreateProduct";
 import SellerOrders from "./SellerOrders";
 import SellerProductReviews from "./SellerProductReviews";
+import { Doughnut, Line } from "react-chartjs-2";
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+    ArcElement,
+} from "chart.js";
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+    ArcElement
+);
 
 const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState("dashboard");
@@ -38,7 +61,7 @@ const AdminDashboard = () => {
             />
 
             <div className="flex flex-col lg:flex-row items-start justify-between gap-6">
-                <div className="sidebar lg:w-1/5 w-full rounded shadow sticky top-1 bg-white p-4">
+                <div className="sidebar lg:w-1/5 w-full rounded shadow lg:sticky lg:top-1 bg-white p-4">
                     <h2 className="text-xl md:text-2xl font-bold text-start">
                         Admin <span className="text-blue-600">Dashboard</span>
                     </h2>
@@ -124,7 +147,7 @@ const AdminDashboard = () => {
                     </div>
                 </div>
 
-                <div className="content lg:w-4/5 w-full h-full border">
+                <div className="content lg:w-4/5 w-full h-full">
                     {activeTab === "dashboard" && <Dashboard />}
                     {activeTab === "your-products" && <SellerProducts />}
                     {activeTab === "create-product" && <CreateProduct />}
@@ -139,5 +162,78 @@ const AdminDashboard = () => {
 export default AdminDashboard;
 
 const Dashboard = () => {
-    return <div className="flex">dashboard content</div>;
+    const revenueData = {
+        labels: ["Initial Amount", "Amount Earned"],
+        datasets: [
+            {
+                label: "TOTAL AMOUNT (INR) ",
+                backgroundColor: ["#2563eb"],
+                borderColor: ["#e2e8f0"],
+                hoverBackgroundColor: ["#1d4ed8"],
+                data: [0, 1000],
+            },
+        ],
+    };
+
+    const stockData = {
+        labels: ["Out of Stock", "In Stock"],
+        datasets: [
+            {
+                backgroundColor: ["#F05D5E", "#75DDDD"],
+                hoverBackgroundColor: ["#EF4444", "#00A6B4"],
+                data: [6, 61],
+            },
+        ],
+    };
+
+    const ordersData = {
+        labels: ["Pending", "Completed"],
+        datasets: [
+            {
+                backgroundColor: ["#F05D5E", "#75DDDD"],
+                hoverBackgroundColor: ["#EF4444", "#00A6B4"],
+                data: [6, 61],
+            },
+        ],
+    };
+
+    return (
+        <div className="dashboard">
+            <h2 className="text-center text-xl md:text-2xl lg:font-bold font-semibold p-4 bg-blue-600 text-neutral-100 rounded lg:mx-4">
+                Tharun's store details
+            </h2>
+
+            <div className="flex items-center justify-center lg:gap-32 md:gap-8 gap-4 my-4">
+                <div className="md:h-40 md:w-40 w-24 h-24 rounded-full bg-yellow-300 p-4 md:m-4 flex flex-col items-center justify-center shadow-md">
+                    <span className="font-medium text-lg">Products</span>
+                    <span className="font-medium text-lg">23</span>
+                </div>
+
+                <div className="md:h-40 md:w-40 w-24 h-24 rounded-full bg-teal-500 p-4 md:m-4 flex flex-col items-center justify-center shadow-md">
+                    <span className="font-medium text-lg text-neutral-100">Orders</span>
+                    <span className="font-medium text-lg text-neutral-100">23</span>
+                </div>
+
+                <div className="md:h-40 md:w-40 w-24 h-24 rounded-full bg-rose-400 p-4 md:m-4 flex flex-col items-center justify-center shadow-md">
+                    <span className="font-medium text-lg text-neutral-100">Revenue</span>
+                    <span className="font-medium text-lg text-neutral-100">23</span>
+                </div>
+            </div>
+
+            <div className="line-chart bg-white rounded-md shadow md:p-4 md:m-4 lg:mx-32 md:mx-8">
+                <Line data={revenueData} />
+            </div>
+
+            <div className="flex lg:mx-32 md:mx-10 flex-col md:flex-row items-center lg:justify-between justify-center lg:gap-10 md:gap-8 gap-4 my-6">
+                <div className="doughnut-chart bg-white md:p-6 p-2 rounded-md shadow lg:w-1/2 md:w-[49%]">
+                    <h2 className="text-center font-semibold text-xl">Stock</h2>
+                    <Doughnut data={stockData} />
+                </div>
+                <div className="doughnut-chart bg-white md:p-6 p-2 rounded-md shadow lg:w-1/2 md:w-[49%]">
+                    <h2 className="text-center font-semibold text-xl">Orders</h2>
+                    <Doughnut data={ordersData} />
+                </div>
+            </div>
+        </div>
+    );
 };

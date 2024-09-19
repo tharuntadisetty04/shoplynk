@@ -16,6 +16,9 @@ import {
     NEW_REVIEW_SUCCESS,
     NEW_REVIEW_FAIL,
     NEW_REVIEW_RESET,
+    SELLER_PRODUCT_REQUEST,
+    SELLER_PRODUCT_FAIL,
+    SELLER_PRODUCT_SUCCESS,
 } from "../constants/ProductConstant";
 
 // all products reducer
@@ -29,6 +32,7 @@ const initialProductsState = {
 const productsReducer = (state = initialProductsState, action) => {
     switch (action.type) {
         case ALL_PRODUCT_REQUEST:
+        case SELLER_PRODUCT_REQUEST:
             return {
                 ...state,
                 loading: true,
@@ -42,6 +46,14 @@ const productsReducer = (state = initialProductsState, action) => {
                 filteredProductsCount: action.payload.data.filteredProductsCount,
                 error: null,
             };
+        case SELLER_PRODUCT_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                products: action.payload.data.products,
+                productsCount: action.payload.data.productsCount,
+            };
+        case SELLER_PRODUCT_FAIL:
         case ALL_PRODUCT_FAIL:
             return {
                 ...state,

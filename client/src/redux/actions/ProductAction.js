@@ -16,6 +16,9 @@ import {
     NEW_REVIEW_REQUEST,
     NEW_REVIEW_SUCCESS,
     NEW_REVIEW_FAIL,
+    SELLER_PRODUCT_REQUEST,
+    SELLER_PRODUCT_SUCCESS,
+    SELLER_PRODUCT_FAIL,
 } from "../constants/ProductConstant";
 import { extractErrorMessage } from "../ExtractErrorMessage";
 
@@ -148,6 +151,32 @@ const createProductReview = (review) => async (dispatch) => {
     }
 };
 
+// Get all seller products
+const getSellerProducts = () => async (dispatch) => {
+    try {
+        dispatch({ type: SELLER_PRODUCT_REQUEST });
+
+        const { data } = await axios.get(
+            "http://localhost:8000/api/v1/products/admin/all",
+            {
+                withCredentials: true,
+            }
+        );
+
+        dispatch({
+            type: SELLER_PRODUCT_SUCCESS,
+            payload: data,
+        });
+    } catch (error) {
+        const errorMessage = extractErrorMessage(error.response.data);
+
+        dispatch({
+            type: SELLER_PRODUCT_FAIL,
+            payload: errorMessage,
+        });
+    }
+};
+
 // Clear errors
 const clearErrors = () => async (dispatch) => {
     dispatch({ type: CLEAR_ERRORS });
@@ -160,4 +189,5 @@ export {
     getBestSellingProducts,
     clearErrors,
     createProductReview,
+    getSellerProducts,
 };
