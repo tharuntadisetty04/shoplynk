@@ -89,7 +89,7 @@ const UpdateProfile = () => {
             dispatch(loadUser());
 
             navigate("/", {
-                state: { toastMessage: "Profile updated successfully!" },
+                state: { toastMessage: "Profile updated successfully!", type: "success" },
             });
 
             dispatch({ type: UPDATE_PROFILE_RESET });

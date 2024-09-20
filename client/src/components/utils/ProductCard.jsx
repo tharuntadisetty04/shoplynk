@@ -17,6 +17,7 @@ const ProductCard = ({ product }) => {
 
     useEffect(() => {
         const savedDiscount = sessionStorage.getItem("discountPercent");
+
         if (savedDiscount) {
             setDiscountPercent(parseInt(savedDiscount));
         } else {
@@ -82,7 +83,10 @@ const ProductCard = ({ product }) => {
                     </div>
 
                     <button
-                        className="rounded-md bg-blue-600 p-2 font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 text-sm"
+                        className={`rounded-md p-2 font-semibold text-neutral-100 shadow-sm duration-200 text-sm ${product?.stock < 1
+                            ? "bg-gray-400 hover:bg-gray-500 cursor-not-allowed"
+                            : "bg-blue-600 hover:bg-blue-500"
+                            } focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600`}
                         onClick={addToCart}
                         disabled={product?.stock < 1}
                     >

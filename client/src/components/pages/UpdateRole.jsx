@@ -59,10 +59,10 @@ const UpdateRole = () => {
 
         if (isAuthenticated && user.role === "seller") {
             navigate("/", {
-                state: { toastMessage: "User role updated successfully!" },
+                state: { toastMessage: "User role updated successfully!", type: "success" },
             });
         }
-    }, [dispatch, error, navigate, user]);
+    }, [dispatch, error, navigate, user, isAuthenticated]);
 
     return loading ? (
         <div className="bg-transparent lg:-mt-[3.4rem] lg:-ml-28 -ml-2">

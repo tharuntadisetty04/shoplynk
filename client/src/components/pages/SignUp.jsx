@@ -113,7 +113,7 @@ const SignUp = () => {
 
         if (isAuthenticated) {
             navigate("/", {
-                state: { toastMessage: "User registered successfully!" },
+                state: { toastMessage: "User registered successfully!", type: "success" },
             });
         }
     }, [dispatch, error, isAuthenticated, navigate]);

@@ -71,7 +71,7 @@ const ResetPassword = () => {
         if (success) {
             dispatch(loadUser());
             navigate("/", {
-                state: { toastMessage: "Password has been reset and logged in successfully!" },
+                state: { toastMessage: "Password has been reset and logged in successfully!", type: "success" },
             });
         }
     }, [dispatch, error, success, navigate]);

@@ -57,7 +57,7 @@ const Login = () => {
 
         if (isAuthenticated) {
             navigate(redirect, {
-                state: { toastMessage: "User logged in successfully!" },
+                state: { toastMessage: "User logged in successfully!", type: "success" },
             });
         }
     }, [dispatch, error, isAuthenticated, navigate, redirect]);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TitleHelmet from "../utils/TitleHelmet";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -22,6 +22,10 @@ import {
     Legend,
     ArcElement,
 } from "chart.js";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import PageLoader from "../layout/PageLoader";
+import { getSellerProducts } from "../../redux/actions/ProductAction";
 
 ChartJS.register(
     CategoryScale,
@@ -35,6 +39,24 @@ ChartJS.register(
 );
 
 const AdminDashboard = () => {
+    const navigate = useNavigate();
+    const { user, isAuthenticated, loading } = useSelector((state) => state.user);
+    const [authChecked, setAuthChecked] = useState(false);
+
+    useEffect(() => {
+        if (!loading) {
+            if (!isAuthenticated) {
+                navigate("/login");
+            } else if (user?.role === "buyer") {
+                navigate("/", {
+                    state: { toastMessage: "Access Denied", type: "warning" },
+                });
+            } else {
+                setAuthChecked(true);
+            }
+        }
+    }, [isAuthenticated, loading, navigate, user]);
+
     const [activeTab, setActiveTab] = useState("dashboard");
     const [isProductsOpen, setIsProductsOpen] = useState(false);
 
@@ -42,8 +64,10 @@ const AdminDashboard = () => {
         setIsProductsOpen(!isProductsOpen);
     };
 
-    return (
-        <div className="admin-dashboard h-full w-full px-8 md:px-16 min-h-[65svh]">
+    return !authChecked ? (
+        <PageLoader />
+    ) : (
+        <div className="admin-dashboard h-full w-full px-8 md:px-16 lg:min-h-[60svh] md:min-h-[65svh]">
             <TitleHelmet title={"Admin Dashboard | ShopLynk"} />
 
             <ToastContainer
@@ -148,8 +172,12 @@ const AdminDashboard = () => {
                 </div>
 
                 <div className="content lg:w-4/5 w-full h-full">
-                    {activeTab === "dashboard" && <Dashboard />}
-                    {activeTab === "your-products" && <SellerProducts />}
+                    {activeTab === "dashboard" && (
+                        <Dashboard setActiveTab={setActiveTab} />
+                    )}
+                    {activeTab === "your-products" && (
+                        <SellerProducts setActiveTab={setActiveTab} />
+                    )}
                     {activeTab === "create-product" && <CreateProduct />}
                     {activeTab === "orders" && <SellerOrders />}
                     {activeTab === "reviews" && <SellerProductReviews />}
@@ -161,7 +189,21 @@ const AdminDashboard = () => {
 
 export default AdminDashboard;
 
-const Dashboard = () => {
+const Dashboard = ({ setActiveTab }) => {
+    const dispatch = useDispatch();
+    const { products } = useSelector((state) => state.products);
+
+    useEffect(() => {
+        dispatch(getSellerProducts());
+    }, [dispatch]);
+
+    let outOfStock = 0;
+    products?.forEach((product) => {
+        if (product.stock === 0) {
+            outOfStock += 1;
+        }
+    });
+
     const revenueData = {
         labels: ["Initial Amount", "Amount Earned"],
         datasets: [
@@ -181,7 +223,7 @@ const Dashboard = () => {
             {
                 backgroundColor: ["#F05D5E", "#75DDDD"],
                 hoverBackgroundColor: ["#EF4444", "#00A6B4"],
-                data: [6, 61],
+                data: [outOfStock, products.length - outOfStock],
             },
         ],
     };
@@ -204,12 +246,18 @@ const Dashboard = () => {
             </h2>
 
             <div className="flex items-center justify-center lg:gap-32 md:gap-8 gap-4 my-4">
-                <div className="md:h-40 md:w-40 w-24 h-24 rounded-full bg-yellow-300 p-4 md:m-4 flex flex-col items-center justify-center shadow-md">
+                <div
+                    className="md:h-40 md:w-40 w-24 h-24 rounded-full bg-yellow-300 p-4 md:m-4 flex flex-col items-center justify-center shadow-md cursor-pointer"
+                    onClick={() => setActiveTab("your-products")}
+                >
                     <span className="font-medium text-lg">Products</span>
-                    <span className="font-medium text-lg">23</span>
+                    <span className="font-medium text-lg">{products?.length}</span>
                 </div>
 
-                <div className="md:h-40 md:w-40 w-24 h-24 rounded-full bg-teal-500 p-4 md:m-4 flex flex-col items-center justify-center shadow-md">
+                <div
+                    className="md:h-40 md:w-40 w-24 h-24 rounded-full bg-teal-500 p-4 md:m-4 flex flex-col items-center justify-center shadow-md cursor-pointer"
+                    onClick={() => setActiveTab("orders")}
+                >
                     <span className="font-medium text-lg text-neutral-100">Orders</span>
                     <span className="font-medium text-lg text-neutral-100">23</span>
                 </div>

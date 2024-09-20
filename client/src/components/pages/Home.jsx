@@ -30,7 +30,7 @@ const Home = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
-    const { toastMessage } = location.state || "";
+    const { toastMessage, type } = location.state || "";
 
     const { loading, error, products } = useSelector((state) => state.products);
     const {
@@ -58,18 +58,22 @@ const Home = () => {
     }, [dispatch, error, bestProductsError]);
 
     useEffect(() => {
-        if (toastMessage) {
+        if (toastMessage && type === "success") {
             toast.success(toastMessage);
         }
-    }, [toastMessage]);
+
+        if (toastMessage && type === "warning") {
+            toast.warning(toastMessage);
+        }
+    }, [toastMessage, type]);
 
     const handleCategory = (category) => {
         dispatch(getAllProducts("", 1, category, 0, [1, 100000]));
         navigate("/products", {
             state: {
                 category,
-                activeCategory: category
-            }
+                activeCategory: category,
+            },
         });
     };
 

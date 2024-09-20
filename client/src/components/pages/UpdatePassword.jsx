@@ -73,7 +73,7 @@ const UpdatePassword = () => {
         if (isUpdated) {
             dispatch(loadUser());
             navigate("/", {
-                state: { toastMessage: "Password updated successfully!" },
+                state: { toastMessage: "Password updated successfully!", type: "success" },
             });
 
             dispatch({ type: UPDATE_PASSWORD_RESET });

@@ -40,12 +40,12 @@ const Profile = () => {
                 setAuthCheckLoading(false);
             }
         }
-    }, [loading, error, isAuthenticated, navigate]);
+    }, [loading, error, isAuthenticated, navigate, dispatch]);
 
     const logout = () => {
         dispatch(logoutUser());
         navigate("/", {
-            state: { toastMessage: "User logged out successfully!" },
+            state: { toastMessage: "User logged out successfully!", type: "success" },
         });
     };
 
