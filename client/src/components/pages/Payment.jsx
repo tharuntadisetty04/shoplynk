@@ -32,7 +32,7 @@ const Payment = () => {
     const paymentBtn = useRef(null);
 
     const orderInfo = JSON.parse(sessionStorage.getItem("orderInfo") || "{}");
-    const { isAuthenticated, user } = useSelector((state) => state.user);
+    const { user } = useSelector((state) => state.user);
     const { shippingInfo, cartItems } = useSelector((state) => state.cart);
     const { error, loading } = useSelector((state) => state.newOrder);
 
@@ -53,11 +53,7 @@ const Payment = () => {
                 onClose: () => dispatch(clearErrors()),
             });
         }
-
-        if (!isAuthenticated) {
-            navigate("/login?redirect=order/payment");
-        }
-    }, [isAuthenticated, navigate, error, dispatch]);
+    }, [error, dispatch]);
 
     const paymentData = {
         amount: Math.round(orderInfo.totalAmount * 100),
@@ -236,6 +232,9 @@ const Payment = () => {
 };
 
 const PaymentWrapper = () => {
+    const navigate = useNavigate();
+    const { isAuthenticated } = useSelector((state) => state.user);
+
     const [stripeApiKey, setStripeApiKey] = useState("");
 
     const getStripeApiKey = useCallback(async () => {
@@ -253,8 +252,14 @@ const PaymentWrapper = () => {
     }, []);
 
     useEffect(() => {
+        if (isAuthenticated) {
+            navigate("/order/payment");
+        } else {
+            navigate("/login?redirect=order/payment");
+        }
+
         getStripeApiKey();
-    }, [getStripeApiKey]);
+    }, [getStripeApiKey, isAuthenticated, navigate]);
 
     return (
         stripeApiKey && (

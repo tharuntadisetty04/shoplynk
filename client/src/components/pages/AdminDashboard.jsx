@@ -191,7 +191,7 @@ export default AdminDashboard;
 
 const Dashboard = ({ setActiveTab }) => {
     const dispatch = useDispatch();
-    const { products } = useSelector((state) => state.products);
+    const { products, productsCount } = useSelector((state) => state.products);
 
     useEffect(() => {
         dispatch(getSellerProducts());
@@ -223,7 +223,7 @@ const Dashboard = ({ setActiveTab }) => {
             {
                 backgroundColor: ["#F05D5E", "#75DDDD"],
                 hoverBackgroundColor: ["#EF4444", "#00A6B4"],
-                data: [outOfStock, products.length - outOfStock],
+                data: [outOfStock, products?.length - outOfStock],
             },
         ],
     };
@@ -239,49 +239,69 @@ const Dashboard = ({ setActiveTab }) => {
         ],
     };
 
-    return (
-        <div className="dashboard">
-            <h2 className="text-center text-xl md:text-2xl lg:font-bold font-semibold p-4 bg-blue-600 text-neutral-100 rounded lg:mx-4">
-                Tharun's store details
-            </h2>
+    return productsCount !== 0 ? (
+        <>
+            <div className="dashboard">
+                <h2 className="text-center text-xl md:text-2xl lg:font-bold font-semibold p-4 bg-blue-600 text-neutral-100 rounded lg:mx-4">
+                    Tharun's store details
+                </h2>
 
-            <div className="flex items-center justify-center lg:gap-32 md:gap-8 gap-4 my-4">
-                <div
-                    className="md:h-40 md:w-40 w-24 h-24 rounded-full bg-yellow-300 p-4 md:m-4 flex flex-col items-center justify-center shadow-md cursor-pointer"
-                    onClick={() => setActiveTab("your-products")}
-                >
-                    <span className="font-medium text-lg">Products</span>
-                    <span className="font-medium text-lg">{products?.length}</span>
+                <div className="flex items-center justify-center lg:gap-32 md:gap-8 gap-4 my-4">
+                    <div
+                        className="md:h-40 md:w-40 w-24 h-24 rounded-full bg-yellow-300 p-4 md:m-4 flex flex-col items-center justify-center shadow-md cursor-pointer"
+                        onClick={() => setActiveTab("your-products")}
+                    >
+                        <span className="font-medium text-lg">Products</span>
+                        <span className="font-medium text-lg">{products?.length}</span>
+                    </div>
+
+                    <div
+                        className="md:h-40 md:w-40 w-24 h-24 rounded-full bg-teal-500 p-4 md:m-4 flex flex-col items-center justify-center shadow-md cursor-pointer"
+                        onClick={() => setActiveTab("orders")}
+                    >
+                        <span className="font-medium text-lg text-neutral-100">Orders</span>
+                        <span className="font-medium text-lg text-neutral-100">23</span>
+                    </div>
+
+                    <div className="md:h-40 md:w-40 w-24 h-24 rounded-full bg-rose-400 p-4 md:m-4 flex flex-col items-center justify-center shadow-md">
+                        <span className="font-medium text-lg text-neutral-100">
+                            Revenue
+                        </span>
+                        <span className="font-medium text-lg text-neutral-100">23</span>
+                    </div>
                 </div>
 
-                <div
-                    className="md:h-40 md:w-40 w-24 h-24 rounded-full bg-teal-500 p-4 md:m-4 flex flex-col items-center justify-center shadow-md cursor-pointer"
-                    onClick={() => setActiveTab("orders")}
-                >
-                    <span className="font-medium text-lg text-neutral-100">Orders</span>
-                    <span className="font-medium text-lg text-neutral-100">23</span>
+                <div className="line-chart bg-white rounded-md shadow md:p-4 md:m-4 lg:mx-32 md:mx-8">
+                    <Line data={revenueData} />
                 </div>
 
-                <div className="md:h-40 md:w-40 w-24 h-24 rounded-full bg-rose-400 p-4 md:m-4 flex flex-col items-center justify-center shadow-md">
-                    <span className="font-medium text-lg text-neutral-100">Revenue</span>
-                    <span className="font-medium text-lg text-neutral-100">23</span>
+                <div className="flex lg:mx-32 md:mx-10 flex-col md:flex-row items-center lg:justify-between justify-center lg:gap-10 md:gap-8 gap-4 my-6">
+                    <div className="doughnut-chart bg-white md:p-6 p-2 rounded-md shadow lg:w-1/2 md:w-[49%]">
+                        <h2 className="text-center font-semibold text-xl">Stock</h2>
+                        <Doughnut data={stockData} />
+                    </div>
+                    <div className="doughnut-chart bg-white md:p-6 p-2 rounded-md shadow lg:w-1/2 md:w-[49%]">
+                        <h2 className="text-center font-semibold text-xl">Orders</h2>
+                        <Doughnut data={ordersData} />
+                    </div>
                 </div>
             </div>
-
-            <div className="line-chart bg-white rounded-md shadow md:p-4 md:m-4 lg:mx-32 md:mx-8">
-                <Line data={revenueData} />
-            </div>
-
-            <div className="flex lg:mx-32 md:mx-10 flex-col md:flex-row items-center lg:justify-between justify-center lg:gap-10 md:gap-8 gap-4 my-6">
-                <div className="doughnut-chart bg-white md:p-6 p-2 rounded-md shadow lg:w-1/2 md:w-[49%]">
-                    <h2 className="text-center font-semibold text-xl">Stock</h2>
-                    <Doughnut data={stockData} />
-                </div>
-                <div className="doughnut-chart bg-white md:p-6 p-2 rounded-md shadow lg:w-1/2 md:w-[49%]">
-                    <h2 className="text-center font-semibold text-xl">Orders</h2>
-                    <Doughnut data={ordersData} />
-                </div>
-            </div>
+        </>
+    ) : (
+        <div className="flex flex-col items-center justify-center h-full lg:min-h-[50svh] md:min-h-[30svh] p-4 -mt-6 lg:mt-4">
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl mb-4 text-center">
+                No Products Available
+            </h1>
+            <p className="text-gray-600 mb-6 text-center">
+                It looks like you haven't added any products yet. Start by adding your
+                first product!
+            </p>
+            <button
+                className="px-5 py-2 bg-blue-600 text-white font-medium rounded hover:bg-blue-500 transition"
+                onClick={() => setActiveTab("create-product")}
+            >
+                Add Product
+            </button>
         </div>
     );
 };

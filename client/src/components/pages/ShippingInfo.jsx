@@ -56,7 +56,7 @@ const ShippingInfo = () => {
         } else {
             navigate("/login?redirect=shipping");
         }
-    }, []);
+    }, [isAuthenticated, navigate]);
 
     const nextHandler = (e) => {
         e.preventDefault();

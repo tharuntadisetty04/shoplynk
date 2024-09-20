@@ -13,9 +13,13 @@ const Orders = () => {
     const navigate = useNavigate();
 
     const { loading, error, orders } = useSelector((state) => state.myOrders);
-    const { user } = useSelector((state) => state.user);
+    const { user, isAuthenticated } = useSelector((state) => state.user);
 
     useEffect(() => {
+        if (!isAuthenticated) {
+            navigate("/login");
+        }
+
         dispatch(getCurrentUserOrders());
 
         if (error) {
@@ -23,7 +27,7 @@ const Orders = () => {
                 onClose: () => dispatch(clearErrors()),
             });
         }
-    }, [dispatch, error]);
+    }, [dispatch, error, isAuthenticated, navigate]);
 
     const handleShopNow = () => {
         navigate("/products");
@@ -49,7 +53,7 @@ const Orders = () => {
                 transition:Slide
             />
 
-            {orders.length === 0 ? (
+            {orders?.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full lg:min-h-[60svh] md:min-h-[65svh]">
                     <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 md:text-5xl mb-4">
                         No Orders Yet

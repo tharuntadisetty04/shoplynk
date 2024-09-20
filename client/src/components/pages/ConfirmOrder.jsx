@@ -43,7 +43,7 @@ const ConfirmOrder = () => {
         } else {
             navigate("/login?redirect=order/confirm");
         }
-    }, []);
+    }, [isAuthenticated, navigate]);
 
     const paymentHandler = () => {
         const data = {
