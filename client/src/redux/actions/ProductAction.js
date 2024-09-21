@@ -22,6 +22,9 @@ import {
     CREATE_PRODUCT_REQUEST,
     CREATE_PRODUCT_SUCCESS,
     CREATE_PRODUCT_FAIL,
+    DELETE_PRODUCT_REQUEST,
+    DELETE_PRODUCT_SUCCESS,
+    DELETE_PRODUCT_FAIL,
 } from "../constants/ProductConstant";
 import { extractErrorMessage } from "../ExtractErrorMessage";
 
@@ -195,7 +198,6 @@ const createNewProduct = (productData) => async (dispatch) => {
             productData,
             config
         );
-        console.log(data);
 
         dispatch({
             type: CREATE_PRODUCT_SUCCESS,
@@ -212,48 +214,30 @@ const createNewProduct = (productData) => async (dispatch) => {
     }
 };
 
-// const createNewProduct = (productData) => async (dispatch) => {
-//     try {
-//         dispatch({ type: CREATE_PRODUCT_REQUEST });
+// delete product
+const deleteProduct = (id) => async (dispatch) => {
+    try {
+        dispatch({ type: DELETE_PRODUCT_REQUEST });
 
-//         const formData = new FormData();
+        const { data } = await axios.delete(
+            `http://localhost:8000/api/v1/products/admin/${id}`,
+            { withCredentials: true }
+        );
 
-//         // Append other product data
-//         for (const key in productData) {
-//             formData.append(key, productData[key]);
-//         }
+        dispatch({
+            type: DELETE_PRODUCT_SUCCESS,
+            payload: data,
+        });
+    } catch (error) {
+        const errorMessage =
+            extractErrorMessage(error.response.data) || error.message;
 
-//         // Append multiple files
-//         for (let i = 0; i < productData.images.length; i++) {
-//             formData.append('images', productData.images[i]); // Assuming 'images' is the key for files in your backend
-//         }
-
-//         const config = {
-//             headers: { "Content-Type": "multipart/form-data" },
-//             withCredentials: true,
-//         };
-
-//         const { data } = await axios.post(
-//             "http://localhost:8000/api/v1/products/admin/new",
-//             formData,
-//             config
-//         );
-
-//         dispatch({
-//             type: CREATE_PRODUCT_SUCCESS,
-//             payload: data,
-//         });
-//     } catch (error) {
-//         const errorMessage =
-//             extractErrorMessage(error.response.data) || error.message;
-
-//         dispatch({
-//             type: CREATE_PRODUCT_FAIL,
-//             payload: errorMessage,
-//         });
-//     }
-// };
-
+        dispatch({
+            type: DELETE_PRODUCT_FAIL,
+            payload: errorMessage,
+        });
+    }
+};
 
 // Clear errors
 const clearErrors = () => async (dispatch) => {
@@ -269,4 +253,5 @@ export {
     createProductReview,
     getSellerProducts,
     createNewProduct,
+    deleteProduct
 };

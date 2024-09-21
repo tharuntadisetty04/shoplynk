@@ -44,9 +44,26 @@ const uploadProductImagesToCloudinary = async (localFilePaths) => {
         const uploadResults = await Promise.all(uploadPromises);
         return uploadResults;
     } catch (error) {
-        localFilePaths.forEach(filePath => fs.unlinkSync(filePath));
+        localFilePaths.forEach((filePath) => fs.unlinkSync(filePath));
+
         throw new ApiError(500, "Error uploading product images to Cloudinary");
     }
 };
 
-export { uploadToCloudinary, uploadProductImagesToCloudinary };
+const deleteImagesFromCloudinary = async (publicIds) => {
+    try {
+        const deletionPromises = publicIds.map((public_id) => {
+            return cloudinary.uploader.destroy(public_id);
+        });
+
+        const results = await Promise.all(deletionPromises);
+    } catch (error) {
+        throw new ApiError(500, "Failed to delete images from Cloudinary");
+    }
+};
+
+export {
+    uploadToCloudinary,
+    uploadProductImagesToCloudinary,
+    deleteImagesFromCloudinary,
+};

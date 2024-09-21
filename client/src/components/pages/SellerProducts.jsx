@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
     clearErrors,
+    deleteProduct,
     getSellerProducts,
 } from "../../redux/actions/ProductAction";
 import { toast, ToastContainer } from "react-toastify";
@@ -11,6 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 import ItemLoader from "../layout/ItemLoader";
 import { RiEdit2Line } from "react-icons/ri";
 import { MdDeleteOutline } from "react-icons/md";
+import { DELETE_PRODUCT_RESET } from "../../redux/constants/ProductConstant";
 
 const SellerProducts = ({ setActiveTab }) => {
     const dispatch = useDispatch();
@@ -20,6 +22,11 @@ const SellerProducts = ({ setActiveTab }) => {
         (state) => state.products
     );
     const { user, isAuthenticated } = useSelector((state) => state.user);
+    const {
+        isDeleted,
+        error: deleteError,
+        loading: deleteLoading,
+    } = useSelector((state) => state.deleteProduct);
 
     const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
     const [currentPage, setCurrentPage] = useState(1);
@@ -30,12 +37,23 @@ const SellerProducts = ({ setActiveTab }) => {
             toast.error(error, { onClose: () => dispatch(clearErrors()) });
         }
 
+        if (deleteError) {
+            toast.error(deleteError, { onClose: () => dispatch(clearErrors()) });
+        }
+
         if (!isAuthenticated) {
             navigate("/login");
         }
 
-        dispatch(getSellerProducts());
-    }, [dispatch, error, isAuthenticated, navigate]);
+        if (isDeleted) {
+            dispatch(getSellerProducts());
+            dispatch({ type: DELETE_PRODUCT_RESET });
+        }
+
+        if (isAuthenticated && !deleteError) {
+            dispatch(getSellerProducts());
+        }
+    }, [dispatch, error, deleteError, isAuthenticated, navigate, isDeleted]);
 
     const sortedProducts = useMemo(() => {
         if (sortConfig.key) {
@@ -68,6 +86,13 @@ const SellerProducts = ({ setActiveTab }) => {
     };
 
     const totalPages = Math.ceil(productsCount / itemsPerPage);
+
+    const deleteProductHandler = (id) => {
+        if (window.confirm("Are you sure you want to delete this product?")) {
+            dispatch(deleteProduct(id));
+            toast.success("Product deleted successfully!");
+        }
+    };
 
     return loading ? (
         <ItemLoader />
@@ -158,7 +183,11 @@ const SellerProducts = ({ setActiveTab }) => {
                                                 <RiEdit2Line />
                                             </button>
                                             <span>|</span>
-                                            <button className="text-red-600 hover:underline text-xl">
+                                            <button
+                                                className="text-red-600 hover:underline text-xl"
+                                                onClick={() => deleteProductHandler(product._id)}
+                                                disabled={deleteLoading}
+                                            >
                                                 <MdDeleteOutline />
                                             </button>
                                         </td>

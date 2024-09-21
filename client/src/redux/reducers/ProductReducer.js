@@ -23,6 +23,10 @@ import {
     CREATE_PRODUCT_SUCCESS,
     CREATE_PRODUCT_FAIL,
     CREATE_PRODUCT_RESET,
+    DELETE_PRODUCT_REQUEST,
+    DELETE_PRODUCT_SUCCESS,
+    DELETE_PRODUCT_FAIL,
+    DELETE_PRODUCT_RESET,
 } from "../constants/ProductConstant";
 
 // all products reducer
@@ -226,6 +230,47 @@ const createProductReducer = (state = initialCreateProductState, action) => {
     }
 };
 
+// delete product reducer
+const initialDeleteProductState = {
+    loading: false,
+    isDeleted: null,
+    error: null,
+};
+
+const deleteProductReducer = (state = initialDeleteProductState, action) => {
+    switch (action.type) {
+        case DELETE_PRODUCT_REQUEST:
+            return {
+                ...state,
+                loading: true,
+            };
+        case DELETE_PRODUCT_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                isDeleted: action.payload.success,
+            };
+        case DELETE_PRODUCT_FAIL:
+            return {
+                ...state,
+                loading: false,
+                error: action.payload,
+            };
+        case DELETE_PRODUCT_RESET:
+            return {
+                ...state,
+                isDeleted: false,
+            };
+        case CLEAR_ERRORS:
+            return {
+                ...state,
+                error: null,
+            };
+        default:
+            return state;
+    }
+};
+
 // create review reducer
 const intialReviewState = {
     loading: false,
@@ -273,4 +318,5 @@ export {
     bestProductsReducer,
     newReviewReducer,
     createProductReducer,
+    deleteProductReducer,
 };

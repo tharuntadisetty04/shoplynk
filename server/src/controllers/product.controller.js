@@ -5,6 +5,7 @@ import { ApiError } from "../utils/ApiError.js";
 import ProductSearch from "../utils/productSearch.js";
 import mongoose from "mongoose";
 import { uploadProductImagesToCloudinary } from "../utils/cloudinary.js";
+import { deleteImagesFromCloudinary } from "../utils/cloudinary.js";
 
 // Create Product
 const createProduct = asyncHandler(async (req, res) => {
@@ -283,6 +284,18 @@ const deleteProduct = asyncHandler(async (req, res, next) => {
     const productId = req.params?.id;
 
     try {
+        const productToDelete = await Product.findById(productId);
+
+        if (!productToDelete) {
+            throw new ApiError(404, "Product to be deleted not found");
+        }
+
+        const publicIds = productToDelete.images.map(
+            (image) => image.public_id
+        );
+
+        await deleteImagesFromCloudinary(publicIds);
+
         const deletedProduct = await Product.findByIdAndDelete(productId);
 
         if (!deletedProduct) {
@@ -293,7 +306,7 @@ const deleteProduct = asyncHandler(async (req, res, next) => {
             .status(200)
             .json(new ApiResponse(200, {}, "Product deleted successfully"));
     } catch (error) {
-        if (error.name == "CastError") {
+        if (error.name === "CastError") {
             next(new ApiError(400, `Invalid product ID: ${productId}`));
         } else {
             next(error);

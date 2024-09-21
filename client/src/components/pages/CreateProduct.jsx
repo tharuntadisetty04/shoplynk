@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,7 +7,11 @@ import "react-toastify/dist/ReactToastify.css";
 import TitleHelmet from "../utils/TitleHelmet";
 import { useDispatch, useSelector } from "react-redux";
 import createProductImg from "../../assets/create-product.jpg";
-import { createNewProduct } from "../../redux/actions/ProductAction";
+import {
+    clearErrors,
+    createNewProduct,
+} from "../../redux/actions/ProductAction";
+import { CREATE_PRODUCT_RESET } from "../../redux/constants/ProductConstant";
 
 const categories = [
     "fashion",
@@ -56,6 +60,19 @@ const CreateProduct = () => {
         resolver: zodResolver(createProductSchema),
     });
 
+    useEffect(() => {
+        if (error) {
+            toast.error(error, {
+                onClose: () => dispatch(clearErrors()),
+            });
+        }
+
+        if (success) {
+            toast.success("Product Created Successfully!");
+            dispatch({ type: CREATE_PRODUCT_RESET });
+        }
+    }, [error, success, dispatch]);
+
     const handleNext = async () => {
         const isValid = await trigger(["name", "price", "description"]);
         if (isValid) {
@@ -103,7 +120,7 @@ const CreateProduct = () => {
         }
 
         for (let i = 0; i < data.images.length; i++) {
-            formData.append('images', data.images[i]);
+            formData.append("images", data.images[i]);
         }
 
         dispatch(createNewProduct(formData));
@@ -326,7 +343,9 @@ const CreateProduct = () => {
 
                                 <button
                                     type="submit"
-                                    className="rounded bg-blue-600 px-3.5 py-2.5 font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200"
+                                    disabled={loading}
+                                    className={`rounded bg-blue-600 px-3.5 py-2.5 font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 ${loading ? "cursor-not-allowed" : "cursor-pointer"
+                                        }`}
                                 >
                                     Create
                                 </button>
