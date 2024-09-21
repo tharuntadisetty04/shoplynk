@@ -27,4 +27,26 @@ const uploadToCloudinary = async (localFilePath) => {
     }
 };
 
-export { uploadToCloudinary };
+const uploadProductImagesToCloudinary = async (localFilePaths) => {
+    try {
+        if (!localFilePaths || localFilePaths.length === 0) return null;
+
+        const uploadPromises = localFilePaths.map(async (filePath) => {
+            const response = await cloudinary.uploader.upload(filePath, {
+                resource_type: "auto",
+                folder: "shoplynk_products",
+            });
+
+            fs.unlinkSync(filePath);
+            return response;
+        });
+
+        const uploadResults = await Promise.all(uploadPromises);
+        return uploadResults;
+    } catch (error) {
+        localFilePaths.forEach(filePath => fs.unlinkSync(filePath));
+        throw new ApiError(500, "Error uploading product images to Cloudinary");
+    }
+};
+
+export { uploadToCloudinary, uploadProductImagesToCloudinary };

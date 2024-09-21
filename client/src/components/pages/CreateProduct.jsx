@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import TitleHelmet from "../utils/TitleHelmet";
 import { useDispatch, useSelector } from "react-redux";
 import createProductImg from "../../assets/create-product.jpg";
+import { createNewProduct } from "../../redux/actions/ProductAction";
 
 const categories = [
     "fashion",
@@ -68,29 +69,44 @@ const CreateProduct = () => {
     };
 
     const handleInputChange = (e) => {
-        const files = Array.from(e.target.files);
+        const { name, files } = e.target;
 
-        if (files.length > 0) {
+        if (name === "images" && files.length > 0) {
+            const fileList = Array.from(files);
+
+            const previews = [];
             setImagesPreview([]);
-        }
 
-        files.forEach((file) => {
-            const reader = new FileReader();
-            reader.onload = () => {
-                if (reader.readyState === 2) {
-                    setImagesPreview((old) => [...old, reader.result]);
-                    setValue("images", files);
-                }
-            };
-            reader.onerror = () => {
-                toast.error("There was an error reading the file.");
-            };
-            reader.readAsDataURL(file);
-        });
+            fileList.forEach((file) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    if (reader.readyState === 2) {
+                        previews.push(reader.result);
+                        setImagesPreview([...previews]);
+                    }
+                };
+                reader.onerror = () => {
+                    toast.error("There was an error reading the file.");
+                };
+                reader.readAsDataURL(file);
+            });
+
+            setValue("images", fileList);
+        }
     };
 
     const onSubmit = async (data) => {
-        console.log(data);
+        const formData = new FormData();
+
+        for (const key in data) {
+            formData.append(key, data[key]);
+        }
+
+        for (let i = 0; i < data.images.length; i++) {
+            formData.append('images', data.images[i]);
+        }
+
+        dispatch(createNewProduct(formData));
     };
 
     return (
@@ -121,17 +137,20 @@ const CreateProduct = () => {
             </div>
 
             <form
-                className="lg:w-[22rem] w-full p-4 rounded-md shadow-md bg-slate-200 lg:mt-2.5"
                 encType="multipart/form-data"
                 onSubmit={handleSubmit(onSubmit)}
+                className="lg:w-[22rem] w-full p-4 rounded-md shadow-md bg-slate-200 lg:mt-2.5"
             >
                 <div className="flex flex-col gap-4 w-full">
                     {step === 1 && (
                         <>
                             <div className="flex gap-1 flex-col">
-                                <label className="font-medium text-lg">Product Name</label>
+                                <label htmlFor="name" className="font-medium text-lg">
+                                    Product Name
+                                </label>
                                 <input
                                     type="text"
+                                    name="name"
                                     placeholder="Enter Product Name"
                                     className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                                     {...register("name")}
@@ -144,9 +163,12 @@ const CreateProduct = () => {
                             </div>
 
                             <div className="flex gap-1 flex-col">
-                                <label className="font-medium text-lg">Price</label>
+                                <label htmlFor="price" className="font-medium text-lg">
+                                    Price
+                                </label>
                                 <input
                                     type="text"
+                                    name="price"
                                     placeholder="Enter Price"
                                     className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                                     {...register("price", { valueAsNumber: true })}
@@ -159,9 +181,12 @@ const CreateProduct = () => {
                             </div>
 
                             <div className="flex gap-1 flex-col">
-                                <label className="font-medium text-lg">Description</label>
+                                <label htmlFor="description" className="font-medium text-lg">
+                                    Description
+                                </label>
                                 <textarea
                                     rows={2}
+                                    name="description"
                                     placeholder="Enter Product Description"
                                     className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600 resize-none overflow-y-auto"
                                     {...register("description")}
@@ -188,8 +213,11 @@ const CreateProduct = () => {
                     {step === 2 && (
                         <>
                             <div className="flex gap-1 flex-col">
-                                <label className="font-medium text-lg">Category</label>
+                                <label htmlFor="category" className="font-medium text-lg">
+                                    Category
+                                </label>
                                 <select
+                                    name="category"
                                     className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                                     {...register("category")}
                                 >
@@ -198,7 +226,13 @@ const CreateProduct = () => {
                                     </option>
                                     {categories.map((cat) => (
                                         <option key={cat} value={cat}>
-                                            {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                                            {cat === "home"
+                                                ? "Home & Kitchen"
+                                                : cat === "personalcare"
+                                                    ? "Personal Care"
+                                                    : cat === "sports"
+                                                        ? "Sports & Games"
+                                                        : cat.charAt(0).toUpperCase() + cat.slice(1)}
                                         </option>
                                     ))}
                                 </select>
@@ -210,9 +244,12 @@ const CreateProduct = () => {
                             </div>
 
                             <div className="flex gap-1 flex-col">
-                                <label className="font-medium text-lg">Stock</label>
+                                <label htmlFor="stock" className="font-medium text-lg">
+                                    Stock
+                                </label>
                                 <input
                                     type="text"
+                                    name="stock"
                                     placeholder="Enter Stock"
                                     className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                                     {...register("stock", { valueAsNumber: true })}
@@ -225,17 +262,16 @@ const CreateProduct = () => {
                             </div>
 
                             <div className="flex gap-1 flex-col">
-                                <label htmlFor="productImages" className="font-medium text-lg">
-                                    Image(s):
-                                </label>
-
                                 {window.innerWidth < 700 ? (
                                     <div className="mt-2">
-                                        <label className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer">
+                                        <label
+                                            htmlFor="images"
+                                            className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer"
+                                        >
                                             Choose File
                                             <input
                                                 type="file"
-                                                name="productImages"
+                                                name="images"
                                                 accept="image/*"
                                                 multiple
                                                 onChange={handleInputChange}
@@ -245,14 +281,19 @@ const CreateProduct = () => {
                                         <span className="ml-3">{imagesPreview.length} files</span>
                                     </div>
                                 ) : (
-                                    <input
-                                        type="file"
-                                        name="productImages"
-                                        accept="image/*"
-                                        multiple
-                                        onChange={handleInputChange}
-                                        className="mx-auto pl-6"
-                                    />
+                                    <>
+                                        <label htmlFor="images" className="font-medium text-lg">
+                                            Image(s):
+                                        </label>
+                                        <input
+                                            type="file"
+                                            name="images"
+                                            accept="image/*"
+                                            multiple
+                                            onChange={handleInputChange}
+                                            className="mx-auto pl-6"
+                                        />
+                                    </>
                                 )}
 
                                 {imagesPreview && (

@@ -4,58 +4,74 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import ProductSearch from "../utils/productSearch.js";
 import mongoose from "mongoose";
+import { uploadProductImagesToCloudinary } from "../utils/cloudinary.js";
 
-//create a product
+// Create Product
 const createProduct = asyncHandler(async (req, res) => {
-    const { name, description, price, images, category, stock } = req.body;
+    const { name, description, price, category, stock } = req.body;
 
-    if ([name, description, category].some((field) => field?.trim() === "")) {
-        throw new ApiError(400, "Required fields are empty");
-    }
-
-    if (!name || !description || !price || !images || !category) {
+    if (
+        [name, description, category].some(
+            (field) => !field || field?.trim() === ""
+        )
+    ) {
         throw new ApiError(400, "Please enter the required fields");
     }
 
-    if (typeof price !== "number" || price < 0) {
-        throw new ApiError(400, "Price must be a non-negative number");
-    }
-
     if (price.toString().length > 6) {
-        throw new ApiError(400, "Price cannot exceed 6 characters");
+        throw new ApiError(400, "Price cannot exceed 6 digits");
     }
 
-    if (stock.toString().length > 4) {
-        throw new ApiError(400, "Stock limit cannot exceed 4 characters");
+    if (stock && stock.toString().length > 4) {
+        throw new ApiError(400, "Stock cannot exceed 4 digits");
     }
 
-    if (
-        ![
-            "fashion",
-            "electronics",
-            "personalcare",
-            "home",
-            "sports",
-            "groceries",
-        ].includes(category)
-    ) {
+    const allowedCategories = [
+        "fashion",
+        "electronics",
+        "personalcare",
+        "home",
+        "sports",
+        "groceries",
+    ];
+    if (!allowedCategories.includes(category.toLowerCase())) {
         throw new ApiError(400, "Invalid category provided");
     }
 
-    const product = await Product.create({
-        name: name,
-        description: description,
-        price: price,
-        images: images,
+    let uploadedImages = [];
+    try {
+        if (req.files && req.files.length > 0) {
+            const imagePaths = req.files.map((file) => file.path);
+            uploadedImages = await uploadProductImagesToCloudinary(imagePaths);
+        } else {
+            throw new ApiError(400, "Product images are required");
+        }
+    } catch (error) {
+        throw new ApiError(
+            500,
+            error.message || "Failed to upload product images"
+        );
+    }
+
+    const newProduct = {
+        name,
+        description,
+        price,
+        images: uploadedImages.map((image) => ({
+            public_id: image.public_id,
+            url: image.secure_url,
+        })),
         category: category.toLowerCase(),
-        stock: stock,
-        owner: req.user._id,
-    });
+        stock: stock || 1,
+        owner: req?.user._id,
+    };
+
+    const product = await Product.create(newProduct);
 
     const isProductCreated = await Product.findById(product._id);
 
     if (!isProductCreated) {
-        throw new ApiError(500, "Product creation failed in Database");
+        throw new ApiError(500, "Product creation failed in the database");
     }
 
     return res

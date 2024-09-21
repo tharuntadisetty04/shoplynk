@@ -19,6 +19,10 @@ import {
     SELLER_PRODUCT_REQUEST,
     SELLER_PRODUCT_FAIL,
     SELLER_PRODUCT_SUCCESS,
+    CREATE_PRODUCT_REQUEST,
+    CREATE_PRODUCT_SUCCESS,
+    CREATE_PRODUCT_FAIL,
+    CREATE_PRODUCT_RESET,
 } from "../constants/ProductConstant";
 
 // all products reducer
@@ -181,6 +185,47 @@ const bestProductsReducer = (state = bestProductsState, action) => {
     }
 };
 
+// create product reducer
+const initialCreateProductState = {
+    loading: false,
+    product: {},
+    error: null,
+};
+
+const createProductReducer = (state = initialCreateProductState, action) => {
+    switch (action.type) {
+        case CREATE_PRODUCT_REQUEST:
+            return {
+                ...state,
+                loading: true,
+            };
+        case CREATE_PRODUCT_SUCCESS:
+            return {
+                loading: false,
+                product: action.payload.data,
+                success: action.payload.success,
+            };
+        case CREATE_PRODUCT_FAIL:
+            return {
+                ...state,
+                loading: false,
+                error: action.payload,
+            };
+        case CREATE_PRODUCT_RESET:
+            return {
+                ...state,
+                success: false,
+            };
+        case CLEAR_ERRORS:
+            return {
+                ...state,
+                error: null,
+            };
+        default:
+            return state;
+    }
+};
+
 // create review reducer
 const intialReviewState = {
     loading: false,
@@ -227,4 +272,5 @@ export {
     similarProductsReducer,
     bestProductsReducer,
     newReviewReducer,
+    createProductReducer,
 };

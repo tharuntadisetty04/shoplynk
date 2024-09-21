@@ -1,6 +1,7 @@
 import { combineReducers } from "@reduxjs/toolkit";
 import {
     bestProductsReducer,
+    createProductReducer,
     newReviewReducer,
     productDetailsReducer,
     productsReducer,
@@ -21,7 +22,8 @@ const rootReducer = combineReducers({
     cart: cartReducer,
     newOrder: newOrderReducer,
     myOrders: currentUserOrdersReducer,
-    newReview: newReviewReducer
+    newReview: newReviewReducer,
+    newProduct: createProductReducer,
 });
 
 export default rootReducer;

@@ -78,7 +78,7 @@ const ProductCard = ({ product }) => {
                     <div>
                         <span className="font-bold text-xl pr-1">₹{product.price}</span>
                         <span className="line-through text-sm text-gray-500 font-medium">
-                            ₹{product.price + product.price * (discountPercent / 100)}
+                            ₹{product.price + Math.floor(product.price * (discountPercent / 100))}
                         </span>
                     </div>
 

@@ -86,7 +86,6 @@ const ProductDetails = () => {
             toast.warning("Quantity cannot be less than 1!");
             setQuantity(1);
         } else if (parsedValue > product.stock) {
-            toast.warning(`Stock limit exceeded. Max: ${product.stock}`);
             setQuantity(product.stock);
         } else {
             setQuantity(parsedValue);
@@ -271,7 +270,7 @@ const ProductDetails = () => {
                             <div className="text-2xl font-semibold md:mt-2 mt-1">
                                 <span>₹{product.price}</span>
                                 <span className="line-through text-lg text-gray-500 font-medium pl-2">
-                                    ₹{product.price + product.price * discountPercent / 100}
+                                    ₹{product.price + Math.floor(product.price * (discountPercent / 100))}
                                 </span>
                             </div>
                             <p className="text-gray-700 mt-1 text-base">

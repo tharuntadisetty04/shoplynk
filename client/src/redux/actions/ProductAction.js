@@ -19,6 +19,9 @@ import {
     SELLER_PRODUCT_REQUEST,
     SELLER_PRODUCT_SUCCESS,
     SELLER_PRODUCT_FAIL,
+    CREATE_PRODUCT_REQUEST,
+    CREATE_PRODUCT_SUCCESS,
+    CREATE_PRODUCT_FAIL,
 } from "../constants/ProductConstant";
 import { extractErrorMessage } from "../ExtractErrorMessage";
 
@@ -75,7 +78,7 @@ const getProductDetails = (id) => async (dispatch) => {
 };
 
 // Get best selling products
-const getBestSellingProducts = (id) => async (dispatch) => {
+const getBestSellingProducts = () => async (dispatch) => {
     try {
         dispatch({ type: BEST_PRODUCTS_REQUEST });
 
@@ -177,6 +180,81 @@ const getSellerProducts = () => async (dispatch) => {
     }
 };
 
+// create new product
+const createNewProduct = (productData) => async (dispatch) => {
+    try {
+        dispatch({ type: CREATE_PRODUCT_REQUEST });
+
+        const config = {
+            headers: { "Content-Type": "multipart/form-data" },
+            withCredentials: true,
+        };
+
+        const { data } = await axios.post(
+            "http://localhost:8000/api/v1/products/admin/new",
+            productData,
+            config
+        );
+        console.log(data);
+
+        dispatch({
+            type: CREATE_PRODUCT_SUCCESS,
+            payload: data,
+        });
+    } catch (error) {
+        const errorMessage =
+            extractErrorMessage(error.response.data) || error.message;
+
+        dispatch({
+            type: CREATE_PRODUCT_FAIL,
+            payload: errorMessage,
+        });
+    }
+};
+
+// const createNewProduct = (productData) => async (dispatch) => {
+//     try {
+//         dispatch({ type: CREATE_PRODUCT_REQUEST });
+
+//         const formData = new FormData();
+
+//         // Append other product data
+//         for (const key in productData) {
+//             formData.append(key, productData[key]);
+//         }
+
+//         // Append multiple files
+//         for (let i = 0; i < productData.images.length; i++) {
+//             formData.append('images', productData.images[i]); // Assuming 'images' is the key for files in your backend
+//         }
+
+//         const config = {
+//             headers: { "Content-Type": "multipart/form-data" },
+//             withCredentials: true,
+//         };
+
+//         const { data } = await axios.post(
+//             "http://localhost:8000/api/v1/products/admin/new",
+//             formData,
+//             config
+//         );
+
+//         dispatch({
+//             type: CREATE_PRODUCT_SUCCESS,
+//             payload: data,
+//         });
+//     } catch (error) {
+//         const errorMessage =
+//             extractErrorMessage(error.response.data) || error.message;
+
+//         dispatch({
+//             type: CREATE_PRODUCT_FAIL,
+//             payload: errorMessage,
+//         });
+//     }
+// };
+
+
 // Clear errors
 const clearErrors = () => async (dispatch) => {
     dispatch({ type: CLEAR_ERRORS });
@@ -190,4 +268,5 @@ export {
     clearErrors,
     createProductReview,
     getSellerProducts,
+    createNewProduct,
 };

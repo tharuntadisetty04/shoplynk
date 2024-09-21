@@ -17,11 +17,11 @@ const ConfirmOrder = () => {
         (total, item) => total + item.price * item.quantity,
         0
     );
-    const tax = totalPrice * 0.18;
+    const tax = Math.floor(totalPrice * 0.18);
     const deliveryCharges = totalPrice < 5000 ? 0 : 200;
     const discountPercent = sessionStorage.getItem("discountPercent");
-    const discount = (totalPrice * discountPercent) / 100;
-    const totalAmount = totalPrice + tax + deliveryCharges - discount;
+    const discount = Math.floor((totalPrice * discountPercent) / 100);
+    const totalAmount = Math.floor(totalPrice + tax + deliveryCharges - discount);
     const address = `${shippingInfo.address}, ${shippingInfo.city}, ${shippingInfo.state}, ${shippingInfo.pincode}, ${shippingInfo.country}`;
 
     useEffect(() => {

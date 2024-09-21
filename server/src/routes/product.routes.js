@@ -15,6 +15,7 @@ import {
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { verifySeller } from "../middlewares/verifySeller.middleware.js";
 import { verifyOwner } from "../middlewares/verifyOwner.middleware.js";
+import { upload } from "../middlewares/multer.middleware.js";
 
 const router = Router();
 
@@ -28,7 +29,9 @@ router.route("/review").post(verifyJWT, createProductReview);
 router.route("/reviews").get(getAllReviews).delete(verifyJWT, deleteReview);
 
 //admin routes
-router.route("/admin/new").post(verifyJWT, verifySeller, createProduct);
+router
+    .route("/admin/new")
+    .post(upload.array("images"), verifyJWT, verifySeller, createProduct);
 router.route("/admin/all").get(verifyJWT, verifySeller, getSellerProducts);
 router
     .route("/admin/:id")
