@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { lazy, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ReactStars from "react-rating-stars-component";
 import { useDispatch, useSelector } from "react-redux";
@@ -55,13 +55,14 @@ const ProductCard = ({ product }) => {
             to={`/products/${product._id}`}
             className="border-2 border-slate-200 rounded duration-300 hover:-translate-y-2 hover:shadow-md h-full"
         >
-            <div className="product-image aspect-square object-contain flex items-center justify-center">
+            <div className="product-image aspect-square flex items-center justify-center rounded w-[19rem] h-[19rem]">
                 <img
-                    src={product.images[0].url}
-                    alt={product.name}
-                    loading="lazy"
+                    src={product?.images[0].url}
+                    alt={product?.name}
+                    loading={lazy}
                     width={300}
-                    className="object-contain"
+                    height={300}
+                    className="w-full h-full object-cover rounded-t"
                 />
             </div>
 
@@ -78,7 +79,9 @@ const ProductCard = ({ product }) => {
                     <div>
                         <span className="font-bold text-xl pr-1">₹{product.price}</span>
                         <span className="line-through text-sm text-gray-500 font-medium">
-                            ₹{product.price + Math.floor(product.price * (discountPercent / 100))}
+                            ₹
+                            {product.price +
+                                Math.floor(product.price * (discountPercent / 100))}
                         </span>
                     </div>
 

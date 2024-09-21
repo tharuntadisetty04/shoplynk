@@ -14,7 +14,7 @@ import { RiEdit2Line } from "react-icons/ri";
 import { MdDeleteOutline } from "react-icons/md";
 import { DELETE_PRODUCT_RESET } from "../../redux/constants/ProductConstant";
 
-const SellerProducts = ({ setActiveTab }) => {
+const SellerProducts = ({ setActiveTab, updateProductHandler }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -26,7 +26,7 @@ const SellerProducts = ({ setActiveTab }) => {
         isDeleted,
         error: deleteError,
         loading: deleteLoading,
-    } = useSelector((state) => state.deleteProduct);
+    } = useSelector((state) => state.modifiedProduct);
 
     const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
     const [currentPage, setCurrentPage] = useState(1);
@@ -165,7 +165,8 @@ const SellerProducts = ({ setActiveTab }) => {
                                     <tr key={product._id} className="border-b hover:bg-gray-50">
                                         <td className="px-6 py-2">
                                             <Link
-                                                to={product._id}
+                                                // to={`/products/${product._id}`}
+                                                to={`/admin/dashboard/product/${product._id}`}
                                                 className="hover:text-blue-600 duration-200"
                                             >
                                                 {product._id}
@@ -179,13 +180,16 @@ const SellerProducts = ({ setActiveTab }) => {
                                         <td className="px-6 py-2">{product.stock}</td>
                                         <td className="px-6 py-2">{product.price}</td>
                                         <td className="px-6 py-2 flex items-center space-x-2">
-                                            <button className="text-blue-600 hover:underline text-xl">
+                                            <button
+                                                className="text-blue-600 hover:underline text-xl"
+                                                onClick={() => updateProductHandler(product?._id)}
+                                            >
                                                 <RiEdit2Line />
                                             </button>
                                             <span>|</span>
                                             <button
                                                 className="text-red-600 hover:underline text-xl"
-                                                onClick={() => deleteProductHandler(product._id)}
+                                                onClick={() => deleteProductHandler(product?._id)}
                                                 disabled={deleteLoading}
                                             >
                                                 <MdDeleteOutline />

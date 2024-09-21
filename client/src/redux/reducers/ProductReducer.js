@@ -27,6 +27,10 @@ import {
     DELETE_PRODUCT_SUCCESS,
     DELETE_PRODUCT_FAIL,
     DELETE_PRODUCT_RESET,
+    UPDATE_PRODUCT_REQUEST,
+    UPDATE_PRODUCT_FAIL,
+    UPDATE_PRODUCT_SUCCESS,
+    UPDATE_PRODUCT_RESET,
 } from "../constants/ProductConstant";
 
 // all products reducer
@@ -230,19 +234,30 @@ const createProductReducer = (state = initialCreateProductState, action) => {
     }
 };
 
-// delete product reducer
-const initialDeleteProductState = {
+// update or delete product reducer
+const initialModifiedProductState = {
     loading: false,
+    isUpdated: null,
     isDeleted: null,
     error: null,
 };
 
-const deleteProductReducer = (state = initialDeleteProductState, action) => {
+const productModificationReducer = (
+    state = initialModifiedProductState,
+    action
+) => {
     switch (action.type) {
+        case UPDATE_PRODUCT_REQUEST:
         case DELETE_PRODUCT_REQUEST:
             return {
                 ...state,
                 loading: true,
+            };
+        case UPDATE_PRODUCT_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                isUpdated: action.payload.success,
             };
         case DELETE_PRODUCT_SUCCESS:
             return {
@@ -250,11 +265,17 @@ const deleteProductReducer = (state = initialDeleteProductState, action) => {
                 loading: false,
                 isDeleted: action.payload.success,
             };
+        case UPDATE_PRODUCT_FAIL:
         case DELETE_PRODUCT_FAIL:
             return {
                 ...state,
                 loading: false,
                 error: action.payload,
+            };
+        case UPDATE_PRODUCT_RESET:
+            return {
+                ...state,
+                isUpdated: false,
             };
         case DELETE_PRODUCT_RESET:
             return {
@@ -318,5 +339,5 @@ export {
     bestProductsReducer,
     newReviewReducer,
     createProductReducer,
-    deleteProductReducer,
+    productModificationReducer,
 };

@@ -215,19 +215,20 @@ const getProductDetails = asyncHandler(async (req, res, next) => {
 
 //update product
 const updateProduct = asyncHandler(async (req, res, next) => {
-    const productId = req.params?.id;
-    const { name, description, price, images, stock } = req.body;
+    let productId = req.params?.id;
+
+    if (typeof productId === "string") {
+        productId = new mongoose.Types.ObjectId(productId);
+    }
+
+    const { name, description, price, stock } = req.body;
 
     if ([name, description].some((field) => field?.trim() === "")) {
         throw new ApiError(400, "Required fields are empty");
     }
 
-    if (!name || !description || !price || !images) {
+    if (!name || !description || !price) {
         throw new ApiError(400, "Please enter the required fields");
-    }
-
-    if (typeof price !== "number" || price < 0) {
-        throw new ApiError(400, "Price must be a non-negative number");
     }
 
     if (price.toString().length > 6) {
@@ -238,6 +239,32 @@ const updateProduct = asyncHandler(async (req, res, next) => {
         throw new ApiError(400, "Stock limit cannot exceed 4 characters");
     }
 
+    let uploadedImages = [];
+    try {
+        const product = await Product.findById(productId);
+        if (!product) {
+            throw new ApiError(404, "Product to be updated not found");
+        }
+
+        const oldImagePublicIds = product.images.map(
+            (image) => image.public_id
+        );
+
+        await deleteImagesFromCloudinary(oldImagePublicIds);
+
+        if (req.files && req.files.length > 0) {
+            const imagePaths = req.files.map((file) => file.path);
+            uploadedImages = await uploadProductImagesToCloudinary(imagePaths);
+        } else {
+            throw new ApiError(400, "Product images are required");
+        }
+    } catch (error) {
+        throw new ApiError(
+            500,
+            error.message || "Failed to process product images"
+        );
+    }
+
     try {
         const updatedProduct = await Product.findByIdAndUpdate(
             productId,
@@ -246,7 +273,10 @@ const updateProduct = asyncHandler(async (req, res, next) => {
                     name: name,
                     description: description,
                     price: price,
-                    images: images,
+                    images: uploadedImages.map((image) => ({
+                        public_id: image.public_id,
+                        url: image.secure_url,
+                    })),
                     stock: stock,
                 },
             },

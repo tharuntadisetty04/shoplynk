@@ -26,6 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import PageLoader from "../layout/PageLoader";
 import { getSellerProducts } from "../../redux/actions/ProductAction";
+import UpdateProduct from "./UpdateProduct";
 
 ChartJS.register(
     CategoryScale,
@@ -59,9 +60,15 @@ const AdminDashboard = () => {
 
     const [activeTab, setActiveTab] = useState("dashboard");
     const [isProductsOpen, setIsProductsOpen] = useState(false);
+    const [selectedProductId, setSelectedProductId] = useState(null);
 
     const toggleProductsDropdown = () => {
         setIsProductsOpen(!isProductsOpen);
+    };
+
+    const updateProductHandler = (id) => {
+        setSelectedProductId(id);
+        setActiveTab("update-product");
     };
 
     return !authChecked ? (
@@ -176,9 +183,15 @@ const AdminDashboard = () => {
                         <Dashboard setActiveTab={setActiveTab} />
                     )}
                     {activeTab === "your-products" && (
-                        <SellerProducts setActiveTab={setActiveTab} />
+                        <SellerProducts
+                            setActiveTab={setActiveTab}
+                            updateProductHandler={updateProductHandler}
+                        />
                     )}
                     {activeTab === "create-product" && <CreateProduct />}
+                    {activeTab === "update-product" && (
+                        <UpdateProduct productId={selectedProductId} />
+                    )}
                     {activeTab === "orders" && <SellerOrders />}
                     {activeTab === "reviews" && <SellerProductReviews />}
                 </div>

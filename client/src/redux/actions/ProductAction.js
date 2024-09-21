@@ -25,6 +25,9 @@ import {
     DELETE_PRODUCT_REQUEST,
     DELETE_PRODUCT_SUCCESS,
     DELETE_PRODUCT_FAIL,
+    UPDATE_PRODUCT_REQUEST,
+    UPDATE_PRODUCT_SUCCESS,
+    UPDATE_PRODUCT_FAIL,
 } from "../constants/ProductConstant";
 import { extractErrorMessage } from "../ExtractErrorMessage";
 
@@ -214,6 +217,37 @@ const createNewProduct = (productData) => async (dispatch) => {
     }
 };
 
+// update product
+const updateProduct = (productData, productId) => async (dispatch) => {
+    try {
+        dispatch({ type: UPDATE_PRODUCT_REQUEST });
+
+        const config = {
+            headers: { "Content-Type": "multipart/form-data" },
+            withCredentials: true,
+        };
+
+        const { data } = await axios.patch(
+            `http://localhost:8000/api/v1/products/admin/${productId}`,
+            productData,
+            config
+        );
+
+        dispatch({
+            type: UPDATE_PRODUCT_SUCCESS,
+            payload: data,
+        });
+    } catch (error) {
+        const errorMessage =
+            extractErrorMessage(error.response.data) || error.message;
+
+        dispatch({
+            type: UPDATE_PRODUCT_FAIL,
+            payload: errorMessage,
+        });
+    }
+};
+
 // delete product
 const deleteProduct = (id) => async (dispatch) => {
     try {
@@ -253,5 +287,6 @@ export {
     createProductReview,
     getSellerProducts,
     createNewProduct,
-    deleteProduct
+    updateProduct,
+    deleteProduct,
 };

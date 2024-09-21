@@ -8,7 +8,7 @@ import {
     createProductReview,
 } from "../../redux/actions/ProductAction";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { NEW_REVIEW_RESET } from "../../redux/constants/ProductConstant";
 
@@ -22,9 +22,11 @@ const CreateReviewModal = ({ isOpen, onModalClose }) => {
 
     const { id } = useParams();
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [rating, setRating] = useState(0);
 
     const { loading, error, success } = useSelector((state) => state.newReview);
+    const { isAuthenticated } = useSelector((state) => state.user);
 
     const {
         register,
@@ -47,6 +49,10 @@ const CreateReviewModal = ({ isOpen, onModalClose }) => {
         }
     };
 
+    const refreshPage = () => {
+        window.location.reload(false);
+    };
+
     useEffect(() => {
         if (error) {
             toast.error(error, {
@@ -58,6 +64,7 @@ const CreateReviewModal = ({ isOpen, onModalClose }) => {
             toast.success("Review submitted successfully!", {
                 autoClose: 1200,
                 onClose: () => {
+                    refreshPage();
                     onModalClose();
                 },
             });
@@ -66,6 +73,10 @@ const CreateReviewModal = ({ isOpen, onModalClose }) => {
     }, [dispatch, error, success]);
 
     const onSubmit = (data) => {
+        if (!isAuthenticated) {
+            navigate("/login");
+        }
+
         data.productId = id;
         dispatch(createProductReview(data));
         reset();

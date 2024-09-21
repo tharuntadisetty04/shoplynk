@@ -35,7 +35,7 @@ router
 router.route("/admin/all").get(verifyJWT, verifySeller, getSellerProducts);
 router
     .route("/admin/:id")
-    .patch(verifyJWT, verifySeller, verifyOwner, updateProduct)
+    .patch(upload.array("images"), verifyJWT, verifySeller, verifyOwner, updateProduct)
     .delete(verifyJWT, verifySeller, verifyOwner, deleteProduct);
 
 export default router;
