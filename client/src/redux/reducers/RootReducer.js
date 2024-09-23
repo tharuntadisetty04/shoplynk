@@ -10,7 +10,13 @@ import {
 } from "./ProductReducer";
 import { passwordsReducer, profileReducer, userReducer } from "./UserReducer";
 import { cartReducer } from "./CartReducer";
-import { currentUserOrdersReducer, newOrderReducer } from "./orderReducer";
+import {
+    currentUserOrdersReducer,
+    newOrderReducer,
+    orderDetailsReducer,
+    orderModificationReducer,
+    sellerOrdersReducer,
+} from "./orderReducer";
 
 const rootReducer = combineReducers({
     products: productsReducer,
@@ -26,6 +32,9 @@ const rootReducer = combineReducers({
     newReview: newReviewReducer,
     newProduct: createProductReducer,
     modifiedProduct: productModificationReducer,
+    sellerOrders: sellerOrdersReducer,
+    orderDetails: orderDetailsReducer,
+    modifiedOrder: orderModificationReducer,
 });
 
 export default rootReducer;

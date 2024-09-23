@@ -38,7 +38,9 @@ const OrdersGrid = ({ orders }) => {
         () => (orderItems) =>
             orderItems.every((item) => item.orderStatus === "Delivered")
                 ? "Delivered"
-                : "Processing",
+                : orderItems.some((item) => item.orderStatus === "Shipped")
+                    ? "Shipped"
+                    : "Processing",
         []
     );
 
@@ -107,7 +109,9 @@ const OrdersGrid = ({ orders }) => {
                                 <td
                                     className={`p-3 border-b text-left ${getOrderStatus(order.orderItems) === "Delivered"
                                         ? "text-green-600"
-                                        : "text-red-600"
+                                        : getOrderStatus(order.orderItems) === "Shipped"
+                                            ? "text-orange-600"
+                                            : "text-red-600"
                                         }`}
                                 >
                                     {getOrderStatus(order.orderItems)}
@@ -137,7 +141,6 @@ const OrdersGrid = ({ orders }) => {
                 </table>
             </div>
 
-            {/* Pagination Controls */}
             <div className="mt-4 flex justify-between items-center">
                 <button
                     className="px-4 py-2 bg-blue-500 text-white rounded-md disabled:opacity-50"

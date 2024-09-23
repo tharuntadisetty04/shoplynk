@@ -110,7 +110,7 @@ const getSellerOrders = asyncHandler(async (req, res) => {
     const filteredOrders = orders
         .map((order) => {
             const sellerItems = order.orderItems.filter((item) =>
-                item.product.owner.equals(sellerId)
+                item?.product?.owner.equals(sellerId)
             );
 
             if (sellerItems.length > 0) {
@@ -172,7 +172,7 @@ const updateOrder = asyncHandler(async (req, res) => {
         item.product.owner.equals(sellerId)
     );
 
-    if (!sellerItems) {
+    if (!sellerItems.length) {
         throw new ApiError(
             403,
             "Order does not contain products owned by this seller"
@@ -184,7 +184,7 @@ const updateOrder = asyncHandler(async (req, res) => {
     );
 
     if (status === "Delivered" && alreadyDelivered) {
-        throw new ApiError(400, "The order has already been delivered");
+        throw new ApiError(400, "Some items have already been delivered");
     }
 
     if (status === "Shipped") {
@@ -198,23 +198,11 @@ const updateOrder = asyncHandler(async (req, res) => {
             return {
                 ...item.toObject(),
                 orderStatus: status,
+                ...(status === "Delivered" && { deliveredAt: Date.now() }),
             };
         }
         return item;
     });
-
-    if (status === "Delivered") {
-        order.orderItems = order.orderItems.map((item) => {
-            if (item.product.owner.equals(sellerId)) {
-                return {
-                    ...item.toObject(),
-                    orderStatus: status,
-                    deliveredAt: Date.now(),
-                };
-            }
-            return item;
-        });
-    }
 
     await order.save({ validateBeforeSave: false });
 
@@ -272,23 +260,23 @@ const deleteOrder = asyncHandler(async (req, res) => {
         (item) => !item.product.owner.equals(sellerId)
     );
 
-    if (!remainingItems) {
+    if (remainingItems.length === 0) {
         await order.deleteOne();
-        res.status(200).json(
-            new ApiResponse(200, {}, "Order deleted successfully")
-        );
-    } else {
-        order.orderItems = remainingItems;
-        await order.save();
-
-        res.status(200).json(
-            new ApiResponse(
-                200,
-                order,
-                "Seller's items removed from order successfully"
-            )
-        );
+        return res
+            .status(200)
+            .json(new ApiResponse(200, {}, "Order deleted successfully"));
     }
+
+    order.orderItems = remainingItems;
+    await order.save();
+
+    res.status(200).json(
+        new ApiResponse(
+            200,
+            order,
+            "Seller's items removed from order successfully"
+        )
+    );
 });
 
 export {
