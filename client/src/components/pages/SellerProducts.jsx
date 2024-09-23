@@ -181,14 +181,14 @@ const SellerProducts = ({ setActiveTab, updateProductHandler }) => {
                                         <td className="px-6 py-2">{product.price}</td>
                                         <td className="px-6 py-2 flex items-center space-x-2">
                                             <button
-                                                className="text-blue-600 hover:underline text-xl"
+                                                className="text-gray-600 hover:text-blue-600 duration-200 text-xl"
                                                 onClick={() => updateProductHandler(product?._id)}
                                             >
                                                 <RiEdit2Line />
                                             </button>
                                             <span>|</span>
                                             <button
-                                                className="text-red-600 hover:underline text-xl"
+                                                className="text-gray-600 hover:text-red-600 duration-200 text-xl"
                                                 onClick={() => deleteProductHandler(product?._id)}
                                                 disabled={deleteLoading}
                                             >

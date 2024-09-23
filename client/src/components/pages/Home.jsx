@@ -220,18 +220,20 @@ const Home = () => {
 
             {/* Best selling products */}
             <div className="best-products w-full h-fit py-4 px-8 md:px-16">
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl md:text-3xl font-bold">
-                        Best <span className="text-blue-600">Selling Products</span>
-                    </h2>
+                {bestProducts.length > 0 && (
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-2xl md:text-3xl font-bold">
+                            Best <span className="text-blue-600">Selling Products</span>
+                        </h2>
 
-                    <Link
-                        to="/products"
-                        className="rounded-md bg-blue-600 md:px-3.5 px-2 md:py-2 py-1.5 text-sm font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 text-center"
-                    >
-                        View All
-                    </Link>
-                </div>
+                        <Link
+                            to="/products"
+                            className="rounded-md bg-blue-600 md:px-3.5 px-2 md:py-2 py-1.5 text-sm font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 text-center"
+                        >
+                            View All
+                        </Link>
+                    </div>
+                )}
 
                 {bestProductsLoading ? (
                     <ItemLoader />

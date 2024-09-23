@@ -3,11 +3,17 @@ import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import OrderSuccessImg from "../../assets/order-complete.jpg";
 import TitleHelmet from "../utils/TitleHelmet";
 import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { CLEAR_CART } from "../../redux/constants/CartConstant";
 
 const OrderSuccess = () => {
+    const dispatch = useDispatch();
+
     useEffect(() => {
         localStorage.removeItem("cartItems");
-    }, [localStorage])
+
+        dispatch({ type: CLEAR_CART });
+    }, [dispatch, localStorage]);
 
     return (
         <div className="flex md:flex-row flex-col items-center justify-center lg:-ml-12 lg:gap-20 w-full h-full lg:min-h-[60svh] md:min-h-[65svh] px-8 md:px-16 md:pb-0 pb-4">

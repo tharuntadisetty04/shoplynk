@@ -222,6 +222,7 @@ const Payment = () => {
                         type="submit"
                         className="bg-blue-600 hover:bg-blue-700 font-medium text-neutral-100 py-2 px-4 rounded duration-200 w-full"
                         ref={paymentBtn}
+                        disabled={loading}
                     >
                         Pay ₹{orderInfo?.totalAmount || "0"}
                     </button>
