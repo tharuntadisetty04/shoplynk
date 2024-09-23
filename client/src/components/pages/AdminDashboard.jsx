@@ -330,14 +330,18 @@ const Dashboard = ({ setActiveTab }) => {
                 </div>
 
                 <div className="flex lg:mx-32 md:mx-10 flex-col md:flex-row items-center lg:justify-between justify-center lg:gap-10 md:gap-8 gap-4 my-6">
-                    <div className="doughnut-chart bg-white md:p-6 p-2 rounded-md shadow lg:w-1/2 md:w-[49%]">
-                        <h2 className="text-center font-semibold text-xl">Stock</h2>
-                        <Doughnut data={stockData} />
-                    </div>
-                    <div className="doughnut-chart bg-white md:p-6 p-2 rounded-md shadow lg:w-1/2 md:w-[49%]">
-                        <h2 className="text-center font-semibold text-xl">Orders</h2>
-                        <Doughnut data={ordersData} />
-                    </div>
+                    {productsCount > 0 && (
+                        <div className="doughnut-chart bg-white md:p-6 p-2 rounded-md shadow lg:w-1/2 md:w-[49%]">
+                            <h2 className="text-center font-semibold text-xl">Stock</h2>
+                            <Doughnut data={stockData} />
+                        </div>
+                    )}
+                    {orders && orders.length > 0 && (
+                        <div className="doughnut-chart bg-white md:p-6 p-2 rounded-md shadow lg:w-1/2 md:w-[49%]">
+                            <h2 className="text-center font-semibold text-xl">Orders</h2>
+                            <Doughnut data={ordersData} />
+                        </div>
+                    )}
                 </div>
             </div>
         </>

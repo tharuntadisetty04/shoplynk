@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
     clearErrors,
+    deleteProductReview,
     getProductDetails,
 } from "../../redux/actions/ProductAction";
 import { ToastContainer, toast } from "react-toastify";
@@ -26,8 +27,12 @@ Modal.setAppElement("#root");
 const ProductDetails = () => {
     const { id } = useParams();
     const dispatch = useDispatch();
+
     const { loading, error, product } = useSelector(
         (state) => state.productDetails
+    );
+    const { isDeleted, error: deleteError } = useSelector(
+        (state) => state.deleteReview
     );
 
     const [mainImage, setMainImage] = useState("");
@@ -36,7 +41,7 @@ const ProductDetails = () => {
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     const [selectedReview, setSelectedReview] = useState(null);
     const [isCreateReviewModalOpen, setIsCreateReviewModalOpen] = useState(false);
-    const discountPercent = sessionStorage.getItem("discountPercent")
+    const discountPercent = sessionStorage.getItem("discountPercent");
 
     useEffect(() => {
         if (error) {
@@ -46,6 +51,23 @@ const ProductDetails = () => {
         }
         dispatch(getProductDetails(id));
     }, [dispatch, id, error]);
+
+    useEffect(() => {
+        if (deleteError) {
+            toast.error(deleteError, {
+                onClose: () => dispatch(clearErrors()),
+            });
+        }
+
+        if (isDeleted) {
+            toast.success("Review deleted successfully!");
+            dispatch({ type: "DELETE_REVIEW_RESET" });
+
+            setTimeout(() => {
+                dispatch(getProductDetails(id));
+            }, 1000);
+        }
+    }, [dispatch, isDeleted, deleteError]);
 
     useEffect(() => {
         if (product?.images) {
@@ -147,6 +169,14 @@ const ProductDetails = () => {
 
     const closeCreateReviewModal = () => {
         setIsCreateReviewModalOpen(false);
+    };
+
+    const deleteReview = (reviewId) => {
+        if (window.confirm("Are you sure you want to delete this review?")) {
+            if (!deleteError) {
+                dispatch(deleteProductReview(id, reviewId));
+            }
+        }
     };
 
     return (
@@ -355,6 +385,7 @@ const ProductDetails = () => {
                 </div>
 
                 <CreateReviewModal
+                    productId={id}
                     isOpen={isCreateReviewModalOpen}
                     onModalClose={closeCreateReviewModal}
                 />
@@ -371,6 +402,7 @@ const ProductDetails = () => {
                                             key={review._id}
                                             review={review}
                                             onClick={openReviewModal}
+                                            onDelete={deleteReview}
                                         />
                                     ))}
                             </div>

@@ -31,6 +31,13 @@ import {
     UPDATE_PRODUCT_FAIL,
     UPDATE_PRODUCT_SUCCESS,
     UPDATE_PRODUCT_RESET,
+    ALL_REVIEW_REQUEST,
+    ALL_REVIEW_SUCCESS,
+    ALL_REVIEW_FAIL,
+    DELETE_REVIEW_REQUEST,
+    DELETE_REVIEW_SUCCESS,
+    DELETE_REVIEW_FAIL,
+    DELETE_REVIEW_RESET,
 } from "../constants/ProductConstant";
 
 // all products reducer
@@ -332,6 +339,82 @@ const newReviewReducer = (state = intialReviewState, action) => {
     }
 };
 
+// get all product reviews reducer
+const intialReviewsState = {
+    loading: false,
+    reviews: [],
+    error: null,
+};
+
+const productReviewsReducer = (state = intialReviewsState, action) => {
+    switch (action.type) {
+        case ALL_REVIEW_REQUEST:
+            return {
+                ...state,
+                loading: true,
+            };
+        case ALL_REVIEW_SUCCESS:
+            return {
+                loading: false,
+                reviews: action.payload.data,
+            };
+        case ALL_REVIEW_FAIL:
+            return {
+                ...state,
+                loading: false,
+                error: action.payload,
+            };
+        case CLEAR_ERRORS:
+            return {
+                ...state,
+                error: null,
+            };
+        default:
+            return state;
+    }
+};
+
+// delete product reviews reducer
+const intialDeleteReviewState = {
+    loading: false,
+    isDeleted: null,
+    error: null,
+};
+
+const deleteReviewReducer = (state = intialDeleteReviewState, action) => {
+    switch (action.type) {
+        case DELETE_REVIEW_REQUEST:
+            return {
+                ...state,
+                loading: true,
+            };
+        case DELETE_REVIEW_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                isDeleted: action.payload.success,
+            };
+        case DELETE_REVIEW_FAIL:
+            return {
+                ...state,
+                loading: false,
+                error: action.payload,
+            };
+        case DELETE_REVIEW_RESET:
+            return {
+                ...state,
+                isDeleted: false,
+            };
+        case CLEAR_ERRORS:
+            return {
+                ...state,
+                error: null,
+            };
+        default:
+            return state;
+    }
+};
+
 export {
     productsReducer,
     productDetailsReducer,
@@ -340,4 +423,6 @@ export {
     newReviewReducer,
     createProductReducer,
     productModificationReducer,
+    productReviewsReducer,
+    deleteReviewReducer,
 };

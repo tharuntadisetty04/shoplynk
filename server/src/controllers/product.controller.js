@@ -473,19 +473,15 @@ const deleteReview = asyncHandler(async (req, res) => {
         (rev) => rev._id.toString() !== reviewId
     );
 
-    let avg = 0;
-    newReviews.forEach((rev) => {
-        avg += rev.rating;
-    });
-
+    const avg = newReviews.reduce((acc, rev) => acc + rev.rating, 0);
     const numOfReviews = newReviews.length;
-    const ratings = numOfReviews > 0 ? avg / numOfReviews : 0;
+    const newRating = numOfReviews > 0 ? avg / numOfReviews : 0;
 
     await Product.findByIdAndUpdate(
         productId,
         {
             reviews: newReviews,
-            ratings,
+            rating: newRating,
             numOfReviews,
         },
         {

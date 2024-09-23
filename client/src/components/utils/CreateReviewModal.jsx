@@ -6,6 +6,7 @@ import ReactStars from "react-rating-stars-component";
 import {
     clearErrors,
     createProductReview,
+    getProductDetails,
 } from "../../redux/actions/ProductAction";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -14,10 +15,10 @@ import { NEW_REVIEW_RESET } from "../../redux/constants/ProductConstant";
 
 const CreateReviewSchema = z.object({
     rating: z.number().min(1, "Rating is required"),
-    comment: z.string().optional(),
+    comment: z.string().min(1, "Comment is required"),
 });
 
-const CreateReviewModal = ({ isOpen, onModalClose }) => {
+const CreateReviewModal = ({ productId, isOpen, onModalClose }) => {
     if (!isOpen) return null;
 
     const { id } = useParams();
@@ -49,10 +50,6 @@ const CreateReviewModal = ({ isOpen, onModalClose }) => {
         }
     };
 
-    const refreshPage = () => {
-        window.location.reload(false);
-    };
-
     useEffect(() => {
         if (error) {
             toast.error(error, {
@@ -64,8 +61,8 @@ const CreateReviewModal = ({ isOpen, onModalClose }) => {
             toast.success("Review submitted successfully!", {
                 autoClose: 1200,
                 onClose: () => {
-                    refreshPage();
                     onModalClose();
+                    dispatch(getProductDetails(productId));
                 },
             });
             dispatch({ type: NEW_REVIEW_RESET });
@@ -126,7 +123,7 @@ const CreateReviewModal = ({ isOpen, onModalClose }) => {
                         id="comment"
                         rows={3}
                         className="resize-none outline-none p-2 rounded w-full"
-                        placeholder="Write a comment (optional)"
+                        placeholder="Write a comment"
                     ></textarea>
                     {errors.comment && (
                         <p className="text-red-500 text-sm">{errors.comment.message}</p>
