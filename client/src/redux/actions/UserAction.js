@@ -2,6 +2,9 @@ import axios from "axios";
 import {
     CLEAR_ERRORS,
     CLEAR_MESSAGE,
+    DELETE_ACCOUNT_FAIL,
+    DELETE_ACCOUNT_REQUEST,
+    DELETE_ACCOUNT_SUCCESS,
     FORGOT_PASSWORD_FAIL,
     FORGOT_PASSWORD_REQUEST,
     FORGOT_PASSWORD_SUCCESS,
@@ -302,6 +305,31 @@ const resetPassword = (token, passwords) => async (dispatch) => {
     }
 };
 
+// delete user account
+const deleteUser = () => async (dispatch) => {
+    try {
+        dispatch({ type: DELETE_ACCOUNT_REQUEST });
+
+        const { data } = await axios.delete(
+            "http://localhost:8000/api/v1/user/delete-profile",
+            { withCredentials: true }
+        );
+
+        dispatch({
+            type: DELETE_ACCOUNT_SUCCESS,
+            payload: data,
+        });
+    } catch (error) {
+        const errorMessage =
+            extractErrorMessage(error.response.data) || error.message;
+
+        dispatch({
+            type: DELETE_ACCOUNT_FAIL,
+            payload: errorMessage,
+        });
+    }
+};
+
 // Clear errors
 const clearErrors = () => (dispatch) => {
     dispatch({ type: CLEAR_ERRORS });
@@ -322,6 +350,7 @@ export {
     updateUserProfile,
     updateUserPassword,
     forgotPassword,
+    deleteUser,
     resetPassword,
     clearMessage,
 };

@@ -1,4 +1,4 @@
-import React, { lazy, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ReactStars from "react-rating-stars-component";
 import { useDispatch, useSelector } from "react-redux";
@@ -59,7 +59,7 @@ const ProductCard = ({ product }) => {
                 <img
                     src={product?.images[0].url}
                     alt={product?.name}
-                    loading={lazy}
+                    loading="lazy"
                     width={300}
                     height={300}
                     className="w-full h-full object-cover rounded-t"

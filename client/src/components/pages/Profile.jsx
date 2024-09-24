@@ -5,9 +5,12 @@ import "react-toastify/dist/ReactToastify.css";
 import { useDispatch, useSelector } from "react-redux";
 import PageLoader from "../layout/PageLoader";
 import { Link, useNavigate } from "react-router-dom";
-import { clearErrors, logoutUser } from "../../redux/actions/UserAction";
-import { IoLogOutOutline } from "react-icons/io5";
-import { MdDashboard } from "react-icons/md";
+import {
+    clearErrors,
+    deleteUser,
+    loadUser,
+} from "../../redux/actions/UserAction";
+import { MdDashboard, MdDeleteOutline } from "react-icons/md";
 import { FaBagShopping, FaUser } from "react-icons/fa6";
 import { AiFillShop } from "react-icons/ai";
 import { IoMdLock } from "react-icons/io";
@@ -15,6 +18,7 @@ import PersonalInformation from "./PersonalInformation";
 import UpdatePassword from "./UpdatePassword";
 import UpdateRole from "./UpdateRole";
 import UpdateProfile from "./UpdateProfile";
+import { DELETE_ACCOUNT_RESET } from "../../redux/constants/UserConstant";
 
 const Profile = () => {
     const navigate = useNavigate();
@@ -22,6 +26,11 @@ const Profile = () => {
     const { loading, error, user, isAuthenticated } = useSelector(
         (state) => state.user
     );
+    const {
+        loading: deleteLoading,
+        error: deleteError,
+        isDeleted,
+    } = useSelector((state) => state.deleteUser);
 
     const [activeTab, setActiveTab] = useState("personalInformation");
     const [authCheckLoading, setAuthCheckLoading] = useState(true);
@@ -33,6 +42,12 @@ const Profile = () => {
             });
         }
 
+        if (deleteError) {
+            toast.error(deleteError, {
+                onClose: () => dispatch(clearErrors()),
+            });
+        }
+
         if (loading === false) {
             if (!isAuthenticated) {
                 navigate("/login");
@@ -40,13 +55,32 @@ const Profile = () => {
                 setAuthCheckLoading(false);
             }
         }
-    }, [loading, error, isAuthenticated, navigate, dispatch]);
 
-    const logout = () => {
-        dispatch(logoutUser());
-        navigate("/", {
-            state: { toastMessage: "User logged out successfully!", type: "success" },
-        });
+        if (isDeleted) {
+            dispatch({ type: DELETE_ACCOUNT_RESET });
+            dispatch(loadUser());
+        }
+    }, [
+        loading,
+        error,
+        isAuthenticated,
+        navigate,
+        dispatch,
+        deleteError,
+        isDeleted,
+    ]);
+
+    const deleteUserHandler = () => {
+        if (window.confirm("Are you sure you want to delete your account?")) {
+            dispatch(deleteUser()).then(() => {
+                navigate("/", {
+                    state: {
+                        toastMessage: "Account deleted successfully!",
+                        type: "success",
+                    },
+                });
+            });
+        }
     };
 
     return loading || authCheckLoading ? (
@@ -135,12 +169,13 @@ const Profile = () => {
                     {window.innerWidth > 1000 && (
                         <button
                             className="text-start rounded-md border-2 border-slate-200 text-lg font-medium py-2 px-3 hover:bg-blue-600 hover:text-neutral-100 duration-200 flex items-center gap-1.5"
-                            onClick={logout}
+                            onClick={deleteUserHandler}
+                            disabled={deleteLoading}
                         >
                             <span className="text-[1.3rem] ml-0.5">
-                                <IoLogOutOutline />
+                                <MdDeleteOutline />
                             </span>
-                            <span>Logout</span>
+                            <span>Delete Account</span>
                         </button>
                     )}
                 </div>

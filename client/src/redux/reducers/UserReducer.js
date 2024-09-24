@@ -1,6 +1,10 @@
 import {
     CLEAR_ERRORS,
     CLEAR_MESSAGE,
+    DELETE_ACCOUNT_FAIL,
+    DELETE_ACCOUNT_REQUEST,
+    DELETE_ACCOUNT_RESET,
+    DELETE_ACCOUNT_SUCCESS,
     FORGOT_PASSWORD_FAIL,
     FORGOT_PASSWORD_REQUEST,
     FORGOT_PASSWORD_SUCCESS,
@@ -196,4 +200,44 @@ const passwordsReducer = (state = passwordsState, action) => {
     }
 };
 
-export { userReducer, profileReducer, passwordsReducer };
+const intialDeleteUserState = {
+    loading: false,
+    isDeleted: null,
+    error: null,
+};
+
+const deleteUserReducer = (state = intialDeleteUserState, action) => {
+    switch (action.type) {
+        case DELETE_ACCOUNT_REQUEST:
+            return {
+                ...state,
+                loading: true,
+            };
+        case DELETE_ACCOUNT_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                isDeleted: action.payload.success,
+            };
+        case DELETE_ACCOUNT_FAIL:
+            return {
+                ...state,
+                loading: false,
+                error: action.payload,
+            };
+        case DELETE_ACCOUNT_RESET:
+            return {
+                ...state,
+                isDeleted: false,
+            };
+        case CLEAR_ERRORS:
+            return {
+                ...state,
+                error: null,
+            };
+        default:
+            return state;
+    }
+};
+
+export { userReducer, profileReducer, passwordsReducer, deleteUserReducer };

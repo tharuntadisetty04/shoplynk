@@ -1,4 +1,6 @@
 import { User } from "../models/user.model.js";
+import { Product } from "../models/product.model.js";
+import { Order } from "../models/order.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -30,7 +32,7 @@ const registerUser = asyncHandler(async (req, res) => {
     const { username, email, password, role } = req.body;
 
     if (
-        [username, email, password].some(
+        [username, email, password, role].some(
             (field) => !field || field.trim() === ""
         )
     ) {
@@ -195,19 +197,16 @@ const logoutUser = asyncHandler(async (req, res) => {
     const accessTokenOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        expires: new Date(0),
     };
 
     const refreshTokenOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        expires: new Date(0),
     };
 
     const checkTokenOptions = {
         httpOnly: false,
         secure: process.env.NODE_ENV === "production",
-        expires: new Date(0),
     };
 
     return res
@@ -479,7 +478,6 @@ const updateProfile = asyncHandler(async (req, res) => {
         {
             new: true,
             runValidators: true,
-            useFindAndModify: false,
         }
     );
 
@@ -520,14 +518,10 @@ const updateUserRole = asyncHandler(async (req, res) => {
         throw new ApiError(403, "Only buyers can upgrade to seller role.");
     }
 
-    user.username = username;
-    user.email = email;
-    user.role = "seller";
-
-    await user.save({ runValidators: true });
-
-    const updatedUser = await User.findById(user._id).select(
-        "-password -refreshToken"
+    const updatedUser = await User.findByIdAndUpdate(
+        req.user?._id,
+        { username, email, role: "seller" },
+        { new: true, runValidators: true, select: "-password -refreshToken" }
     );
 
     return res
@@ -552,29 +546,57 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
             await cloudinary.v2.uploader.destroy(user.avatar.public_id);
         }
 
+        const sellerProducts = await Product.find({ owner: userId });
+
+        const publicIds = sellerProducts.flatMap((product) =>
+            product.images.map((image) => image.public_id)
+        );
+
+        if (publicIds.length > 0) {
+            await deleteImagesFromCloudinary(publicIds);
+        }
+
+        await Product.deleteMany({ owner: userId });
+
+        await Order.deleteMany({ user: userId });
+
+        await Order.updateMany(
+            {
+                "orderItems.product": {
+                    $in: sellerProducts.map((product) => product._id),
+                },
+            },
+            {
+                $pull: {
+                    orderItems: {
+                        product: {
+                            $in: sellerProducts.map((product) => product._id),
+                        },
+                    },
+                },
+            }
+        );
+
+        await Order.deleteMany({ orderItems: { $size: 0 } });
+
+        await Product.updateMany(
+            { "reviews.userId": userId },
+            { $pull: { reviews: { userId: userId } } }
+        );
+
         await User.findByIdAndDelete(userId);
 
-        const accessTokenOptions = {
+        const cookieOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            expires: new Date(0),
         };
 
-        const refreshTokenOptions = {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            expires: new Date(0),
-        };
-
-        const checkTokenOptions = {
+        res.clearCookie("accessToken", cookieOptions);
+        res.clearCookie("refreshToken", cookieOptions);
+        res.clearCookie("checkToken", {
             httpOnly: false,
-            secure: process.env.NODE_ENV === "production",
-            expires: new Date(0),
-        };
-
-        res.clearCookie("accessToken", accessTokenOptions);
-        res.clearCookie("refreshToken", refreshTokenOptions);
-        res.clearCookie("checkToken", checkTokenOptions);
+            secure: cookieOptions.secure,
+        });
 
         return res
             .status(200)
@@ -589,73 +611,6 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
     }
 });
 
-//renew access token
-const renewAccessToken = asyncHandler(async (req, res) => {
-    const incomingRefreshToken =
-        req.cookies.refreshToken || req.body.refreshToken;
-
-    if (!incomingRefreshToken) {
-        throw new ApiError(401, "Unauthorized request");
-    }
-
-    try {
-        const decodedToken = jwt.verify(
-            incomingRefreshToken,
-            process.env.REFRESH_TOKEN_SECRET
-        );
-
-        const user = await User.findById(decodedToken?._id);
-
-        if (!user) {
-            throw new ApiError(401, "Invalid refresh token");
-        }
-
-        if (incomingRefreshToken !== user?.refreshToken) {
-            throw new ApiError(401, "Refresh token is expired or invalid");
-        }
-
-        const { accessToken, newRefreshToken } = await generateTokens(user._id);
-
-        const accessTokenOptions = {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
-        };
-
-        const refreshTokenOptions = {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
-        };
-
-        const checkTokenOptions = {
-            httpOnly: false,
-            secure: process.env.NODE_ENV === "production",
-            expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        };
-
-        return res
-            .status(200)
-            .cookie("accessToken", accessToken, accessTokenOptions)
-            .cookie("refreshToken", newRefreshToken, refreshTokenOptions)
-            .cookie("checkToken", true, checkTokenOptions)
-            .json(new ApiResponse(200, {}, "Access token refreshed"));
-    } catch (error) {
-        const refreshTokenOptions = {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            expires: new Date(0),
-        };
-
-        res.clearCookie("refreshToken", refreshTokenOptions);
-
-        throw new ApiError(
-            401,
-            error?.message || "Invalid or expired refresh token"
-        );
-    }
-});
-
 export {
     registerUser,
     loginUser,
@@ -665,7 +620,6 @@ export {
     resetPassword,
     updatePassword,
     updateProfile,
-    renewAccessToken,
     updateUserRole,
     deleteUserProfile,
 };

@@ -6,7 +6,6 @@ import {
     loginUser,
     logoutUser,
     registerUser,
-    renewAccessToken,
     resetPassword,
     updatePassword,
     updateProfile,
@@ -26,9 +25,10 @@ router.route("/password/reset/:token").put(resetPassword);
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/current-user").get(verifyJWT, getCurrentUser);
 router.route("/password/update").patch(verifyJWT, updatePassword);
-router.route("/update-profile").patch(upload.single("avatar"), verifyJWT, updateProfile);
+router
+    .route("/update-profile")
+    .patch(upload.single("avatar"), verifyJWT, updateProfile);
 router.route("/delete-profile").delete(verifyJWT, deleteUserProfile);
-router.route("/renew-token").post(renewAccessToken);
 router.route("/update-role").patch(verifyJWT, updateUserRole);
 
 export default router;

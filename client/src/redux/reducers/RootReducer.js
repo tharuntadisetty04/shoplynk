@@ -39,6 +39,7 @@ const rootReducer = combineReducers({
     modifiedOrder: orderModificationReducer,
     allReviews: productReviewsReducer,
     deleteReview: deleteReviewReducer,
+    deleteUser: deleteReviewReducer,
 });
 
 export default rootReducer;
