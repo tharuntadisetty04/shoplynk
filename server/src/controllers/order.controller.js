@@ -44,47 +44,61 @@ const newOrder = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Invalid pincode format");
     }
 
-    const order = await Order.create({
-        shippingInfo,
-        orderItems,
-        paymentInfo,
-        itemsPrice,
-        taxPrice,
-        shippingPrice,
-        totalPrice,
-        user: req.user._id,
-        paidAt: Date.now(),
-    });
+    try {
+        const order = await Order.create({
+            shippingInfo,
+            orderItems,
+            paymentInfo,
+            itemsPrice,
+            taxPrice,
+            shippingPrice,
+            totalPrice,
+            user: req.user._id,
+            paidAt: Date.now(),
+        });
 
-    if (!order) {
-        throw new ApiError(500, "Order creation failed");
+        if (!order) {
+            throw new ApiError(500, "Order creation failed");
+        }
+
+        res.status(201).json(
+            new ApiResponse(201, order, "Order created successfully")
+        );
+    } catch (error) {
+        throw new ApiError(500, error?.message || "Internal server error");
     }
-
-    res.status(201).json(
-        new ApiResponse(201, order, "Order created successfully")
-    );
 });
 
 //get single order
 const getSingleOrder = asyncHandler(async (req, res) => {
     const sellerId = req.user._id;
-    const order = await Order.findById(req.params?.id)
+
+    if (!req.params?.id) {
+        throw new ApiError(400, "Order ID is required");
+    }
+
+    const order = await Order.findById(req.params.id)
         .populate("user", "username email")
-        .populate("orderItems.product", "name owner")
-        .lean();
+        .populate("orderItems.product", "name owner");
 
     if (!order) {
         throw new ApiError(404, "Order not found with the given ID");
     }
 
-    const sellerItems = order.orderItems.filter((item) =>
-        item.product.owner.equals(sellerId)
-    );
+    const sellerItems = order.orderItems.filter((item) => {
+        if (!item.product) {
+            throw new ApiError(
+                400,
+                `Product associated with order item ${item._id} has been deleted.`
+            );
+        }
+        return item.product.owner.equals(sellerId);
+    });
 
     if (!sellerItems) {
         throw new ApiError(
             403,
-            "Order does not contain products owned by this seller"
+            "No products in this order are owned by the seller"
         );
     }
 
@@ -99,8 +113,13 @@ const getSingleOrder = asyncHandler(async (req, res) => {
 const getSellerOrders = asyncHandler(async (req, res) => {
     const sellerId = req.user._id;
 
-    const orders = await Order.find({})
-        .populate("orderItems.product", "name owner")
+    const orders = await Order.find({
+        "orderItems.product": { $exists: true },
+    })
+        .populate({
+            path: "orderItems.product",
+            select: "name owner",
+        })
         .populate("user", "username email");
 
     if (!orders) {
@@ -109,8 +128,8 @@ const getSellerOrders = asyncHandler(async (req, res) => {
 
     const filteredOrders = orders
         .map((order) => {
-            const sellerItems = order.orderItems.filter((item) =>
-                item?.product?.owner.equals(sellerId)
+            const sellerItems = order.orderItems.filter(
+                (item) => item?.product && item.product.owner.equals(sellerId)
             );
 
             if (sellerItems.length > 0) {
@@ -168,23 +187,23 @@ const updateOrder = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Order not found with this ID");
     }
 
-    const sellerItems = order.orderItems.filter((item) =>
-        item.product.owner.equals(sellerId)
+    const sellerItems = order.orderItems.filter(
+        (item) => item?.product && item.product.owner.equals(sellerId)
     );
 
-    if (!sellerItems.length) {
+    if (!sellerItems) {
         throw new ApiError(
             403,
             "Order does not contain products owned by this seller"
         );
     }
 
-    const alreadyDelivered = sellerItems.some(
+    const alreadyDelivered = sellerItems.every(
         (item) => item.orderStatus === "Delivered"
     );
 
     if (status === "Delivered" && alreadyDelivered) {
-        throw new ApiError(400, "Some items have already been delivered");
+        throw new ApiError(400, "All items have already been delivered");
     }
 
     if (status === "Shipped") {
@@ -194,7 +213,7 @@ const updateOrder = asyncHandler(async (req, res) => {
     }
 
     order.orderItems = order.orderItems.map((item) => {
-        if (item.product.owner.equals(sellerId)) {
+        if (item?.product && item.product.owner.equals(sellerId)) {
             return {
                 ...item.toObject(),
                 orderStatus: status,
@@ -207,7 +226,7 @@ const updateOrder = asyncHandler(async (req, res) => {
     await order.save({ validateBeforeSave: false });
 
     const sellerOrderItems = order.orderItems
-        .filter((item) => item.product.owner.equals(sellerId))
+        .filter((item) => item?.product && item.product.owner.equals(sellerId))
         .map((item) => ({
             ...item.toObject(),
             product: {
@@ -257,7 +276,7 @@ const deleteOrder = asyncHandler(async (req, res) => {
     }
 
     const remainingItems = order.orderItems.filter(
-        (item) => !item.product.owner.equals(sellerId)
+        (item) => item?.product && !item.product.owner.equals(sellerId)
     );
 
     if (remainingItems.length === 0) {
@@ -268,6 +287,7 @@ const deleteOrder = asyncHandler(async (req, res) => {
     }
 
     order.orderItems = remainingItems;
+
     await order.save();
 
     res.status(200).json(

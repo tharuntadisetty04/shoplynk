@@ -6,7 +6,6 @@ import validator from "validator";
 import sendEmail from "../utils/sendEmail.js";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
 import cloudinary from "cloudinary";
 
@@ -42,11 +41,11 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Please enter a valid email");
     }
 
-    if (username.length > 30 || username.length < 3) {
+    if (username.length < 3 || username.length > 30) {
         throw new ApiError(400, "Username must be between 3 and 30 characters");
     }
 
-    if (password.length > 30 || password.length < 8) {
+    if (password.length < 8 || password.length > 30) {
         throw new ApiError(400, "Password must be between 8 and 30 characters");
     }
 
@@ -56,30 +55,24 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(409, "User with email already exists");
     }
 
-    let avatarLocalPath;
-    if (req.file) {
-        avatarLocalPath = req.file.path;
-    }
-
     let avatar;
-    try {
-        if (avatarLocalPath) {
-            avatar = await uploadToCloudinary(avatarLocalPath);
-
+    if (req.file) {
+        try {
+            avatar = await uploadToCloudinary(req.file.path);
             if (!avatar) {
                 throw new ApiError(
                     400,
                     "Failed to upload avatar file to cloud"
                 );
             }
-        } else {
-            throw new ApiError(400, "Avatar file is missing or not uploaded");
+        } catch (error) {
+            throw new ApiError(
+                500,
+                error.message || "Failed to upload avatar file to cloud"
+            );
         }
-    } catch (error) {
-        throw new ApiError(
-            500,
-            error.message || "Failed to upload avatar file to cloud"
-        );
+    } else {
+        throw new ApiError(400, "Avatar file is missing or not uploaded");
     }
 
     const newUser = {
@@ -107,21 +100,28 @@ const registerUser = asyncHandler(async (req, res) => {
         isUserCreated._id
     );
 
-    const options = {
+    const accessTokenOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
+        expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+    };
+
+    const refreshTokenOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
     };
 
     const checkTokenOptions = {
         httpOnly: false,
         secure: process.env.NODE_ENV === "production",
-        // expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     };
 
     return res
         .status(201)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", refreshToken, options)
+        .cookie("accessToken", accessToken, accessTokenOptions)
+        .cookie("refreshToken", refreshToken, refreshTokenOptions)
         .cookie("checkToken", true, checkTokenOptions)
         .json(
             new ApiResponse(200, isUserCreated, "User registered successfully")
@@ -160,29 +160,31 @@ const loginUser = asyncHandler(async (req, res) => {
         "-password -refreshToken"
     );
 
-    const options = {
+    const accessTokenOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
+        expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+    };
+
+    const refreshTokenOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
     };
 
     const checkTokenOptions = {
         httpOnly: false,
         secure: process.env.NODE_ENV === "production",
-        // expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     };
 
     return res
         .status(200)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", refreshToken, options)
+        .cookie("accessToken", accessToken, accessTokenOptions)
+        .cookie("refreshToken", refreshToken, refreshTokenOptions)
         .cookie("checkToken", true, checkTokenOptions)
         .json(
-            new ApiResponse(
-                200,
-                // { user: loggedInUser, accessToken, refreshToken },
-                loggedInUser,
-                "User logged in successfully"
-            )
+            new ApiResponse(200, loggedInUser, "User logged in successfully")
         );
 });
 
@@ -190,29 +192,44 @@ const loginUser = asyncHandler(async (req, res) => {
 const logoutUser = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(req.user._id, { $unset: { refreshToken: 1 } });
 
-    const options = {
+    const accessTokenOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
+        expires: new Date(0),
+    };
+
+    const refreshTokenOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        expires: new Date(0),
     };
 
     const checkTokenOptions = {
         httpOnly: false,
         secure: process.env.NODE_ENV === "production",
-        // expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        expires: new Date(0),
     };
 
     return res
         .status(200)
-        .clearCookie("accessToken", options)
-        .clearCookie("refreshToken", options)
+        .clearCookie("accessToken", accessTokenOptions)
+        .clearCookie("refreshToken", refreshTokenOptions)
         .clearCookie("checkToken", checkTokenOptions)
         .json(
-            new ApiResponse(200, {}, `User: ${req.user.username} logged out`)
+            new ApiResponse(
+                200,
+                {},
+                `User: ${req.user.username} logged out successfully`
+            )
         );
 });
 
 //get current user
 const getCurrentUser = asyncHandler(async (req, res) => {
+    if (!req.user) {
+        throw new ApiError(401, "User not authenticated");
+    }
+
     return res
         .status(200)
         .json(
@@ -225,32 +242,39 @@ const forgotPassword = asyncHandler(async (req, res) => {
     const email = req.body?.email;
 
     if (!email) {
-        throw new ApiError(400, "Please Enter Email");
+        throw new ApiError(400, "Please enter your email.");
     }
 
     if (!validator.isEmail(email)) {
-        throw new ApiError(400, "Please Enter a valid Email");
+        throw new ApiError(400, "Please enter a valid email.");
     }
 
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email });
 
     if (!user) {
-        throw new ApiError(404, "User does not exist or Invalid email");
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(
+                    200,
+                    {},
+                    "If this email exists, a password reset link will be sent."
+                )
+            );
     }
 
     const resetToken = user.getPasswordResetToken();
 
     await user.save({ validateBeforeSave: false });
 
-    // const resetPasswordUrl = `${req.protocol}://${req.get("host")}/api/v1/user/password/reset/${resetToken}`;
     const resetPasswordUrl = `${process.env.CLIENT_URL}/password/reset/${resetToken}`;
 
-    const message = `Your reset password url is :- \n ${resetPasswordUrl} \n\n If you have not requested this email, then update your password or ignore it.`;
+    const message = `You requested a password reset. Please use the following link to reset your password: \n\n${resetPasswordUrl}\n\nIf you did not request this, please ignore this email or update your password to ensure your account's security.`;
 
     try {
         await sendEmail({
             email: user.email,
-            subject: `Password recovery request | ShopLynk`,
+            subject: "Password Recovery Request | ShopLynk",
             message,
         });
 
@@ -269,7 +293,11 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
         await user.save({ validateBeforeSave: false });
 
-        throw new ApiError(500, error.message);
+        throw new ApiError(
+            500,
+            error.message ||
+            "Failed to send reset email. Please try again later."
+        );
     }
 });
 
@@ -278,7 +306,7 @@ const resetPassword = asyncHandler(async (req, res) => {
     const { password, confirmPassword } = req.body;
 
     if (!password || !confirmPassword) {
-        throw new ApiError(400, "Please Enter Password");
+        throw new ApiError(400, "Please enter both passwords");
     }
 
     const resetPasswordToken = crypto
@@ -292,17 +320,17 @@ const resetPassword = asyncHandler(async (req, res) => {
     });
 
     if (!user) {
-        throw new ApiError(400, "Reset password token has expired or invalid ");
+        throw new ApiError(400, "Invalid or expired reset token.");
     }
 
     if (password !== confirmPassword) {
-        throw new ApiError(400, "Password do not match ");
+        throw new ApiError(400, "Passwords do not match.");
     }
 
     if (password.length > 30 || password.length < 8) {
         throw new ApiError(
             400,
-            "Password length must be between 8 and 30 characters"
+            "Password must be between 8 and 30 characters."
         );
     }
 
@@ -319,26 +347,32 @@ const resetPassword = asyncHandler(async (req, res) => {
         "-password -refreshToken"
     );
 
-    const options = {
+    const accessTokenOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
+        expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+    };
+
+    const refreshTokenOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
     };
 
     const checkTokenOptions = {
         httpOnly: false,
         secure: process.env.NODE_ENV === "production",
-        // expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     };
 
     return res
         .status(200)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", refreshToken, options)
+        .cookie("accessToken", accessToken, accessTokenOptions)
+        .cookie("refreshToken", refreshToken, refreshTokenOptions)
         .cookie("checkToken", true, checkTokenOptions)
         .json(
             new ApiResponse(
                 200,
-                // { user: loggedInUser, accessToken, refreshToken },
                 loggedInUser,
                 "Password has been reset and user logged in successfully"
             )
@@ -365,6 +399,13 @@ const updatePassword = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Invalid old password");
     }
 
+    if (oldPassword === newPassword) {
+        throw new ApiError(
+            400,
+            "New password cannot be the same as the old password."
+        );
+    }
+
     if (newPassword.length > 30 || newPassword.length < 8) {
         throw new ApiError(
             400,
@@ -386,7 +427,7 @@ const updateProfile = asyncHandler(async (req, res) => {
     const { username, email } = req.body;
 
     if ([username, email].some((field) => !field || field.trim() === "")) {
-        throw new ApiError(400, "All fields are required");
+        throw new ApiError(400, "Both username and email are required");
     }
 
     if (!validator.isEmail(email)) {
@@ -417,7 +458,7 @@ const updateProfile = asyncHandler(async (req, res) => {
         avatar = await uploadToCloudinary(avatarLocalPath);
 
         if (!avatar) {
-            throw new ApiError(400, "Failed to upload avatar file to cloud");
+            throw new ApiError(500, "Failed to upload new avatar");
         }
     } else {
         throw new ApiError(400, "Avatar file is missing or not uploaded");
@@ -432,20 +473,24 @@ const updateProfile = asyncHandler(async (req, res) => {
         },
     };
 
-    const updatedUser = await User.findByIdAndUpdate(req.user.id, newUserData, {
-        new: true,
-        runValidators: true,
-        useFindAndModify: false,
-    });
+    const updatedUser = await User.findByIdAndUpdate(
+        req.user._id,
+        newUserData,
+        {
+            new: true,
+            runValidators: true,
+            useFindAndModify: false,
+        }
+    );
+
+    if (!updatedUser) {
+        throw new ApiError(500, "Failed to update user profile");
+    }
 
     return res
         .status(200)
         .json(
-            new ApiResponse(
-                200,
-                updatedUser,
-                "Account details updated successfully"
-            )
+            new ApiResponse(200, updatedUser, "Profile updated successfully.")
         );
 });
 
@@ -454,11 +499,7 @@ const updateUserRole = asyncHandler(async (req, res) => {
     const { username, email } = req.body;
 
     if ([username, email].some((field) => !field || field.trim() === "")) {
-        throw new ApiError(400, "Required fields are empty");
-    }
-
-    if (!username || !email) {
-        throw new ApiError(400, "Please enter the required fields");
+        throw new ApiError(400, "Username and email are required");
     }
 
     if (!validator.isEmail(email)) {
@@ -466,35 +507,34 @@ const updateUserRole = asyncHandler(async (req, res) => {
     }
 
     if (username.length > 30 || username.length < 3) {
-        throw new ApiError(
-            400,
-            "Username length must be between 3 and 30 characters"
-        );
+        throw new ApiError(400, "Username must be between 3 and 30 characters");
     }
 
-    const updatedUser = await User.findByIdAndUpdate(
-        req.user?._id,
-        {
-            $set: {
-                username,
-                email,
-                role: "seller",
-            },
-        },
-        {
-            new: true,
-            runValidators: true,
-            useFindAndModify: false,
-        }
-    ).select("-password -refreshToken");
+    const user = await User.findById(req.user?._id);
 
-    if (!updatedUser) {
-        throw new ApiError(404, `User with ID ${req.user?._id} not found`);
+    if (!user) {
+        throw new ApiError(404, `User with ID ${req.user?._id} not found.`);
     }
 
-    res.status(200).json(
-        new ApiResponse(200, updatedUser, "User role updated successfully")
+    if (user.role !== "buyer") {
+        throw new ApiError(403, "Only buyers can upgrade to seller role.");
+    }
+
+    user.username = username;
+    user.email = email;
+    user.role = "seller";
+
+    await user.save({ runValidators: true });
+
+    const updatedUser = await User.findById(user._id).select(
+        "-password -refreshToken"
     );
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, updatedUser, "User role updated successfully")
+        );
 });
 
 //delete account
@@ -508,13 +548,44 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
             throw new ApiError(404, "User not found");
         }
 
+        if (user.avatar && user.avatar.public_id) {
+            await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+        }
+
         await User.findByIdAndDelete(userId);
 
-        res.status(200).json(
-            new ApiResponse(200, {}, "User account deleted successfully")
-        );
+        const accessTokenOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            expires: new Date(0),
+        };
+
+        const refreshTokenOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            expires: new Date(0),
+        };
+
+        const checkTokenOptions = {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === "production",
+            expires: new Date(0),
+        };
+
+        res.clearCookie("accessToken", accessTokenOptions);
+        res.clearCookie("refreshToken", refreshTokenOptions);
+        res.clearCookie("checkToken", checkTokenOptions);
+
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(200, {}, "User account deleted successfully")
+            );
     } catch (error) {
-        throw new ApiError(400, error?.message || "User cannot be deleted");
+        throw new ApiError(
+            500,
+            error.message || "An error occurred while deleting the account"
+        );
     }
 });
 
@@ -540,69 +611,49 @@ const renewAccessToken = asyncHandler(async (req, res) => {
         }
 
         if (incomingRefreshToken !== user?.refreshToken) {
-            throw new ApiError(401, "Refresh token is expired or used");
+            throw new ApiError(401, "Refresh token is expired or invalid");
         }
 
-        const options = {
+        const { accessToken, newRefreshToken } = await generateTokens(user._id);
+
+        const accessTokenOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
+            expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
         };
 
-        const { accessToken, newRefreshToken } = await generateTokens(user._id);
+        const refreshTokenOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+        };
 
         const checkTokenOptions = {
             httpOnly: false,
             secure: process.env.NODE_ENV === "production",
-            // expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+            expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
         };
 
         return res
             .status(200)
-            .cookie("accessToken", accessToken, options)
-            .cookie("refreshToken", newRefreshToken, options)
+            .cookie("accessToken", accessToken, accessTokenOptions)
+            .cookie("refreshToken", newRefreshToken, refreshTokenOptions)
             .cookie("checkToken", true, checkTokenOptions)
-            .json(
-                new ApiResponse(
-                    200,
-                    { accessToken, refreshToken: newRefreshToken },
-                    "Access token refreshed"
-                )
-            );
+            .json(new ApiResponse(200, {}, "Access token refreshed"));
     } catch (error) {
-        throw new ApiError(401, error?.message || "Invalid refresh token");
+        const refreshTokenOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            expires: new Date(0),
+        };
+
+        res.clearCookie("refreshToken", refreshTokenOptions);
+
+        throw new ApiError(
+            401,
+            error?.message || "Invalid or expired refresh token"
+        );
     }
-});
-
-//get all users --Admin
-const getAllUser = asyncHandler(async (req, res) => {
-    const users = await User.find().select("-password -refreshToken");
-
-    if (!users) {
-        throw new ApiError(404, "No users found");
-    }
-
-    res.status(200).json(
-        new ApiResponse(200, users, "All users fetched successfully")
-    );
-});
-
-//get single user --Admin
-const getSingleUser = asyncHandler(async (req, res) => {
-    if (!mongoose.Types.ObjectId.isValid(req.params?.id)) {
-        throw new ApiError(400, "Invalid user ID");
-    }
-
-    const user = await User.findById(req.params?.id).select(
-        "-password -refreshToken"
-    );
-
-    if (!user) {
-        throw new ApiError(404, "User not found");
-    }
-
-    res.status(200).json(
-        new ApiResponse(200, user, "User fetched successfully")
-    );
 });
 
 export {
@@ -615,8 +666,6 @@ export {
     updatePassword,
     updateProfile,
     renewAccessToken,
-    getAllUser,
-    getSingleUser,
     updateUserRole,
     deleteUserProfile,
 };

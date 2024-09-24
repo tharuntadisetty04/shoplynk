@@ -2,9 +2,7 @@ import { Router } from "express";
 import {
     deleteUserProfile,
     forgotPassword,
-    getAllUser,
     getCurrentUser,
-    getSingleUser,
     loginUser,
     logoutUser,
     registerUser,
@@ -15,7 +13,6 @@ import {
     updateUserRole,
 } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { verifySeller } from "../middlewares/verifySeller.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
 const router = Router();
@@ -33,9 +30,5 @@ router.route("/update-profile").patch(upload.single("avatar"), verifyJWT, update
 router.route("/delete-profile").delete(verifyJWT, deleteUserProfile);
 router.route("/renew-token").post(renewAccessToken);
 router.route("/update-role").patch(verifyJWT, updateUserRole);
-
-//admin routes
-router.route("/admin/users").get(verifyJWT, verifySeller, getAllUser);
-router.route("/admin/user/:id").get(verifyJWT, verifySeller, getSingleUser);
 
 export default router;

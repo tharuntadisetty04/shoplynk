@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 import { uploadProductImagesToCloudinary } from "../utils/cloudinary.js";
 import { deleteImagesFromCloudinary } from "../utils/cloudinary.js";
 
-// Create Product
+//create Product
 const createProduct = asyncHandler(async (req, res) => {
     const { name, description, price, category, stock } = req.body;
 
@@ -19,12 +19,18 @@ const createProduct = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Please enter the required fields");
     }
 
-    if (price.toString().length > 6) {
-        throw new ApiError(400, "Price cannot exceed 6 digits");
+    if (isNaN(price) || price.toString().length > 6) {
+        throw new ApiError(
+            400,
+            "Price must be a number and cannot exceed 6 digits"
+        );
     }
 
-    if (stock && stock.toString().length > 4) {
-        throw new ApiError(400, "Stock cannot exceed 4 digits");
+    if (isNaN(stock) || stock.toString().length > 4) {
+        throw new ApiError(
+            400,
+            "Stock must be a number and cannot exceed 4 digits"
+        );
     }
 
     const allowedCategories = [
@@ -35,18 +41,20 @@ const createProduct = asyncHandler(async (req, res) => {
         "sports",
         "groceries",
     ];
+
     if (!allowedCategories.includes(category.toLowerCase())) {
         throw new ApiError(400, "Invalid category provided");
     }
 
     let uploadedImages = [];
+
+    if (!req?.files || req.files.length === 0) {
+        throw new ApiError(400, "Product images are required");
+    }
+
     try {
-        if (req.files && req.files.length > 0) {
-            const imagePaths = req.files.map((file) => file.path);
-            uploadedImages = await uploadProductImagesToCloudinary(imagePaths);
-        } else {
-            throw new ApiError(400, "Product images are required");
-        }
+        const imagePaths = req.files.map((file) => file.path);
+        uploadedImages = await uploadProductImagesToCloudinary(imagePaths);
     } catch (error) {
         throw new ApiError(
             500,
@@ -69,17 +77,9 @@ const createProduct = asyncHandler(async (req, res) => {
 
     const product = await Product.create(newProduct);
 
-    const isProductCreated = await Product.findById(product._id);
-
-    if (!isProductCreated) {
-        throw new ApiError(500, "Product creation failed in the database");
-    }
-
     return res
         .status(201)
-        .json(
-            new ApiResponse(200, isProductCreated, "Product added successfully")
-        );
+        .json(new ApiResponse(200, product, "Product added successfully"));
 });
 
 //get all products
@@ -87,17 +87,17 @@ const getAllProducts = asyncHandler(async (req, res) => {
     const resultPerPage = 12;
     const allProductsCount = await Product.countDocuments();
 
-    let productFilters = new ProductSearch(Product.find(), req.query)
+    const productFilters = new ProductSearch(Product.find(), req.query)
         .search()
         .filter();
 
-    const filteredProductsCount = await productFilters.data
-        .clone()
-        .countDocuments();
+    const filteredProductsCount = await Product.countDocuments(
+        productFilters.data.getFilter()
+    );
 
-    productFilters = productFilters.pagination(resultPerPage);
+    const paginatedProducts = productFilters.pagination(resultPerPage).data;
 
-    const products = await productFilters.data;
+    const products = await paginatedProducts;
 
     if (!products) {
         throw new ApiError(500, "Products not found");
@@ -114,13 +114,18 @@ const getAllProducts = asyncHandler(async (req, res) => {
         );
 });
 
-// get similar products
+//get similar products
 const getSimilarProducts = asyncHandler(async (req, res, next) => {
     const productId = req.params?.id;
     const resultPerPage = 8;
 
     try {
-        const product = await Product.findById(productId);
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            throw new ApiError(400, "Invalid product ID");
+        }
+
+        const product = await Product.findById(productId).lean();
+
         if (!product) {
             throw new ApiError(404, "Product not found");
         }
@@ -149,16 +154,12 @@ const getSimilarProducts = asyncHandler(async (req, res, next) => {
                 )
             );
     } catch (error) {
-        if (error.name === "CastError") {
-            next(new ApiError(400, `Invalid product ID: ${productId}`));
-        } else {
-            next(error);
-        }
+        next(error);
     }
 });
 
-// get best selling products
-const getBestSellingProducts = asyncHandler(async (req, res, next) => {
+//get best selling products
+const getBestSellingProducts = asyncHandler(async (req, res) => {
     const resultPerPage = 8;
 
     const products = new ProductSearch(
@@ -168,7 +169,7 @@ const getBestSellingProducts = asyncHandler(async (req, res, next) => {
         req.query
     ).pagination(resultPerPage);
 
-    const bestProducts = await products.data;
+    const bestProducts = await products.execute();
 
     if (!bestProducts) {
         throw new ApiError(404, "Products not found");
@@ -190,7 +191,12 @@ const getProductDetails = asyncHandler(async (req, res, next) => {
     const productId = req.params?.id;
 
     try {
-        const product = await Product.findById(productId);
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return next(new ApiError(400, "Invalid product ID"));
+        }
+
+        const product = await Product.findById(productId).lean();
+
         if (!product) {
             throw new ApiError(404, "Product not found");
         }
@@ -205,30 +211,20 @@ const getProductDetails = asyncHandler(async (req, res, next) => {
                 )
             );
     } catch (error) {
-        if (error.name == "CastError") {
-            next(new ApiError(400, `Invalid product ID: ${productId}`));
-        } else {
-            next(error);
-        }
+        next(error);
     }
 });
 
 //update product
 const updateProduct = asyncHandler(async (req, res, next) => {
-    let productId = req.params?.id;
-
-    if (typeof productId === "string") {
-        productId = new mongoose.Types.ObjectId(productId);
-    }
-
+    const { id: productId } = req.params;
     const { name, description, price, stock } = req.body;
 
-    if ([name, description].some((field) => field?.trim() === "")) {
-        throw new ApiError(400, "Required fields are empty");
-    }
-
-    if (!name || !description || !price) {
-        throw new ApiError(400, "Please enter the required fields");
+    if (
+        ![name, description, price].every(Boolean) ||
+        [name, description].some((field) => field.trim() === "")
+    ) {
+        throw new ApiError(400, "Please provide all required fields");
     }
 
     if (price.toString().length > 6) {
@@ -239,11 +235,11 @@ const updateProduct = asyncHandler(async (req, res, next) => {
         throw new ApiError(400, "Stock limit cannot exceed 4 characters");
     }
 
-    let uploadedImages = [];
     try {
         const product = await Product.findById(productId);
+
         if (!product) {
-            throw new ApiError(404, "Product to be updated not found");
+            throw new ApiError(404, "Product not found");
         }
 
         const oldImagePublicIds = product.images.map(
@@ -252,43 +248,32 @@ const updateProduct = asyncHandler(async (req, res, next) => {
 
         await deleteImagesFromCloudinary(oldImagePublicIds);
 
+        let uploadedImages = [];
+
         if (req.files && req.files.length > 0) {
             const imagePaths = req.files.map((file) => file.path);
             uploadedImages = await uploadProductImagesToCloudinary(imagePaths);
         } else {
             throw new ApiError(400, "Product images are required");
         }
-    } catch (error) {
-        throw new ApiError(
-            500,
-            error.message || "Failed to process product images"
-        );
-    }
 
-    try {
         const updatedProduct = await Product.findByIdAndUpdate(
             productId,
             {
-                $set: {
-                    name: name,
-                    description: description,
-                    price: price,
-                    images: uploadedImages.map((image) => ({
-                        public_id: image.public_id,
-                        url: image.secure_url,
-                    })),
-                    stock: stock,
-                },
+                name,
+                description,
+                price,
+                stock,
+                images: uploadedImages.map((image) => ({
+                    public_id: image.public_id,
+                    url: image.secure_url,
+                })),
             },
-            {
-                new: true,
-                runValidators: true,
-                useFindAndModify: false,
-            }
+            { new: true, runValidators: true }
         );
 
         if (!updatedProduct) {
-            throw new ApiError(404, "Product to be updated not found");
+            throw new ApiError(500, "Failed to update product");
         }
 
         return res
@@ -297,11 +282,11 @@ const updateProduct = asyncHandler(async (req, res, next) => {
                 new ApiResponse(
                     200,
                     updatedProduct,
-                    "Product details updated successfully"
+                    "Product updated successfully"
                 )
             );
     } catch (error) {
-        if (error.name == "CastError") {
+        if (error.name === "CastError") {
             next(new ApiError(400, `Invalid product ID: ${productId}`));
         } else {
             next(error);
@@ -329,7 +314,7 @@ const deleteProduct = asyncHandler(async (req, res, next) => {
         const deletedProduct = await Product.findByIdAndDelete(productId);
 
         if (!deletedProduct) {
-            throw new ApiError(404, "Product to be deleted not found");
+            throw new ApiError(404, "Failed to delete product");
         }
 
         return res
@@ -345,21 +330,22 @@ const deleteProduct = asyncHandler(async (req, res, next) => {
 });
 
 //get seller products only
-const getSellerProducts = asyncHandler(async (req, res, next) => {
+const getSellerProducts = asyncHandler(async (req, res) => {
     const sellerId = req.user._id;
 
     const products = await Product.find({ owner: sellerId });
+
     const productsCount = products.length;
 
     if (!products) {
-        throw new ApiError(404, "Seller has no products");
+        throw new ApiError(404, "No products found for this seller");
     }
 
     res.status(200).json(
         new ApiResponse(
             200,
             { products, productsCount },
-            "Your products fetched successfully"
+            "Seller products fetched successfully"
         )
     );
 });
@@ -368,8 +354,8 @@ const getSellerProducts = asyncHandler(async (req, res, next) => {
 const createProductReview = asyncHandler(async (req, res) => {
     const { rating, comment, productId } = req.body;
 
-    if (!rating) {
-        throw new ApiError(400, "Please enter ratings");
+    if (!rating || !comment) {
+        return next(new ApiError(400, "Please provide a rating and comment"));
     }
 
     if (!productId) {
@@ -380,7 +366,7 @@ const createProductReview = asyncHandler(async (req, res) => {
         userId: req.user._id,
         name: req.user.username,
         rating: Number(rating),
-        comment: comment || "",
+        comment: comment.trim(),
     };
 
     const product = await Product.findById(productId);
@@ -401,18 +387,18 @@ const createProductReview = asyncHandler(async (req, res) => {
         product.numOfReviews = product.reviews.length;
     }
 
-    let avg = 0;
-    product.reviews.forEach((rev) => {
-        avg += rev.rating;
-    });
+    const totalRating = product.reviews.reduce(
+        (sum, rev) => sum + rev.rating,
+        0
+    );
 
-    product.rating = avg / product.reviews.length;
+    product.rating = totalRating / product.reviews.length;
 
     await product.save({ validateBeforeSave: false });
 
     return res
         .status(200)
-        .json(new ApiResponse(200, {}, "Review added successfully"));
+        .json(new ApiResponse(200, {}, "Review added/updated successfully"));
 });
 
 //get all reviews of a product
@@ -421,6 +407,10 @@ const getAllReviews = asyncHandler(async (req, res) => {
 
     if (!productId) {
         throw new ApiError(400, "Product ID is required");
+    }
+
+    if (!mongoose.isValidObjectId(productId)) {
+        throw new ApiError(400, "Invalid Product ID");
     }
 
     const product = await Product.findById(productId);
@@ -457,20 +447,20 @@ const deleteReview = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Product not found");
     }
 
-    const review = product.reviews.find(
-        (review) => review._id.toString() === reviewId
+    const review = product.reviews.find((review) =>
+        review._id.equals(reviewId)
     );
 
     if (!review) {
         throw new ApiError(404, "Review to be deleted not found");
     }
 
-    if (review.userId.toString() !== req.user._id.toString()) {
+    if (!review.userId.equals(req.user._id)) {
         throw new ApiError(403, "You are not authorized to delete this review");
     }
 
     const newReviews = product.reviews.filter(
-        (rev) => rev._id.toString() !== reviewId
+        (rev) => !rev._id.equals(reviewId)
     );
 
     const avg = newReviews.reduce((acc, rev) => acc + rev.rating, 0);

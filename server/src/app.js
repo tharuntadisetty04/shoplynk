@@ -1,6 +1,9 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
+
+dotenv.config({ path: "./.env" });
 
 const app = express();
 
@@ -20,26 +23,26 @@ app.get("/", (req, res) => {
     res.send("Server running ...");
 });
 
-//Routes
+// Routes
 import productRouter from "./routes/product.routes.js";
 import userRouter from "./routes/user.routes.js";
 import orderRouter from "./routes/order.routes.js";
 import paymentRouter from "./routes/payment.routes.js";
 
-//product routes
+// Product routes
 app.use("/api/v1/products", productRouter);
 
-//user route
+// User route
 app.use("/api/v1/user", userRouter);
 
-//order route
+// Order route
 app.use("/api/v1/orders", orderRouter);
 
-//payment route
+// Payment route
 app.use("/api/v1/payment", paymentRouter);
 
 app.on("error", (err) => {
-    console.log("App error : ", err);
+    console.log("App error: ", err);
     throw err;
 });
 

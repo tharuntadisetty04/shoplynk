@@ -15,7 +15,7 @@ const router = Router();
 router.route("/new").post(verifyJWT, newOrder);
 router.route("/my-orders").get(verifyJWT, getCurrentUserOrders);
 
-//admin routes
+//seller routes
 router.route("/admin/all").get(verifyJWT, verifySeller, getSellerOrders);
 router
     .route("/admin/order/:id")
