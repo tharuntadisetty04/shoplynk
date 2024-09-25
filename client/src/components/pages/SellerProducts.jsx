@@ -183,7 +183,7 @@ const SellerProducts = ({ setActiveTab, updateProductHandler }) => {
 
                                         <td className="px-6 py-2">{product.price}</td>
 
-                                        <td className="px-6 py-2 flex items-center space-x-2">
+                                        <td className="px-6 py-2 lg:flex lg:items-center space-x-2.5">
                                             <button
                                                 className="text-gray-600 hover:text-blue-600 duration-200 text-xl"
                                                 onClick={() => updateProductHandler(product?._id)}
@@ -191,7 +191,7 @@ const SellerProducts = ({ setActiveTab, updateProductHandler }) => {
                                                 <RiEdit2Line />
                                             </button>
 
-                                            <span>|</span>
+                                            <span className="lg:block hidden">|</span>
 
                                             <button
                                                 className="text-gray-600 hover:text-red-600 duration-200 text-xl"

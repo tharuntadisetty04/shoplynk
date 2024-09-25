@@ -157,7 +157,7 @@ const Profile = () => {
                     </button>
                 </div>
 
-                <div className="content w-4/5">
+                <div className="content md:w-4/5">
                     {activeTab === "personalInformation" && (
                         <PersonalInformation setActiveTab={setActiveTab} />
                     )}

@@ -109,7 +109,7 @@ const SellerProductReviews = () => {
                 transition:Slide
             />
 
-            <div className="flex flex-col md:flex-row items-center justify-between mb-4">
+            <div className="flex flex-col md:flex-row items-center justify-between mb-4 gap-2 md:gap-0">
                 <div>
                     <label className="font-medium text-xl">Enter Product ID: </label>
 

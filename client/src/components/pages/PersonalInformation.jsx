@@ -41,7 +41,7 @@ const PersonalInformation = ({ setActiveTab }) => {
                 />
             </div>
 
-            <div className="details flex flex-col gap-4 bg-white lg:p-6 p-4 rounded-lg shadow-md lg:w-[30%] w-[100%]">
+            <div className="details flex flex-col gap-4 bg-white lg:p-6 p-4 rounded-lg shadow-md lg:w-[30%] w-full">
                 <div className="flex flex-col items-start">
                     <h2 className="text-blue-600 text-xl font-semibold">Full Name</h2>
                     <p className="font-medium text-lg">{user?.username || "User Name"}</p>

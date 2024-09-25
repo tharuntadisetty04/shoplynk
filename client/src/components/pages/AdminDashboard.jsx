@@ -305,7 +305,7 @@ const Dashboard = ({ setActiveTab }) => {
                             Revenue
                         </span>
                         <span className="font-medium text-lg text-neutral-100">
-                            ₹ {revenue}
+                            {"₹" + revenue}
                         </span>
                     </div>
                 </div>

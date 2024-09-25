@@ -266,12 +266,14 @@ const UpdateOrder = ({ orderId }) => {
                                         className="w-20 h-20 object-cover rounded duration-200 group-hover:shadow-md"
                                     />
 
-                                    <div className="flex flex-col items-center justify-center">
+                                    <div className="flex flex-col items-start justify-center">
                                         <h3 className="text-lg font-medium lg:w-40 truncate">
-                                            {item.name}
+                                            {item.name.length > 15
+                                                ? item.name.slice(0, 15) + "..."
+                                                : item.name}
                                         </h3>
 
-                                        <div className="flex-col pl-3">
+                                        <div className="flex-col">
                                             <p className="w-40 text-start font-medium">
                                                 ₹{item.price.toFixed(2)} x {item.quantity} =
                                             </p>

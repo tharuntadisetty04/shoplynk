@@ -115,7 +115,7 @@ const ShippingInfo = () => {
                 />
 
                 <form
-                    className="bg-slate-200 rounded shadow-sm px-6 py-4 my-4 space-y-2 w-96"
+                    className="bg-slate-200 rounded shadow-sm px-6 py-4 my-4 space-y-2 md:w-96 w-full"
                     onSubmit={handleSubmit(onSubmit)}
                 >
                     {subStep === 1 && (
