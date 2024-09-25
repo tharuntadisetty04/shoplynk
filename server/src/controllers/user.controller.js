@@ -60,7 +60,7 @@ const registerUser = asyncHandler(async (req, res) => {
     let avatar;
     if (req.file) {
         try {
-            avatar = await uploadToCloudinary(req.file.path);
+            avatar = await uploadToCloudinary(req.file?.path);
             if (!avatar) {
                 throw new ApiError(
                     400,
@@ -256,7 +256,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
     await user.save({ validateBeforeSave: false });
 
-    const resetPasswordUrl = `${process.env.CLIENT_URL}/password/reset/${resetToken}`;
+    const resetPasswordUrl = `${process.env.CLIENT_URL || "https://shoplynk.vercel.app"}/password/reset/${resetToken}`;
 
     const message = `You requested a password reset. Please use the following link to reset your password: \n\n${resetPasswordUrl}\n\nIf you did not request this, please ignore this email or update your password to ensure your account's security.`;
 
