@@ -106,18 +106,21 @@ const registerUser = asyncHandler(async (req, res) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+        sameSite: "None",
     };
 
     const refreshTokenOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+        sameSite: "None",
     };
 
     const checkTokenOptions = {
         httpOnly: false,
         secure: process.env.NODE_ENV === "production",
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        sameSite: "None",
     };
 
     return res
@@ -166,18 +169,21 @@ const loginUser = asyncHandler(async (req, res) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+        sameSite: "None",
     };
 
     const refreshTokenOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+        sameSite: "None",
     };
 
     const checkTokenOptions = {
         httpOnly: false,
         secure: process.env.NODE_ENV === "production",
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        sameSite: "None",
     };
 
     return res
@@ -197,6 +203,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     const cookieOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
+        sameSite: "None",
     };
 
     return res
@@ -340,18 +347,21 @@ const resetPassword = asyncHandler(async (req, res) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+        sameSite: "None",
     };
 
     const refreshTokenOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+        sameSite: "None",
     };
 
     const checkTokenOptions = {
         httpOnly: false,
         secure: process.env.NODE_ENV === "production",
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        sameSite: "None",
     };
 
     return res
@@ -579,6 +589,7 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
         const cookieOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
+            sameSite: "None",
         };
 
         return res
