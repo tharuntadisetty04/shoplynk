@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TitleHelmet from "../utils/TitleHelmet";
-import ItemLoader from "../layout/ItemLoader";
+import ItemLoader from "../layout/Loaders/ItemLoader";
 import {
     getProductReviews,
     clearErrors,

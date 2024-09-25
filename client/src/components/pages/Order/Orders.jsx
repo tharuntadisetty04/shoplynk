@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getCurrentUserOrders } from "../../redux/actions/orderAction";
-import TitleHelmet from "../utils/TitleHelmet";
+import { getCurrentUserOrders } from "../../../redux/actions/orderAction";
+import TitleHelmet from "../../utils/TitleHelmet";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import OrdersGrid from "../utils/OrdersGrid";
+import OrdersGrid from "../../utils/OrdersGrid";
 import { useNavigate } from "react-router-dom";
-import PageLoader from "../layout/PageLoader";
+import PageLoader from "../../layout/Loaders/PageLoader";
 
 const Orders = () => {
     const dispatch = useDispatch();

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import TitleHelmet from "../utils/TitleHelmet";
+import TitleHelmet from "../../utils/TitleHelmet";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useForm } from "react-hook-form";
@@ -10,10 +10,10 @@ import {
     clearErrors,
     loadUser,
     updateUserPassword,
-} from "../../redux/actions/UserAction";
+} from "../../../redux/actions/UserAction";
 import { useNavigate } from "react-router-dom";
-import { UPDATE_PASSWORD_RESET } from "../../redux/constants/UserConstant";
-import ItemLoader from "../layout/ItemLoader";
+import { UPDATE_PASSWORD_RESET } from "../../../redux/constants/UserConstant";
+import ItemLoader from "../../layout/Loaders/ItemLoader";
 import updatePasswordImg from "../../assets/update-password.jpg";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import TitleHelmet from "../utils/TitleHelmet";
+import { useEffect } from "react";
+import TitleHelmet from "../../utils/TitleHelmet";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useForm } from "react-hook-form";
@@ -9,22 +9,25 @@ import { useDispatch, useSelector } from "react-redux";
 import {
     clearErrors,
     loadUser,
-    updateUserProfile,
-} from "../../redux/actions/UserAction";
+    updateUserRole,
+} from "../../../redux/actions/UserAction";
+import ItemLoader from "../../layout/Loaders/ItemLoader";
+import shopImg from "../../assets/register-seller.jpg";
 import { useNavigate } from "react-router-dom";
-import { UPDATE_PROFILE_RESET } from "../../redux/constants/UserConstant";
-import ItemLoader from "../layout/ItemLoader";
+import { UPDATE_ROLE_RESET } from "../../../redux/constants/UserConstant";
 
-const UpdateProfileSchema = z.object({
+const UpdateRoleSchema = z.object({
     username: z
         .string()
         .min(3, "Full Name should at least have 3 characters")
         .max(30, "Full Name cannot exceed 30 characters"),
     email: z.string().email("Invalid email address"),
-    avatar: z.instanceof(File, { message: "New avatar is required" }),
+    termsAccepted: z.boolean().refine((val) => val === true, {
+        message: "You must accept terms and conditions",
+    }),
 });
 
-const UpdateProfile = () => {
+const UpdateRole = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -33,46 +36,25 @@ const UpdateProfile = () => {
         (state) => state.userProfile
     );
 
-    const [avatarPreview, setAvatarPreview] = useState("/avatar.png");
-
     const {
         register,
         handleSubmit,
         setValue,
         formState: { errors },
     } = useForm({
-        resolver: zodResolver(UpdateProfileSchema),
+        resolver: zodResolver(UpdateRoleSchema),
     });
 
     useEffect(() => {
         if (user) {
             setValue("username", user.username || "");
             setValue("email", user.email || "");
-            setAvatarPreview(user.avatar?.url || "/avatar.png");
+            setValue("termsAccepted", false);
         }
     }, [user, setValue]);
 
-    const handleInputChange = (e) => {
-        const { name, files } = e.target;
-
-        if (name === "avatar" && files.length > 0) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                if (reader.readyState === 2) {
-                    setAvatarPreview(reader.result);
-                    setValue("avatar", files[0]);
-                }
-            };
-            reader.onerror = () => {
-                toast.error("There was an error reading the file.");
-            };
-
-            reader.readAsDataURL(files[0]);
-        }
-    };
-
     const onSubmit = (data) => {
-        dispatch(updateUserProfile(data));
+        dispatch(updateUserRole(data));
     };
 
     useEffect(() => {
@@ -83,26 +65,26 @@ const UpdateProfile = () => {
         }
 
         if (isUpdated) {
-            dispatch(loadUser());
+            dispatch({ type: UPDATE_ROLE_RESET });
 
             navigate("/", {
                 state: {
-                    toastMessage: "Profile updated successfully!",
+                    toastMessage: "User role updated successfully!",
                     type: "success",
                 },
             });
 
-            dispatch({ type: UPDATE_PROFILE_RESET });
+            dispatch(loadUser());
         }
-    }, [dispatch, error, isUpdated, navigate]);
+    }, [dispatch, error, navigate, isUpdated]);
 
     return loading ? (
         <div className="bg-transparent lg:-mt-[3.4rem] lg:-ml-28 -ml-2">
             <ItemLoader />
         </div>
     ) : (
-        <div className="flex flex-col lg:flex-row items-center lg:items-start gap-6 lg:gap-20 lg:pl-14">
-            <TitleHelmet title={"Update Profile | ShopLynk"} />
+        <div className="update-role w-full h-full flex lg:flex-row flex-col items-center justify-center lg:gap-16 lg:-mt-3">
+            <TitleHelmet title={"Update Role | ShopLynk"} />
 
             <ToastContainer
                 position="top-right"
@@ -118,20 +100,23 @@ const UpdateProfile = () => {
                 transition:Slide
             />
 
-            <img
-                src={avatarPreview}
-                alt="Avatar"
-                className="md:w-[19rem] md:h-[19rem] aspect-square rounded-full object-cover hover:scale-105 duration-300 cursor-pointer"
-            />
+            <div className="lg:-ml-44 md:block hidden lg:-mt-6">
+                <img
+                    src={shopImg}
+                    alt="Shop Image"
+                    width={400}
+                    className="mix-blend-multiply"
+                />
+            </div>
 
             <form
-                className="update-profile-form lg:w-80 w-full shadow-md rounded"
+                className="update-seller-form w-fit md:w-full lg:w-80 shadow-md rounded lg:-mt-2"
                 onSubmit={handleSubmit(onSubmit)}
             >
                 <div className="flex flex-col gap-4 border-2 border-slate-200 rounded p-4 bg-slate-200">
                     <div className="flex gap-1 flex-col">
                         <label htmlFor="username" className="font-medium text-lg pl-0.5">
-                            Full Name
+                            Business Name
                         </label>
 
                         <input
@@ -167,23 +152,22 @@ const UpdateProfile = () => {
                         )}
                     </div>
 
-                    <div className="flex gap-1 md:flex-col flex-row items-center md:items-start">
-                        <label htmlFor="avatar" className="font-medium text-lg pl-0.5">
-                            Avatar
-                        </label>
-
-                        <div className="lg:ml-[0.25rem] md:ml-28">
+                    <div className="flex flex-col gap-1">
+                        <div className="flex gap-1.5 pl-1">
                             <input
-                                type="file"
-                                name="avatar"
-                                accept="image/*"
-                                onChange={handleInputChange}
+                                type="checkbox"
+                                {...register("termsAccepted")}
+                                className="cursor-pointer"
                             />
+
+                            <label htmlFor="termsAccepted" className="font-medium text-sm">
+                                I Agree to the Terms & Conditions.
+                            </label>
                         </div>
 
-                        {errors.avatar && (
+                        {errors.termsAccepted && (
                             <span className="text-red-500 text-sm font-medium pl-1">
-                                {errors.avatar.message}
+                                {errors.termsAccepted.message}
                             </span>
                         )}
                     </div>
@@ -192,7 +176,7 @@ const UpdateProfile = () => {
                         type="submit"
                         className="rounded bg-blue-600 px-3.5 py-2.5 font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200"
                     >
-                        Update Profile
+                        Register as Seller
                     </button>
                 </div>
             </form>
@@ -200,4 +184,4 @@ const UpdateProfile = () => {
     );
 };
 
-export default UpdateProfile;
+export default UpdateRole;

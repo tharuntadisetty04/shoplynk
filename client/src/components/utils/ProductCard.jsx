@@ -71,7 +71,11 @@ const ProductCard = ({ product }) => {
 
             <div className="product-details py-3 px-4 flex flex-col items-start justify-center gap-1">
                 <div>
-                    <h2 className="text-xl font-bold">{product.name}</h2>
+                    <h2 className="text-xl font-bold">
+                        {product.name &&
+                            product.name.length > 20 &&
+                            product.name.slice(0, 20) + "..."}
+                    </h2>
 
                     <div className="text-sm font-medium flex gap-1 items-center">
                         <ReactStars {...options} />
@@ -84,7 +88,9 @@ const ProductCard = ({ product }) => {
                         <span className="font-bold text-xl pr-1">₹{product.price}</span>
 
                         <span className="line-through text-sm text-gray-500 font-medium">
-                            ₹{product.price + Math.floor(product.price * (discountPercent / 100))}
+                            ₹
+                            {product.price +
+                                Math.floor(product.price * (discountPercent / 100))}
                         </span>
                     </div>
 

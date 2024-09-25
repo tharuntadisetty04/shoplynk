@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getSellerOrders } from "../../redux/actions/orderAction";
-import TitleHelmet from "../utils/TitleHelmet";
+import { getSellerOrders } from "../../../redux/actions/orderAction";
+import TitleHelmet from "../../utils/TitleHelmet";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ItemLoader from "../layout/ItemLoader";
-import SellerOrdersGrid from "../utils/SellerOrdersGrid";
+import ItemLoader from "../../layout/Loaders/ItemLoader";
+import SellerOrdersGrid from "../../utils/SellerOrdersGrid";
 
 const SellerOrders = ({ updateOrderHandler }) => {
     const dispatch = useDispatch();

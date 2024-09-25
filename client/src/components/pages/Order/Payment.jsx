@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import TitleHelmet from "../utils/TitleHelmet";
+import TitleHelmet from "../../utils/TitleHelmet";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ProgressBar from "../utils/ProgressBar";
+import ProgressBar from "../../utils/ProgressBar";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import paymentImg from "../../assets/payment.jpg";
@@ -19,8 +19,8 @@ import {
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
-import { clearErrors, createNewOrder } from "../../redux/actions/orderAction";
-import PageLoader from "../layout/PageLoader";
+import { clearErrors, createNewOrder } from "../../../redux/actions/orderAction";
+import PageLoader from "../../layout/Loaders/PageLoader";
 
 const paymentSchema = z.object({
     cardHolderName: z.string().min(3, "Please enter card holder name"),

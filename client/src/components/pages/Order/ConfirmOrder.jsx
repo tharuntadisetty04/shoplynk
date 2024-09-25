@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import TitleHelmet from "../utils/TitleHelmet";
+import TitleHelmet from "../../utils/TitleHelmet";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ProgressBar from "../utils/ProgressBar";
+import ProgressBar from "../../utils/ProgressBar";
 import { useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 

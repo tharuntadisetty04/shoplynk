@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import TitleHelmet from "../utils/TitleHelmet";
+import TitleHelmet from "../../utils/TitleHelmet";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MdDashboard, MdLibraryAdd, MdRateReview } from "react-icons/md";
@@ -9,7 +9,7 @@ import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import SellerProducts from "./SellerProducts";
 import CreateProduct from "./CreateProduct";
 import SellerOrders from "./SellerOrders";
-import SellerProductReviews from "./SellerProductReviews";
+import SellerProductReviews from "../SellerProductReviews";
 import { Doughnut, Line } from "react-chartjs-2";
 import {
     Chart as ChartJS,
@@ -23,11 +23,11 @@ import {
     ArcElement,
 } from "chart.js";
 import { useDispatch, useSelector } from "react-redux";
-import { getSellerProducts } from "../../redux/actions/ProductAction";
-import UpdateProduct from "./UpdateProduct";
-import { getSellerOrders } from "../../redux/actions/orderAction";
-import ItemLoader from "../layout/ItemLoader";
-import UpdateOrder from "./UpdateOrder";
+import { getSellerProducts } from "../../../redux/actions/ProductAction";
+import UpdateProduct from "../UpdateProduct";
+import { getSellerOrders } from "../../../redux/actions/orderAction";
+import ItemLoader from "../../layout/Loaders/ItemLoader";
+import UpdateOrder from "../UpdateOrder";
 
 ChartJS.register(
     CategoryScale,
@@ -230,8 +230,9 @@ const Dashboard = ({ setActiveTab }) => {
     const revenue = orders?.reduce((acc, order) => acc + order.totalPrice, 0);
 
     const pendingOrders = orders?.filter((order) =>
-        order.orderItems.map(
-            (item) => item.orderStatus === "Proccessing" || "Shipping"
+        order.orderItems.some(
+            (item) =>
+                item.orderStatus === "Processing" || item.orderStatus === "Shipping"
         )
     );
 
@@ -267,7 +268,7 @@ const Dashboard = ({ setActiveTab }) => {
             {
                 backgroundColor: ["#F05D5E", "#75DDDD"],
                 hoverBackgroundColor: ["#EF4444", "#00A6B4"],
-                data: [pendingOrders?.length, completedOrders],
+                data: [completedOrders, pendingOrders?.length],
             },
         ],
     };

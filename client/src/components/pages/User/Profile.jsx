@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import TitleHelmet from "../utils/TitleHelmet";
+import TitleHelmet from "../../utils/TitleHelmet";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,7 +8,7 @@ import {
     clearErrors,
     deleteUser,
     logoutUser,
-} from "../../redux/actions/UserAction";
+} from "../../../redux/actions/UserAction";
 import { MdDashboard, MdDeleteOutline } from "react-icons/md";
 import { FaBagShopping, FaUser } from "react-icons/fa6";
 import { AiFillShop } from "react-icons/ai";
@@ -17,7 +17,7 @@ import PersonalInformation from "./PersonalInformation";
 import UpdatePassword from "./UpdatePassword";
 import UpdateRole from "./UpdateRole";
 import UpdateProfile from "./UpdateProfile";
-import { DELETE_ACCOUNT_RESET } from "../../redux/constants/UserConstant";
+import { DELETE_ACCOUNT_RESET } from "../../../redux/constants/UserConstant";
 
 const Profile = () => {
     const navigate = useNavigate();

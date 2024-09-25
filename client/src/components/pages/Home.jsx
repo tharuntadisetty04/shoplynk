@@ -15,7 +15,7 @@ import { RiCustomerService2Line } from "react-icons/ri";
 import { FaArrowRight } from "react-icons/fa";
 import ProductCard from "../utils/ProductCard";
 import TitleHelmet from "../utils/TitleHelmet";
-import ItemLoader from "../layout/ItemLoader";
+import ItemLoader from "../layout/Loaders/ItemLoader";
 import { useDispatch, useSelector } from "react-redux";
 import {
     clearErrors,

@@ -9,7 +9,7 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ProductCard from "../utils/ProductCard";
-import ItemLoader from "../layout/ItemLoader";
+import ItemLoader from "../layout/Loaders/ItemLoader";
 
 const SimilarProducts = () => {
     const { id } = useParams();

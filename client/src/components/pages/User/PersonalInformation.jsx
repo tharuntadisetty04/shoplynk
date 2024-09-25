@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import avatarImg from "/avatar.png";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { clearErrors } from "../../redux/actions/UserAction";
+import { clearErrors } from "../../../redux/actions/UserAction";
 
 const PersonalInformation = ({ setActiveTab }) => {
     const dispatch = useDispatch();

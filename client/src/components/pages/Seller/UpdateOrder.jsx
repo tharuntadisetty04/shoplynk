@@ -9,7 +9,7 @@ import {
     getOrderDetails,
     updateOrder,
 } from "../../redux/actions/orderAction";
-import ItemLoader from "../layout/ItemLoader";
+import ItemLoader from "../layout/Loaders/ItemLoader";
 import { z } from "zod";
 import TitleHelmet from "../utils/TitleHelmet";
 import { UPDATE_ORDER_RESET } from "../../redux/constants/orderConstant";

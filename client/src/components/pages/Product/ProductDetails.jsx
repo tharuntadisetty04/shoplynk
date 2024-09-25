@@ -5,22 +5,22 @@ import {
     clearErrors,
     deleteProductReview,
     getProductDetails,
-} from "../../redux/actions/ProductAction";
+} from "../../../redux/actions/ProductAction";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ReactStars from "react-rating-stars-component";
 import { TbTruckDelivery } from "react-icons/tb";
 import { RiExchangeLine } from "react-icons/ri";
-import { ReviewCard, ReviewModal } from "../utils/ReviewCard";
-import ItemLoader from "../layout/ItemLoader";
+import { ReviewCard, ReviewModal } from "../../utils/ReviewCard";
+import ItemLoader from "../../layout/Loaders/ItemLoader";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import Modal from "react-modal";
-import TitleHelmet from "../utils/TitleHelmet";
-import SimilarProducts from "../utils/SimilarProducts";
+import TitleHelmet from "../../utils/TitleHelmet";
+import SimilarProducts from "../../utils/SimilarProducts";
 import ProductNotFound from "./ProductNotFound";
-import { addItemsToCart } from "../../redux/actions/cartAction";
-import CreateReviewModal from "../utils/CreateReviewModal";
+import { addItemsToCart } from "../../../redux/actions/cartAction";
+import CreateReviewModal from "../../utils/CreateReviewModal";
 
 Modal.setAppElement("#root");
 

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import forgotPasswordImg from "../../assets/forgot-password.jpg";
-import TitleHelmet from "../utils/TitleHelmet";
+import TitleHelmet from "../../utils/TitleHelmet";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useForm } from "react-hook-form";
@@ -11,8 +11,8 @@ import {
     clearErrors,
     clearMessage,
     forgotPassword,
-} from "../../redux/actions/UserAction";
-import PageLoader from "../layout/PageLoader";
+} from "../../../redux/actions/UserAction";
+import PageLoader from "../../layout/Loaders/PageLoader";
 
 const forgotPasswordSchema = z.object({
     email: z.string().email("Invalid email address"),

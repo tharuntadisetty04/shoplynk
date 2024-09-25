@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import OrderSuccessImg from "../../assets/order-complete.jpg";
-import TitleHelmet from "../utils/TitleHelmet";
+import TitleHelmet from "../../utils/TitleHelmet";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { CLEAR_CART } from "../../redux/constants/CartConstant";
+import { CLEAR_CART } from "../../../redux/constants/CartConstant";
 
 const OrderSuccess = () => {
     const dispatch = useDispatch();

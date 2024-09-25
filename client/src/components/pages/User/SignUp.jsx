@@ -5,12 +5,12 @@ import { z } from "zod";
 import signUpImg from "../../assets/signup-img.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
-import TitleHelmet from "../utils/TitleHelmet";
+import TitleHelmet from "../../utils/TitleHelmet";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch, useSelector } from "react-redux";
-import { clearErrors, registerUser } from "../../redux/actions/UserAction";
-import PageLoader from "../layout/PageLoader";
+import { clearErrors, registerUser } from "../../../redux/actions/UserAction";
+import PageLoader from "../../layout/Loaders/PageLoader";
 
 const signUpSchema = z
     .object({

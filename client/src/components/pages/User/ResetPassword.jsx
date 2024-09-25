@@ -8,7 +8,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
 import { clearErrors, loadUser, resetPassword } from "../../redux/actions/UserAction";
-import PageLoader from "../layout/PageLoader";
+import PageLoader from "../layout/Loaders/PageLoader";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";

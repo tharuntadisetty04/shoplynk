@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import TitleHelmet from "../utils/TitleHelmet";
 import ProductCard from "../utils/ProductCard";
-import ProductNotFound from "./ProductNotFound";
+import ProductNotFound from "./Product/ProductNotFound";
 import { useDispatch, useSelector } from "react-redux";
 import { clearErrors, getAllProducts } from "../../redux/actions/ProductAction";
 import { ToastContainer, toast } from "react-toastify";
@@ -15,7 +15,7 @@ import { GiAmpleDress } from "react-icons/gi";
 import { IoGameController } from "react-icons/io5";
 import { MdOutlineFoodBank, MdElectricalServices } from "react-icons/md";
 import { FaBowlFood, FaHandSparkles } from "react-icons/fa6";
-import PageLoader from "../layout/PageLoader";
+import PageLoader from "../layout/Loaders/PageLoader";
 
 const Products = () => {
     const { keyword } = useParams();

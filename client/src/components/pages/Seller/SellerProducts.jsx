@@ -4,15 +4,15 @@ import {
     clearErrors,
     deleteProduct,
     getSellerProducts,
-} from "../../redux/actions/ProductAction";
+} from "../../../redux/actions/ProductAction";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import TitleHelmet from "../utils/TitleHelmet";
+import TitleHelmet from "../../utils/TitleHelmet";
 import { Link, useNavigate } from "react-router-dom";
-import ItemLoader from "../layout/ItemLoader";
+import ItemLoader from "../../layout/Loaders/ItemLoader";
 import { RiEdit2Line } from "react-icons/ri";
 import { MdDeleteOutline } from "react-icons/md";
-import { DELETE_PRODUCT_RESET } from "../../redux/constants/ProductConstant";
+import { DELETE_PRODUCT_RESET } from "../../../redux/constants/ProductConstant";
 
 const SellerProducts = ({ setActiveTab, updateProductHandler }) => {
     const dispatch = useDispatch();

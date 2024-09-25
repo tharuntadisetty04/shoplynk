@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import PageLoader from "../layout/PageLoader";
+import PageLoader from "../layout/Loaders/PageLoader";
 
 const SellerRoute = ({ children }) => {
     const navigate = useNavigate();

@@ -11,7 +11,7 @@ import { TbMoneybag } from "react-icons/tb";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { clearErrors } from "../../redux/actions/UserAction";
-import ItemLoader from "../layout/ItemLoader";
+import ItemLoader from "../layout/Loaders/ItemLoader";
 
 const About = () => {
     const dispatch = useDispatch();

@@ -2,15 +2,15 @@ import { useEffect, useState } from "react";
 import loginImg from "../../assets/login-img.jpg";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
-import TitleHelmet from "../utils/TitleHelmet";
+import TitleHelmet from "../../utils/TitleHelmet";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
-import { clearErrors, loginUser } from "../../redux/actions/UserAction";
-import PageLoader from "../layout/PageLoader";
+import { clearErrors, loginUser } from "../../../redux/actions/UserAction";
+import PageLoader from "../../layout/Loaders/PageLoader";
 
 const loginSchema = z.object({
     email: z.string().email("Invalid email address"),
