@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -11,7 +11,6 @@ import {
 
 const SellerProductReviews = () => {
     const dispatch = useDispatch();
-
     const { loading, error, reviews } = useSelector((state) => state.allReviews);
 
     const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
@@ -57,19 +56,27 @@ const SellerProductReviews = () => {
         return reviews;
     }, [reviews, sortConfig]);
 
-    const indexOfLastReview = currentPage * itemsPerPage;
-    const indexOfFirstReview = indexOfLastReview - itemsPerPage;
-    const currentReviews = sortedReviews.slice(
-        indexOfFirstReview,
-        indexOfLastReview
-    );
+    const currentReviews = useMemo(() => {
+        const indexOfLastReview = currentPage * itemsPerPage;
+        const indexOfFirstReview = indexOfLastReview - itemsPerPage;
+        return sortedReviews.slice(indexOfFirstReview, indexOfLastReview);
+    }, [sortedReviews, currentPage, itemsPerPage]);
+
+    const sortingKeys = {
+        "Review ID": "_id",
+        User: "name",
+        Comment: "comment",
+        Rating: "rating",
+    };
 
     const requestSort = (key) => {
+        const actualKey = sortingKeys[key];
         let direction = "asc";
-        if (sortConfig.key === key && sortConfig.direction === "asc") {
+        if (sortConfig.key === actualKey && sortConfig.direction === "asc") {
             direction = "desc";
         }
-        setSortConfig({ key, direction });
+
+        setSortConfig({ key: actualKey, direction });
     };
 
     const totalPages = Math.ceil(reviews?.length / itemsPerPage);
@@ -105,6 +112,7 @@ const SellerProductReviews = () => {
             <div className="flex flex-col md:flex-row items-center justify-between mb-4">
                 <div>
                     <label className="font-medium text-xl">Enter Product ID: </label>
+
                     <input
                         type="text"
                         value={productId}
@@ -144,8 +152,8 @@ const SellerProductReviews = () => {
                                             className="px-6 py-3 border-b-2 text-left cursor-pointer"
                                             onClick={() => requestSort(key)}
                                         >
-                                            {key.charAt(0).toUpperCase() + key.slice(1)}
-                                            {sortConfig.key === key
+                                            {key}
+                                            {sortConfig.key === sortingKeys[key]
                                                 ? sortConfig.direction === "asc"
                                                     ? " ▲"
                                                     : " ▼"
@@ -177,9 +185,11 @@ const SellerProductReviews = () => {
                         >
                             Previous
                         </button>
+
                         <span>
                             Page {currentPage} of {totalPages}
                         </span>
+
                         <button
                             className="px-3 py-1.5 bg-blue-500 text-white rounded-md disabled:opacity-50"
                             disabled={currentPage === totalPages}
@@ -196,6 +206,7 @@ const SellerProductReviews = () => {
                     <h1 className="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl mb-4 text-center">
                         No Reviews Available
                     </h1>
+
                     <p className="text-gray-600 mb-6 text-center">
                         It looks like there are no reviews yet.
                     </p>

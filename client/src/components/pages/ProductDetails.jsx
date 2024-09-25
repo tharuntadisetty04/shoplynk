@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -49,8 +49,9 @@ const ProductDetails = () => {
                 onClose: () => dispatch(clearErrors()),
             });
         }
+
         dispatch(getProductDetails(id));
-    }, [dispatch, id, error]);
+    }, [dispatch, error, id]);
 
     useEffect(() => {
         if (deleteError) {
@@ -60,24 +61,23 @@ const ProductDetails = () => {
         }
 
         if (isDeleted) {
-            toast.success("Review deleted successfully!");
+            toast.success("Review deleted successfully!", {
+                autoClose: 1800,
+            });
+
             dispatch({ type: "DELETE_REVIEW_RESET" });
 
             setTimeout(() => {
                 dispatch(getProductDetails(id));
-            }, 1000);
+            }, 2000);
         }
-    }, [dispatch, isDeleted, deleteError]);
+    }, [dispatch, deleteError, isDeleted]);
 
     useEffect(() => {
         if (product?.images) {
             setMainImage(product.images[0].url);
         }
     }, [product]);
-
-    if (product.length === 0) {
-        return <ProductNotFound />;
-    }
 
     let displayedImages = [];
     let extraImageCount = 0;
@@ -149,8 +149,10 @@ const ProductDetails = () => {
     };
 
     const addToCart = () => {
-        dispatch(addItemsToCart(id, quantity));
-        toast.success("Item added to cart");
+        if (!error) {
+            dispatch(addItemsToCart(id, quantity));
+            toast.success("Item added to cart");
+        }
     };
 
     const ratingOptions = {
@@ -179,7 +181,9 @@ const ProductDetails = () => {
         }
     };
 
-    return (
+    return Object.keys(product).length === 0 && error ? (
+        <ProductNotFound />
+    ) : (
         <div className="product-details w-full h-full flex flex-col justify-center items-center">
             <TitleHelmet title={"Product Details | ShopLynk"} />
 
@@ -216,6 +220,7 @@ const ProductDetails = () => {
                                         className="w-full h-full rounded object-cover aspect-square"
                                         onClick={() => setMainImage(image.url)}
                                     />
+
                                     {index === 3 && extraImageCount > 0 && (
                                         <div
                                             className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 text-neutral-100 text-lg font-semibold rounded"
@@ -286,6 +291,7 @@ const ProductDetails = () => {
                                 <span className="text-sm text-gray-600 mx-1">
                                     ({product.numOfReviews} Reviews) |
                                 </span>
+
                                 <span
                                     className={
                                         product.stock < 1
@@ -303,6 +309,7 @@ const ProductDetails = () => {
                                     ₹{product.price + Math.floor(product.price * (discountPercent / 100))}
                                 </span>
                             </div>
+
                             <p className="text-gray-700 mt-1 text-base">
                                 {product.description}
                             </p>
@@ -310,21 +317,26 @@ const ProductDetails = () => {
 
                         <div className="mt-2 flex items-center">
                             <button
-                                className="duration-200 border-2 border-blue-600 bg-white text-blue-700 hover:bg-blue-600 hover:text-neutral-100 hover:border-blue-600 px-3 rounded font-semibold text-xl"
+                                className={`duration-200 border-2 border-blue-600 bg-white text-blue-700 hover:bg-blue-600 hover:text-neutral-100 hover:border-blue-600 px-3 rounded font-semibold text-xl ${product?.stock < 1 ? "cursor-not-allowed" : "cursor-auto"
+                                    }`}
                                 onClick={decreaseQuantity}
                                 disabled={product?.stock < 1}
                             >
                                 -
                             </button>
+
                             <input
                                 type="text"
                                 value={quantity}
-                                className="w-12 h-[1.92rem] text-center mx-2 border-2 border-blue-600 rounded outline-none bg-white"
+                                className={`w-12 h-[1.92rem] text-center mx-2 border-2 border-blue-600 rounded outline-none bg-white ${product?.stock < 1 ? "cursor-not-allowed" : "cursor-auto"
+                                    }`}
                                 onChange={handleQuantityChange}
                                 disabled={product?.stock < 1}
                             />
+
                             <button
-                                className="duration-200 border-2 border-blue-600 bg-white text-blue-700 hover:bg-blue-600 hover:text-neutral-100 hover:border-blue-600 px-3 rounded font-semibold text-xl"
+                                className={`duration-200 border-2 border-blue-600 bg-white text-blue-700 hover:bg-blue-600 hover:text-neutral-100 hover:border-blue-600 px-3 rounded font-semibold text-xl ${product?.stock < 1 ? "cursor-not-allowed" : "cursor-auto"
+                                    }`}
                                 onClick={increaseQuantity}
                                 disabled={product?.stock < 1}
                             >
@@ -332,7 +344,10 @@ const ProductDetails = () => {
                             </button>
 
                             <button
-                                className="rounded bg-blue-600 p-2 font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 lg:text-sm md:text-xs text-sm ml-4"
+                                className={`rounded bg-blue-600 p-2 font-semibold text-neutral-100 shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200 lg:text-sm md:text-xs text-sm ml-4 ${product?.stock < 1
+                                    ? "bg-gray-400 hover:bg-gray-500 cursor-not-allowed"
+                                    : "bg-blue-600 hover:bg-blue-500"
+                                    }`}
                                 onClick={addToCart}
                                 disabled={product?.stock < 1}
                             >
@@ -345,6 +360,7 @@ const ProductDetails = () => {
                                 <div className="text-4xl">
                                     <TbTruckDelivery />
                                 </div>
+
                                 <div className="flex flex-col">
                                     <p className="text-sm ml-2 font-medium">Fast Delivery</p>
                                     <p className="text-sm text-gray-500 ml-2">
@@ -357,6 +373,7 @@ const ProductDetails = () => {
                                 <div className="text-4xl">
                                     <RiExchangeLine />
                                 </div>
+
                                 <div className="flex flex-col">
                                     <p className="text-sm ml-2 font-medium">Return Delivery</p>
                                     <p className="text-sm text-gray-500 ml-2">
@@ -411,6 +428,7 @@ const ProductDetails = () => {
                                 No Reviews Yet
                             </p>
                         )}
+
                         <ReviewModal
                             review={selectedReview}
                             isOpen={isReviewModalOpen}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import TitleHelmet from "../utils/TitleHelmet";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -21,7 +21,7 @@ const UpdateProfileSchema = z.object({
         .min(3, "Full Name should at least have 3 characters")
         .max(30, "Full Name cannot exceed 30 characters"),
     email: z.string().email("Invalid email address"),
-    avatar: z.any().optional(),
+    avatar: z.instanceof(File, { message: "New avatar is required" }),
 });
 
 const UpdateProfile = () => {
@@ -66,15 +66,12 @@ const UpdateProfile = () => {
             reader.onerror = () => {
                 toast.error("There was an error reading the file.");
             };
+
             reader.readAsDataURL(files[0]);
         }
     };
 
     const onSubmit = (data) => {
-        if (!data.avatar) {
-            toast.error("Please upload an avatar.");
-            return;
-        }
         dispatch(updateUserProfile(data));
     };
 
@@ -89,7 +86,10 @@ const UpdateProfile = () => {
             dispatch(loadUser());
 
             navigate("/", {
-                state: { toastMessage: "Profile updated successfully!", type: "success" },
+                state: {
+                    toastMessage: "Profile updated successfully!",
+                    type: "success",
+                },
             });
 
             dispatch({ type: UPDATE_PROFILE_RESET });
@@ -118,13 +118,11 @@ const UpdateProfile = () => {
                 transition:Slide
             />
 
-            <div className="avatar">
-                <img
-                    src={avatarPreview}
-                    alt="Avatar"
-                    className="md:w-[19rem] md:h-[19rem] aspect-square rounded-full object-cover hover:scale-105 duration-300 cursor-pointer"
-                />
-            </div>
+            <img
+                src={avatarPreview}
+                alt="Avatar"
+                className="md:w-[19rem] md:h-[19rem] aspect-square rounded-full object-cover hover:scale-105 duration-300 cursor-pointer"
+            />
 
             <form
                 className="update-profile-form lg:w-80 w-full shadow-md rounded"
@@ -135,12 +133,14 @@ const UpdateProfile = () => {
                         <label htmlFor="username" className="font-medium text-lg pl-0.5">
                             Full Name
                         </label>
+
                         <input
                             type="text"
                             placeholder="Enter Full Name or Business Name"
                             className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                             {...register("username")}
                         />
+
                         {errors.username && (
                             <span className="text-red-500 text-sm font-medium pl-1">
                                 {errors.username.message}
@@ -152,12 +152,14 @@ const UpdateProfile = () => {
                         <label htmlFor="email" className="font-medium text-lg pl-0.5">
                             Email
                         </label>
+
                         <input
                             type="email"
                             placeholder="Enter Email"
                             className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                             {...register("email")}
                         />
+
                         {errors.email && (
                             <span className="text-red-500 text-sm font-medium pl-1">
                                 {errors.email.message}
@@ -178,6 +180,12 @@ const UpdateProfile = () => {
                                 onChange={handleInputChange}
                             />
                         </div>
+
+                        {errors.avatar && (
+                            <span className="text-red-500 text-sm font-medium pl-1">
+                                {errors.avatar.message}
+                            </span>
+                        )}
                     </div>
 
                     <button

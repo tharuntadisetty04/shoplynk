@@ -32,9 +32,11 @@ import {
     UPDATE_PROFILE_SUCCESS,
     UPDATE_ROLE_FAIL,
     UPDATE_ROLE_REQUEST,
+    UPDATE_ROLE_RESET,
     UPDATE_ROLE_SUCCESS,
 } from "../constants/UserConstant";
 
+// user reducer
 const initialUserState = {
     loading: false,
     user: {},
@@ -51,15 +53,9 @@ const userReducer = (state = initialUserState, action) => {
                 loading: true,
                 isAuthenticated: false,
             };
-        case UPDATE_ROLE_REQUEST:
-            return {
-                loading: true,
-                isAuthenticated: true,
-            };
         case LOGIN_SUCCESS:
         case REGISTER_USER_SUCCESS:
         case LOAD_USER_SUCCESS:
-        case UPDATE_ROLE_SUCCESS:
             return {
                 ...state,
                 loading: false,
@@ -76,7 +72,6 @@ const userReducer = (state = initialUserState, action) => {
                 error: action.payload,
             };
         case LOAD_USER_FAIL:
-        case UPDATE_ROLE_FAIL:
             return {
                 loading: false,
                 user: null,
@@ -105,6 +100,7 @@ const userReducer = (state = initialUserState, action) => {
     }
 };
 
+// profile reducer
 const profileState = {
     loading: false,
     isUpdated: false,
@@ -115,6 +111,7 @@ const profileReducer = (state = profileState, action) => {
     switch (action.type) {
         case UPDATE_PROFILE_REQUEST:
         case UPDATE_PASSWORD_REQUEST:
+        case UPDATE_ROLE_REQUEST:
             return {
                 ...state,
                 loading: true,
@@ -127,8 +124,15 @@ const profileReducer = (state = profileState, action) => {
                 isUpdated: true,
                 updatedUser: action.payload.data,
             };
+        case UPDATE_ROLE_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                isUpdated: action.payload.success,
+            };
         case UPDATE_PROFILE_FAIL:
         case UPDATE_PASSWORD_FAIL:
+        case UPDATE_ROLE_FAIL:
             return {
                 ...state,
                 loading: false,
@@ -136,6 +140,7 @@ const profileReducer = (state = profileState, action) => {
             };
         case UPDATE_PROFILE_RESET:
         case UPDATE_PASSWORD_RESET:
+        case UPDATE_ROLE_RESET:
             return {
                 ...state,
                 isUpdated: false,
@@ -150,6 +155,7 @@ const profileReducer = (state = profileState, action) => {
     }
 };
 
+// passwords reducer
 const passwordsState = {
     loading: false,
     message: "",
@@ -200,6 +206,7 @@ const passwordsReducer = (state = passwordsState, action) => {
     }
 };
 
+// delete user reducer
 const intialDeleteUserState = {
     loading: false,
     isDeleted: null,
@@ -217,7 +224,7 @@ const deleteUserReducer = (state = intialDeleteUserState, action) => {
             return {
                 ...state,
                 loading: false,
-                isDeleted: action.payload.success,
+                isDeleted: action.payload?.success || true,
             };
         case DELETE_ACCOUNT_FAIL:
             return {

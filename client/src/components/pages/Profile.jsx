@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import TitleHelmet from "../utils/TitleHelmet";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch, useSelector } from "react-redux";
-import PageLoader from "../layout/PageLoader";
 import { Link, useNavigate } from "react-router-dom";
 import {
     clearErrors,
     deleteUser,
-    loadUser,
+    logoutUser,
 } from "../../redux/actions/UserAction";
 import { MdDashboard, MdDeleteOutline } from "react-icons/md";
 import { FaBagShopping, FaUser } from "react-icons/fa6";
@@ -23,9 +22,8 @@ import { DELETE_ACCOUNT_RESET } from "../../redux/constants/UserConstant";
 const Profile = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { loading, error, user, isAuthenticated } = useSelector(
-        (state) => state.user
-    );
+
+    const { error, user } = useSelector((state) => state.user);
     const {
         loading: deleteLoading,
         error: deleteError,
@@ -33,7 +31,6 @@ const Profile = () => {
     } = useSelector((state) => state.deleteUser);
 
     const [activeTab, setActiveTab] = useState("personalInformation");
-    const [authCheckLoading, setAuthCheckLoading] = useState(true);
 
     useEffect(() => {
         if (error) {
@@ -48,44 +45,29 @@ const Profile = () => {
             });
         }
 
-        if (loading === false) {
-            if (!isAuthenticated) {
-                navigate("/login");
-            } else {
-                setAuthCheckLoading(false);
-            }
-        }
-
         if (isDeleted) {
             dispatch({ type: DELETE_ACCOUNT_RESET });
-            dispatch(loadUser());
         }
-    }, [
-        loading,
-        error,
-        isAuthenticated,
-        navigate,
-        dispatch,
-        deleteError,
-        isDeleted,
-    ]);
+    }, [error, deleteError, isDeleted, dispatch]);
 
     const deleteUserHandler = () => {
         if (window.confirm("Are you sure you want to delete your account?")) {
-            dispatch(deleteUser()).then(() => {
-                navigate("/", {
-                    state: {
-                        toastMessage: "Account deleted successfully!",
-                        type: "success",
-                    },
-                });
+            dispatch(deleteUser());
+
+            navigate("/", {
+                state: {
+                    toastMessage: "Account deleted successfully!",
+                    type: "success",
+                },
             });
+
+            setTimeout(() => {
+                dispatch(logoutUser());
+            }, 500);
         }
     };
 
-    return loading || authCheckLoading ? (
-        <PageLoader />
-    ) : (
+    return (
         <div className="profile w-full h-full py-4 px-8 md:px-16 min-h-[26.5rem]">
             <TitleHelmet title={`${user?.username || "User"}'s Profile | ShopLynk`} />
 
@@ -106,9 +88,8 @@ const Profile = () => {
             <div className="mx-auto flex lg:flex-row flex-col justify-between lg:items-start items-center gap-4">
                 <div className="side-bar lg:w-[15rem] lg:flex lg:flex-col lg:justify-between w-full grid grid-cols-2 gap-4">
                     <div
-                        className={`rounded-md border-2 border-slate-200 font-medium py-2 px-3 flex items-center gap-1.5 hover:bg-blue-600 hover:text-neutral-100 duration-200 cursor-pointer ${activeTab === "personalInformation"
-                            ? "bg-blue-600 text-neutral-100"
-                            : ""
+                        className={`rounded-md border-2 border-slate-200 font-medium py-2 px-3 flex items-center gap-1.5 hover:bg-blue-600 hover:text-neutral-100 duration-200 cursor-pointer ${activeTab === "personalInformation" &&
+                            "bg-blue-600 text-neutral-100"
                             }`}
                         onClick={() => setActiveTab("personalInformation")}
                     >
@@ -141,9 +122,7 @@ const Profile = () => {
                     )}
 
                     <div
-                        className={`rounded-md border-2 border-slate-200 font-medium py-2 px-3 flex items-center gap-1.5 hover:bg-blue-600 hover:text-neutral-100 duration-200 cursor-pointer ${activeTab === "updatePassword"
-                            ? "bg-blue-600 text-neutral-100"
-                            : ""
+                        className={`rounded-md border-2 border-slate-200 font-medium py-2 px-3 flex items-center gap-1.5 hover:bg-blue-600 hover:text-neutral-100 duration-200 cursor-pointer ${activeTab === "updatePassword" && "bg-blue-600 text-neutral-100"
                             }`}
                         onClick={() => setActiveTab("updatePassword")}
                     >
@@ -155,7 +134,7 @@ const Profile = () => {
 
                     {user && user.role === "buyer" && (
                         <div
-                            className={`rounded-md border-2 border-slate-200 font-medium py-2 px-3 flex items-center gap-1.5 hover:bg-blue-600 hover:text-neutral-100 duration-200 cursor-pointer ${activeTab === "updateRole" ? "bg-blue-600 text-neutral-100" : ""
+                            className={`rounded-md border-2 border-slate-200 font-medium py-2 px-3 flex items-center gap-1.5 hover:bg-blue-600 hover:text-neutral-100 duration-200 cursor-pointer ${activeTab === "updateRole" && "bg-blue-600 text-neutral-100"
                                 }`}
                             onClick={() => setActiveTab("updateRole")}
                         >
@@ -166,18 +145,16 @@ const Profile = () => {
                         </div>
                     )}
 
-                    {window.innerWidth > 1000 && (
-                        <button
-                            className="text-start rounded-md border-2 border-slate-200 text-lg font-medium py-2 px-3 hover:bg-blue-600 hover:text-neutral-100 duration-200 flex items-center gap-1.5"
-                            onClick={deleteUserHandler}
-                            disabled={deleteLoading}
-                        >
-                            <span className="text-[1.3rem] ml-0.5">
-                                <MdDeleteOutline />
-                            </span>
-                            <span>Delete Account</span>
-                        </button>
-                    )}
+                    <button
+                        className="text-start rounded-md border-2 border-slate-200 text-lg font-medium py-2 px-3 hover:bg-blue-600 hover:text-neutral-100 duration-200 flex items-center gap-1.5"
+                        onClick={deleteUserHandler}
+                        disabled={deleteLoading}
+                    >
+                        <span className="text-[1.3rem] ml-0.5">
+                            <MdDeleteOutline />
+                        </span>
+                        <span>Delete Account</span>
+                    </button>
                 </div>
 
                 <div className="content w-4/5">

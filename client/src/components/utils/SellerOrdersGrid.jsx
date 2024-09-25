@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import { RiEdit2Line } from "react-icons/ri";
 import { clearErrors, deleteOrder } from "../../redux/actions/orderAction";
@@ -23,48 +23,86 @@ const SellerOrdersGrid = ({ orders, updateOrderHandler, fetchOrders }) => {
         }
 
         if (isDeleted) {
-            toast.success("Order deleted successfully!");
-            fetchOrders();
+            toast.success("Order deleted successfully!", {
+                onClose: () => fetchOrders(),
+                autoClose: 1800,
+            });
+
             dispatch({ type: DELETE_ORDER_RESET });
         }
     }, [error, isDeleted, dispatch]);
 
+    const sortingKeys = {
+        "Order ID": "_id",
+        Amount: "totalPrice",
+        Status: "status",
+        "Items Qty": "itemsQty",
+    };
+
+    const getOrderStatus = useMemo(
+        () => (orderItems) => {
+            const status = orderItems.every(
+                (item) => item.orderStatus === "Delivered"
+            )
+                ? "Delivered"
+                : orderItems.some((item) => item.orderStatus === "Shipped")
+                    ? "Shipped"
+                    : "Processing";
+
+            switch (status) {
+                case "Delivered":
+                    return 3;
+                case "Shipped":
+                    return 2;
+                default:
+                    return 1;
+            }
+        },
+        []
+    );
+
     const sortedData = useMemo(() => {
         if (sortConfig.key) {
             return [...orders].sort((a, b) => {
-                if (a[sortConfig.key] < b[sortConfig.key]) {
+                let aValue = a[sortConfig.key];
+                let bValue = b[sortConfig.key];
+
+                if (sortConfig.key === "status") {
+                    aValue = getOrderStatus(a.orderItems);
+                    bValue = getOrderStatus(b.orderItems);
+                }
+
+                if (sortConfig.key === "itemsQty") {
+                    aValue = a.orderItems.reduce((sum, item) => sum + item.quantity, 0);
+                    bValue = b.orderItems.reduce((sum, item) => sum + item.quantity, 0);
+                }
+
+                if (aValue < bValue) {
                     return sortConfig.direction === "asc" ? -1 : 1;
                 }
-                if (a[sortConfig.key] > b[sortConfig.key]) {
+
+                if (aValue > bValue) {
                     return sortConfig.direction === "asc" ? 1 : -1;
                 }
                 return 0;
             });
         }
         return orders;
-    }, [orders, sortConfig]);
+    }, [orders, sortConfig, getOrderStatus]);
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
 
     const requestSort = (key) => {
+        const actualKey = sortingKeys[key];
         let direction = "asc";
-        if (sortConfig.key === key && sortConfig.direction === "asc") {
+        if (sortConfig.key === actualKey && sortConfig.direction === "asc") {
             direction = "desc";
         }
-        setSortConfig({ key, direction });
-    };
 
-    const getOrderStatus = useMemo(
-        () => (orderItems) =>
-            orderItems.every((item) => item.orderStatus === "Delivered")
-                ? "Delivered"
-                : orderItems.some((item) => item.orderStatus === "Shipped")
-                    ? "Shipped"
-                    : "Processing",
-        []
-    );
+        setSortConfig({ key: actualKey, direction });
+    };
 
     const deleteOrderHandler = (id) => {
         if (window.confirm("Are you sure you want to delete this order?")) {
@@ -94,7 +132,7 @@ const SellerOrdersGrid = ({ orders, updateOrderHandler, fetchOrders }) => {
                         <tr>
                             <th
                                 className="p-2 text-left cursor-pointer lg:pl-4"
-                                onClick={() => requestSort("_id")}
+                                onClick={() => requestSort("Order ID")}
                             >
                                 Order ID
                                 {sortConfig.key === "_id"
@@ -103,11 +141,34 @@ const SellerOrdersGrid = ({ orders, updateOrderHandler, fetchOrders }) => {
                                         : " ▼"
                                     : null}
                             </th>
-                            <th className="p-2 text-left lg:pl-6">Status</th>
-                            <th className="p-2 text-left">Items Qty</th>
+
                             <th
-                                className="p-2 text-left cursor-pointer lg:pl-3"
-                                onClick={() => requestSort("totalPrice")}
+                                className="p-2 text-left cursor-pointer lg:pl-6"
+                                onClick={() => requestSort("Status")}
+                            >
+                                Status
+                                {sortConfig.key === "status"
+                                    ? sortConfig.direction === "asc"
+                                        ? " ▲"
+                                        : " ▼"
+                                    : null}
+                            </th>
+
+                            <th
+                                className="p-2 text-left cursor-pointer"
+                                onClick={() => requestSort("Items Qty")}
+                            >
+                                Items Qty
+                                {sortConfig.key === "itemsQty"
+                                    ? sortConfig.direction === "asc"
+                                        ? " ▲"
+                                        : " ▼"
+                                    : null}
+                            </th>
+
+                            <th
+                                className="p-2 text-left cursor-pointer lg:pl-2.5"
+                                onClick={() => requestSort("Amount")}
                             >
                                 Amount
                                 {sortConfig.key === "totalPrice"
@@ -116,6 +177,7 @@ const SellerOrdersGrid = ({ orders, updateOrderHandler, fetchOrders }) => {
                                         : " ▼"
                                     : null}
                             </th>
+
                             <th className="p-2 text-center">Actions</th>
                         </tr>
                     </thead>
@@ -124,25 +186,33 @@ const SellerOrdersGrid = ({ orders, updateOrderHandler, fetchOrders }) => {
                         {currentItems.map((order) => (
                             <tr key={order._id} className="hover:bg-gray-50">
                                 <td className="p-4 border-b">{order._id}</td>
+
                                 <td
-                                    className={`p-3 border-b text-left ${getOrderStatus(order.orderItems) === "Delivered"
+                                    className={`p-3 border-b text-left ${getOrderStatus(order.orderItems) === 3
                                         ? "text-green-600"
-                                        : getOrderStatus(order.orderItems) === "Shipped"
+                                        : getOrderStatus(order.orderItems) === 2
                                             ? "text-orange-600"
                                             : "text-red-600"
                                         }`}
                                 >
-                                    {getOrderStatus(order.orderItems)}
+                                    {getOrderStatus(order.orderItems) === 3
+                                        ? "Delivered"
+                                        : getOrderStatus(order.orderItems) === 2
+                                            ? "Shipped"
+                                            : "Processing"}
                                 </td>
-                                <td className="p-4 border-b lg:pl-10">
+
+                                <td className="p-4 border-b lg:pl-8">
                                     {order.orderItems.reduce(
                                         (sum, item) => sum + item.quantity,
                                         0
                                     )}
                                 </td>
+
                                 <td className="p-4 border-b">
                                     {"₹" + order.totalPrice.toLocaleString()}
                                 </td>
+
                                 <td className="p-4 border-b">
                                     <div className="flex items-center gap-3 justify-center">
                                         <button
@@ -151,7 +221,9 @@ const SellerOrdersGrid = ({ orders, updateOrderHandler, fetchOrders }) => {
                                         >
                                             <RiEdit2Line />
                                         </button>
+
                                         <span className="text-gray-400">|</span>
+
                                         <button
                                             className="text-gray-600 hover:text-red-600 text-xl"
                                             onClick={() => deleteOrderHandler(order?._id)}
@@ -175,9 +247,11 @@ const SellerOrdersGrid = ({ orders, updateOrderHandler, fetchOrders }) => {
                 >
                     Previous
                 </button>
+
                 <span>
                     Page {currentPage} of {Math.ceil(orders.length / itemsPerPage)}
                 </span>
+
                 <button
                     className="px-3 py-1.5 bg-blue-500 text-white rounded-md disabled:opacity-50"
                     disabled={currentPage === Math.ceil(orders.length / itemsPerPage)}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import CartItem from "../utils/CartItem";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -9,6 +9,7 @@ import { MdOutlineRemoveShoppingCart } from "react-icons/md";
 
 const Cart = () => {
     const navigate = useNavigate();
+
     const { cartItems } = useSelector((state) => state.cart);
     const userLoggedIn = useSelector((state) => state.user.isAuthenticated);
     const [discountPercent, setDiscountPercent] = useState(0);
@@ -25,6 +26,7 @@ const Cart = () => {
 
     useEffect(() => {
         const savedDiscount = sessionStorage.getItem("discountPercent");
+
         if (savedDiscount) {
             setDiscountPercent(parseInt(savedDiscount));
         } else {
@@ -88,21 +90,25 @@ const Cart = () => {
 
                 <div className="bg-white p-4 shadow-md rounded-md h-full md:w-3/4 w-full lg:w-1/4 lg:sticky lg:top-1 lg:mt-11 mb-2 lg:mb-0">
                     <h2 className="text-lg font-semibold mb-4">PRICE DETAILS</h2>
+
                     <div className="space-y-2">
                         <div className="flex justify-between font-medium">
                             <span>Price ({cartItems.length} items)</span>
                             <span>{totalPrice.toFixed(2)}</span>
                         </div>
+
                         <div className="flex justify-between font-medium">
                             <span>Delivery Charges</span>
-                            <span className="text-blue-600">+ {deliveryCharges.toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between font-medium">
-                            <span>GST (18%)</span>
                             <span className="text-blue-600">
-                                + {tax.toFixed(2)}
+                                + {deliveryCharges.toFixed(2)}
                             </span>
                         </div>
+
+                        <div className="flex justify-between font-medium">
+                            <span>GST (18%)</span>
+                            <span className="text-blue-600">+ {tax.toFixed(2)}</span>
+                        </div>
+
                         <div className="flex justify-between font-medium">
                             <span>Discount ({discountPercent}%)</span>
                             <span className="text-blue-600">- {discount.toFixed(2)}</span>
@@ -123,6 +129,7 @@ const Cart = () => {
                         >
                             Shop More
                         </Link>
+
                         <button
                             className="px-4 py-2 bg-blue-600 text-neutral-100 rounded font-medium shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 duration-200"
                             onClick={checkoutHandler}
@@ -142,10 +149,12 @@ const Cart = () => {
                     </span>
                     <span>No Items in Cart</span>
                 </h1>
+
                 <p className="mt-6 text-base leading-7 text-gray-600">
                     Sorry, there are no products in your cart. Continue shopping to add
                     items.
                 </p>
+
                 <div className="mt-10 flex items-center justify-center gap-x-6">
                     <Link
                         to="/products"

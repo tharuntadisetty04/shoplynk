@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { FaArrowRight, FaFacebook } from "react-icons/fa";
 import { FaInstagram, FaXTwitter } from "react-icons/fa6";
 import { IoArrowUpCircleOutline } from "react-icons/io5";

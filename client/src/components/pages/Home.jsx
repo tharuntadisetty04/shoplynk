@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import heroImg from "../../assets/hero-img.png";
 import heroImg2 from "../../assets/hero-img2.png";
 import { Link, useNavigate } from "react-router-dom";
@@ -39,18 +39,18 @@ const Home = () => {
         bestProducts,
     } = useSelector((state) => state.bestProducts);
     const { isAuthenticated } = useSelector((state) => state.user);
-    const errorHandled = useRef(false);
 
     useEffect(() => {
-        if (error && !errorHandled.current) {
-            toast.error(error);
-            dispatch(clearErrors());
-            errorHandled.current = true;
+        if (error) {
+            toast.error(error, {
+                onClose: () => dispatch(clearErrors()),
+            });
         }
 
         if (bestProductsError) {
-            toast.error(bestProductsError);
-            dispatch(clearErrors());
+            toast.error(bestProductsError, {
+                onClose: () => dispatch(clearErrors()),
+            });
         }
 
         dispatch(getAllProducts());
@@ -58,17 +58,31 @@ const Home = () => {
     }, [dispatch, error, bestProductsError]);
 
     useEffect(() => {
-        if (toastMessage && type === "success") {
+        const toastShown = localStorage.getItem("toastShown");
+
+        if (toastMessage && !toastShown && type === "success") {
             toast.success(toastMessage);
+            localStorage.setItem("toastShown", "true");
         }
 
-        if (toastMessage && type === "warning") {
+        if (toastMessage && !toastShown && type === "warning") {
             toast.warning(toastMessage);
+            localStorage.setItem("toastShown", "true");
         }
-    }, [toastMessage, type]);
+
+        if (toastMessage && !toastShown && type === "error") {
+            toast.error(toastMessage);
+            localStorage.setItem("toastShown", "true");
+        }
+
+        return () => {
+            localStorage.removeItem("toastShown");
+        };
+    }, [toastMessage, type, localStorage]);
 
     const handleCategory = (category) => {
         dispatch(getAllProducts("", 1, category, 0, [1, 100000]));
+
         navigate("/products", {
             state: {
                 category,
@@ -124,6 +138,7 @@ const Home = () => {
                         >
                             Shop Now
                         </Link>
+
                         {!isAuthenticated && (
                             <Link
                                 to="/signup"
@@ -258,6 +273,7 @@ const Home = () => {
                         <span className="lg:text-5xl text-3xl text-blue-600">
                             Limited Time Offer!
                         </span>
+
                         <span className="lg:text-3xl md:text-xl text-base">
                             Get Upto 30% Off On First Purchase
                         </span>
@@ -333,6 +349,7 @@ const Home = () => {
                             <h2 className="font-medium text-xl text-center">
                                 Flexible Payment
                             </h2>
+
                             <p className="text-gray-600 md:text-center">
                                 Multiple secure payment options
                             </p>

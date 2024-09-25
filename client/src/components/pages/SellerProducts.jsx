@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
     clearErrors,
@@ -39,10 +39,6 @@ const SellerProducts = ({ setActiveTab, updateProductHandler }) => {
 
         if (deleteError) {
             toast.error(deleteError, { onClose: () => dispatch(clearErrors()) });
-        }
-
-        if (!isAuthenticated) {
-            navigate("/login");
         }
 
         if (isDeleted) {
@@ -90,7 +86,9 @@ const SellerProducts = ({ setActiveTab, updateProductHandler }) => {
     const deleteProductHandler = (id) => {
         if (window.confirm("Are you sure you want to delete this product?")) {
             dispatch(deleteProduct(id));
-            toast.success("Product deleted successfully!");
+            toast.success("Product deleted successfully!", {
+                autoClose: 2000,
+            });
         }
     };
 
@@ -143,13 +141,15 @@ const SellerProducts = ({ setActiveTab, updateProductHandler }) => {
                         <table className="min-w-full bg-white shadow border">
                             <thead className="bg-slate-200">
                                 <tr>
-                                    {["Product ID", "name", "stock", "price"].map((key) => (
+                                    {["_id", "name", "stock", "price"].map((key) => (
                                         <th
                                             key={key}
                                             className="px-6 py-3 border-b-2 text-left cursor-pointer"
                                             onClick={() => requestSort(key)}
                                         >
-                                            {key.charAt(0).toUpperCase() + key.slice(1)}
+                                            {key === "_id"
+                                                ? "Product ID"
+                                                : key.charAt(0).toUpperCase() + key.slice(1)}
                                             {sortConfig.key === key
                                                 ? sortConfig.direction === "asc"
                                                     ? " ▲"
@@ -157,6 +157,7 @@ const SellerProducts = ({ setActiveTab, updateProductHandler }) => {
                                                 : null}
                                         </th>
                                     ))}
+
                                     <th className="px-6 py-3 border-b-2 text-left">Actions</th>
                                 </tr>
                             </thead>
@@ -165,20 +166,23 @@ const SellerProducts = ({ setActiveTab, updateProductHandler }) => {
                                     <tr key={product._id} className="border-b hover:bg-gray-50">
                                         <td className="px-6 py-2">
                                             <Link
-                                                // to={`/products/${product._id}`}
-                                                to={`/admin/dashboard/product/${product._id}`}
+                                                to={`/products/${product._id}`}
                                                 className="hover:text-blue-600 duration-200"
                                             >
                                                 {product._id}
                                             </Link>
                                         </td>
+
                                         <td className="px-6 py-2">
                                             {product.name.length > 45
                                                 ? `${product.name.slice(0, 45)}...`
                                                 : product.name}
                                         </td>
+
                                         <td className="px-6 py-2">{product.stock}</td>
+
                                         <td className="px-6 py-2">{product.price}</td>
+
                                         <td className="px-6 py-2 flex items-center space-x-2">
                                             <button
                                                 className="text-gray-600 hover:text-blue-600 duration-200 text-xl"
@@ -186,7 +190,9 @@ const SellerProducts = ({ setActiveTab, updateProductHandler }) => {
                                             >
                                                 <RiEdit2Line />
                                             </button>
+
                                             <span>|</span>
+
                                             <button
                                                 className="text-gray-600 hover:text-red-600 duration-200 text-xl"
                                                 onClick={() => deleteProductHandler(product?._id)}
@@ -209,9 +215,11 @@ const SellerProducts = ({ setActiveTab, updateProductHandler }) => {
                         >
                             Previous
                         </button>
+
                         <span>
                             Page {currentPage} of {totalPages}
                         </span>
+
                         <button
                             className="px-3 py-1.5 bg-blue-500 text-white rounded-md disabled:opacity-50"
                             disabled={currentPage === totalPages}
@@ -228,10 +236,12 @@ const SellerProducts = ({ setActiveTab, updateProductHandler }) => {
                     <h1 className="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl mb-4 text-center">
                         No Products Available
                     </h1>
+
                     <p className="text-gray-600 mb-6 text-center">
                         It looks like you haven't added any products yet. Start by adding
                         your first product!
                     </p>
+
                     <button
                         className="px-5 py-2 bg-blue-600 text-white font-medium rounded hover:bg-blue-500 transition"
                         onClick={() => setActiveTab("create-product")}

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,6 +22,7 @@ const updateOrderSchema = z.object({
 
 const UpdateOrder = ({ orderId }) => {
     const dispatch = useDispatch();
+
     const { loading, error, order } = useSelector((state) => state.orderDetails);
     const {
         loading: updateLoading,
@@ -81,6 +82,7 @@ const UpdateOrder = ({ orderId }) => {
     ) : (
         <div className="flex lg:gap-4 flex-col lg:flex-row">
             <TitleHelmet title={"Update Order | ShopLynk"} />
+
             <ToastContainer
                 position="top-right"
                 autoClose={2500}
@@ -92,7 +94,9 @@ const UpdateOrder = ({ orderId }) => {
                 draggable
                 pauseOnHover
                 theme="colored"
+                transition:Slide
             />
+
             <div className="lg:w-1/2 w-full flex gap-3 flex-col">
                 <div>
                     <h2 className="text-xl md:text-2xl font-semibold text-blue-600">
@@ -139,12 +143,14 @@ const UpdateOrder = ({ orderId }) => {
                                 )}
                             </span>
                         </p>
+
                         <p className="text-lg font-semibold">
                             Paid At:{" "}
                             <span className="text-gray-900 font-medium">
                                 {order?.paidAt ? order.paidAt.slice(0, 10) : "N/A"}
                             </span>
                         </p>
+
                         <p className="text-lg font-semibold">
                             Amount:{" "}
                             <span className="text-gray-900 font-medium">
@@ -158,6 +164,7 @@ const UpdateOrder = ({ orderId }) => {
                     <h2 className="text-xl md:text-2xl font-semibold text-blue-600">
                         Order Status
                     </h2>
+
                     <p className="text-lg font-semibold pb-1">
                         Status:{" "}
                         <span
@@ -183,9 +190,10 @@ const UpdateOrder = ({ orderId }) => {
                             {...register("status")}
                             className="p-2 font-medium rounded outline-blue-600 border-none w-1/2"
                         >
-                            <option value="" disabled>
+                            <option value="" disabled defaultChecked={true}>
                                 -- Choose status --
                             </option>
+
                             {getOrderStatus(order?.orderItems) === "Processing" && (
                                 <option value="Shipped">Shipped</option>
                             )}
@@ -214,7 +222,7 @@ const UpdateOrder = ({ orderId }) => {
                     Order Items
                 </h2>
 
-                {order?.orderItems &&
+                {order.orderItems &&
                     order?.orderItems.map((item) => (
                         <div
                             key={item._id}
@@ -229,6 +237,7 @@ const UpdateOrder = ({ orderId }) => {
                                                 alt={item.name}
                                                 className="w-20 h-20 object-cover rounded duration-200 group-hover:shadow-md"
                                             />
+
                                             <div className="lg:ml-4 ml-2">
                                                 <h3 className="text-lg font-medium truncate max-w-xs">
                                                     {item.name.length > 15
@@ -266,6 +275,7 @@ const UpdateOrder = ({ orderId }) => {
                                             <p className="w-40 text-start font-medium">
                                                 ₹{item.price.toFixed(2)} x {item.quantity} =
                                             </p>
+
                                             <p className="w-32 text-start font-medium text-blue-600">
                                                 ₹{(item.price * item.quantity).toFixed(2)}
                                             </p>

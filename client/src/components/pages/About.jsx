@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import TitleHelmet from "../utils/TitleHelmet";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -18,7 +18,6 @@ const About = () => {
     const { loading, error, isAuthenticated, user } = useSelector(
         (state) => state.user
     );
-
     const [openIndex, setOpenIndex] = useState(null);
 
     useEffect(() => {
@@ -100,6 +99,7 @@ const About = () => {
                             survived not only five centuries, but also the leap into
                             electronic typesetting, remaining essentially unchanged.
                         </p>
+
                         <p className="lg:block hidden">
                             Lorem Ipsum is simply dummy text of the printing and typesetting
                             industry. Lorem Ipsum has been the industry's standard dummy text
@@ -148,6 +148,7 @@ const About = () => {
 
                         <div className="flex flex-col md:items-center">
                             <h2 className="font-semibold text-2xl">2.5k</h2>
+
                             <p className="md:text-center font-medium">
                                 Sellers active in our site
                             </p>
@@ -161,6 +162,7 @@ const About = () => {
 
                         <div className="flex flex-col md:items-center">
                             <h2 className="font-semibold text-2xl">13k</h2>
+
                             <p className="md:text-center font-medium">
                                 Monthly product sales
                             </p>
@@ -174,6 +176,7 @@ const About = () => {
 
                         <div className="flex flex-col md:items-center">
                             <h2 className="font-semibold text-2xl">8.3k</h2>
+
                             <p className="md:text-center font-medium">
                                 Customers active in our site
                             </p>
@@ -187,6 +190,7 @@ const About = () => {
 
                         <div className="flex flex-col md:items-center">
                             <h2 className="font-semibold text-2xl">28k</h2>
+
                             <p className="md:text-center font-medium">
                                 Annual gross sale in our site
                             </p>
@@ -214,10 +218,12 @@ const About = () => {
                                 onClick={() => toggleFAQ(index)}
                             >
                                 <span className="font-medium md:text-lg">{faq.question}</span>
+
                                 <span className="font-medium duration-300 md:text-xl text-lg">
                                     {openIndex === index ? <IoIosArrowUp /> : <IoIosArrowDown />}
                                 </span>
                             </button>
+
                             {openIndex === index && (
                                 <div className="py-2 text-gray-600 text-justify border-t-2 border-slate-200">
                                     {faq.answer}

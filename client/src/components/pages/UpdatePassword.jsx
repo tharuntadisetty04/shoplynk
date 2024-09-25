@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import TitleHelmet from "../utils/TitleHelmet";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -37,9 +37,11 @@ const UpdatePasswordSchema = z
 const UpdatePassword = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
     const { loading, error, isUpdated } = useSelector(
         (state) => state.userProfile
     );
+
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -72,8 +74,12 @@ const UpdatePassword = () => {
 
         if (isUpdated) {
             dispatch(loadUser());
+
             navigate("/", {
-                state: { toastMessage: "Password updated successfully!", type: "success" },
+                state: {
+                    toastMessage: "Password updated successfully!",
+                    type: "success",
+                },
             });
 
             dispatch({ type: UPDATE_PASSWORD_RESET });
@@ -120,12 +126,14 @@ const UpdatePassword = () => {
                         <label htmlFor="oldpassword" className="font-medium text-lg pl-0.5">
                             Old Password
                         </label>
+
                         <input
                             type="text"
                             placeholder="Enter old password"
                             className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                             {...register("oldpassword")}
                         />
+
                         {errors.oldpassword && (
                             <span className="text-red-500 text-sm font-medium pl-1">
                                 {errors.oldpassword.message}
@@ -137,12 +145,14 @@ const UpdatePassword = () => {
                         <label htmlFor="newPassword" className="font-medium text-lg pl-0.5">
                             New Password
                         </label>
+
                         <input
                             type={showNewPassword ? "text" : "password"}
                             placeholder="Enter new password"
                             className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                             {...register("newPassword")}
                         />
+
                         <button
                             type="button"
                             onClick={toggleNewPasswordVisibility}
@@ -154,6 +164,7 @@ const UpdatePassword = () => {
                                 <IoMdEye size={20} />
                             )}
                         </button>
+
                         {errors.newPassword && (
                             <span className="text-red-500 text-sm font-medium pl-1">
                                 {errors.newPassword.message}
@@ -168,12 +179,14 @@ const UpdatePassword = () => {
                         >
                             Confirm Password
                         </label>
+
                         <input
                             type={showConfirmPassword ? "text" : "password"}
                             placeholder="Enter confirm password"
                             className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                             {...register("confirmPassword")}
                         />
+
                         <button
                             type="button"
                             onClick={toggleConfirmPasswordVisibility}
@@ -185,6 +198,7 @@ const UpdatePassword = () => {
                                 <IoMdEye size={20} />
                             )}
                         </button>
+
                         {errors.confirmPassword && (
                             <span className="text-red-500 text-sm font-medium pl-1">
                                 {errors.confirmPassword.message}

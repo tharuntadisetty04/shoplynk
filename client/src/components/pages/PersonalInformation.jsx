@@ -1,20 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import avatarImg from "/avatar.png";
-import ItemLoader from "../layout/ItemLoader";
-import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { clearErrors } from "../../redux/actions/UserAction";
 
 const PersonalInformation = ({ setActiveTab }) => {
-    const navigate = useNavigate();
     const dispatch = useDispatch();
-
-    const { loading, error, user, isAuthenticated } = useSelector(
-        (state) => state.user
-    );
-    const [authCheckLoading, setAuthCheckLoading] = useState(true);
+    const { error, user } = useSelector((state) => state.user);
 
     useEffect(() => {
         if (error) {
@@ -22,21 +15,9 @@ const PersonalInformation = ({ setActiveTab }) => {
                 onClose: () => dispatch(clearErrors()),
             });
         }
+    }, [error, dispatch]);
 
-        if (loading === false) {
-            if (!isAuthenticated) {
-                navigate("/login");
-            } else {
-                setAuthCheckLoading(false);
-            }
-        }
-    }, [loading, error, isAuthenticated, navigate, dispatch]);
-
-    return loading || authCheckLoading ? (
-        <div className="bg-transparent lg:-mt-[3.4rem] lg:-ml-28 -ml-2">
-            <ItemLoader />
-        </div>
-    ) : (
+    return (
         <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-20 lg:pl-14">
             <ToastContainer
                 position="top-right"

@@ -5,6 +5,7 @@ import {
     SAVE_SHIPPING_INFO,
 } from "../constants/CartConstant";
 
+// cart reducer
 const cartState = {
     loading: false,
     cartItems: [],

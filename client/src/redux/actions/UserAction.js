@@ -96,7 +96,7 @@ const registerUser = (userData) => async (dispatch) => {
     }
 };
 
-// Load user
+// get current user
 const loadUser = () => async (dispatch) => {
     try {
         const checkToken = document.cookie

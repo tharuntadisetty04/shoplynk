@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import TitleHelmet from "../utils/TitleHelmet";
 import ProductCard from "../utils/ProductCard";
@@ -21,17 +21,19 @@ const Products = () => {
     const { keyword } = useParams();
     const dispatch = useDispatch();
     const location = useLocation();
+
     const { loading, error, products, productsCount, filteredProductsCount } =
         useSelector((state) => state.products);
 
     const resultPerPage = 12;
-    const [currentPage, setCurrentPage] = useState(1);
-    const [price, setPrice] = useState([]);
     const [category, setCategory] = useState(location.state?.category || "");
-    const [rating, setRating] = useState(0);
     const [activeCategory, setActiveCategory] = useState(
         location.state?.activeCategory || ""
     );
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [price, setPrice] = useState([]);
+    const [rating, setRating] = useState(0);
 
     const [isPriceOpen, setIsPriceOpen] = useState(false);
     const [isCategoryOpen, setIsCategoryOpen] = useState(false);
@@ -43,6 +45,7 @@ const Products = () => {
                 onClose: () => dispatch(clearErrors()),
             });
         }
+
         dispatch(getAllProducts(keyword, currentPage, category, rating));
     }, [dispatch, error, keyword, currentPage, category, rating]);
 
@@ -199,7 +202,7 @@ const Products = () => {
                                 </div>
 
                                 {isPriceOpen && (
-                                    <div className="flex flex-col gap-3 pr-4 py-3">
+                                    <div className="flex flex-col gap-3 pr-4 pt-3 pb-1">
                                         <div className="flex items-center">
                                             <input
                                                 type="text"
@@ -240,68 +243,77 @@ const Products = () => {
                                 </div>
 
                                 {isCategoryOpen && (
-                                    <ul className="font-medium pt-1.5 space-y-2.5">
-                                        <li
-                                            className={`hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200 ${activeCategory === "fashion" && "text-blue-600"
+                                    <div className="categories flex flex-wrap justify-evenly gap-4 items-center pt-3 pb-1">
+                                        <div
+                                            className={`category rounded px-4 py-2 border-2 flex flex-col items-center gap-1 w-20 cursor-pointer ${activeCategory === "fashion"
+                                                ? "border-blue-600"
+                                                : "border-slate-200"
                                                 }`}
                                             onClick={() => handleCategory("fashion")}
                                         >
-                                            <span className="text-base rounded-full border-2 border-blue-600 p-1">
-                                                <GiAmpleDress />
-                                            </span>
-                                            <span>Fashion</span>
-                                        </li>
-                                        <li
-                                            className={`hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200 ${activeCategory === "electronics" && "text-blue-600"
+                                            <GiAmpleDress className="text-2xl" />
+                                            <span className="category-name text-xs">Fashion</span>
+                                        </div>
+
+                                        <div
+                                            className={`category rounded px-4 py-2 border-2 flex flex-col items-center gap-1 w-20 cursor-pointer ${activeCategory === "electronics"
+                                                ? "border-blue-600"
+                                                : "border-slate-200"
                                                 }`}
                                             onClick={() => handleCategory("electronics")}
                                         >
-                                            <span className="text-base rounded-full border-2 border-blue-600 p-1">
-                                                <MdElectricalServices />
-                                            </span>
-                                            <span>Electronics</span>
-                                        </li>
-                                        <li
-                                            className={`hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200 ${activeCategory === "personalcare" && "text-blue-600"
-                                                }`}
-                                            onClick={() => handleCategory("personalcare")}
-                                        >
-                                            <span className="text-base rounded-full border-2 border-blue-600 p-1">
-                                                <FaHandSparkles />
-                                            </span>
-                                            <span>Personal Care</span>
-                                        </li>
-                                        <li
-                                            className={`hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200 ${activeCategory === "home" && "text-blue-600"
-                                                }`}
-                                            onClick={() => handleCategory("home")}
-                                        >
-                                            <span className="text-lg rounded-full border-2 border-blue-600 p-1">
-                                                <MdOutlineFoodBank />
-                                            </span>
-                                            <span>Home & Kitchen</span>
-                                        </li>
-                                        <li
-                                            className={`hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200 ${activeCategory === "sports" && "text-blue-600"
+                                            <MdElectricalServices className="text-2xl" />
+                                            <span className="category-name text-xs">Electronics</span>
+                                        </div>
+
+                                        <div
+                                            className={`category rounded px-4 py-2 border-2 flex flex-col items-center gap-1 w-20 cursor-pointer ${activeCategory === "sports"
+                                                ? "border-blue-600"
+                                                : "border-slate-200"
                                                 }`}
                                             onClick={() => handleCategory("sports")}
                                         >
-                                            <span className="text-base rounded-full border-2 border-blue-600 p-1">
-                                                <IoGameController />
-                                            </span>
-                                            <span>Sports & Games</span>
-                                        </li>
-                                        <li
-                                            className={`hover:text-blue-600 cursor-pointer flex items-center gap-2 duration-200 ${activeCategory === "groceries" && "text-blue-600"
+                                            <IoGameController className="text-2xl" />
+                                            <span className="category-name text-xs">Games</span>
+                                        </div>
+
+                                        <div
+                                            className={`category rounded px-4 py-2 border-2 flex flex-col items-center gap-1 w-20 cursor-pointer ${activeCategory === "groceries"
+                                                ? "border-blue-600"
+                                                : "border-slate-200"
                                                 }`}
                                             onClick={() => handleCategory("groceries")}
                                         >
-                                            <span className="text-base rounded-full border-2 border-blue-600 p-1">
-                                                <FaBowlFood />
+                                            <FaBowlFood className="text-2xl" />
+                                            <span className="category-name text-xs">Grocery</span>
+                                        </div>
+
+                                        <div
+                                            className={`category rounded px-4 py-2 border-2 flex flex-col items-center gap-1 w-20 cursor-pointer ${activeCategory === "personalcare"
+                                                ? "border-blue-600"
+                                                : "border-slate-200"
+                                                }`}
+                                            onClick={() => handleCategory("personalcare")}
+                                        >
+                                            <FaHandSparkles className="text-2xl" />
+                                            <span className="category-name text-xs text-center">
+                                                Personal Care
                                             </span>
-                                            <span>Groceries</span>
-                                        </li>
-                                    </ul>
+                                        </div>
+
+                                        <div
+                                            className={`category rounded px-4 py-2 border-2 flex flex-col items-center gap-1 w-20 cursor-pointer ${activeCategory === "home"
+                                                ? "border-blue-600"
+                                                : "border-slate-200"
+                                                }`}
+                                            onClick={() => handleCategory("home")}
+                                        >
+                                            <MdOutlineFoodBank className="text-2xl" />
+                                            <span className="category-name text-xs text-center">
+                                                Home & Kitchen
+                                            </span>
+                                        </div>
+                                    </div>
                                 )}
                             </div>
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import forgotPasswordImg from "../../assets/forgot-password.jpg";
 import TitleHelmet from "../utils/TitleHelmet";
 import { ToastContainer, toast } from "react-toastify";
@@ -7,7 +7,11 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
-import { clearErrors, clearMessage, forgotPassword } from "../../redux/actions/UserAction";
+import {
+    clearErrors,
+    clearMessage,
+    forgotPassword,
+} from "../../redux/actions/UserAction";
 import PageLoader from "../layout/PageLoader";
 
 const forgotPasswordSchema = z.object({
@@ -64,6 +68,7 @@ const ForgotPassword = () => {
                 pauseOnHover
                 theme="colored"
                 transition:Slide
+                style={{ width: "360px" }}
             />
 
             <div className="forgot-password-img lg:-ml-10">
@@ -95,6 +100,7 @@ const ForgotPassword = () => {
                             className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                             {...register("email")}
                         />
+
                         {errors.email && (
                             <p className="text-red-500 text-sm font-medium pl-1">
                                 {errors.email.message}

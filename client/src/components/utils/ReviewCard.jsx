@@ -1,4 +1,3 @@
-import React from "react";
 import ReactStars from "react-rating-stars-component";
 import { FaUser } from "react-icons/fa6";
 import { MdOutlineDelete } from "react-icons/md";
@@ -21,10 +20,12 @@ const ReviewModal = ({ review, isOpen, onClose }) => {
                         X
                     </button>
                 </div>
+
                 <div className="flex items-center gap-2 mb-4">
                     <div className="text-xl border-4 border-blue-600 rounded-full p-2.5">
                         <FaUser />
                     </div>
+
                     <div>
                         <ReactStars
                             count={5}
@@ -37,6 +38,7 @@ const ReviewModal = ({ review, isOpen, onClose }) => {
                         />
                     </div>
                 </div>
+
                 <p>{review.comment}</p>
             </div>
         </div>
@@ -76,7 +78,7 @@ const ReviewCard = ({ review, onClick, onDelete }) => {
                     className="absolute top-2 right-2 text-red-500 hover:text-red-600 text-xl"
                     onClick={(e) => {
                         e.stopPropagation();
-                        onDelete(review._id);
+                        onDelete(review?._id);
                     }}
                 >
                     <MdOutlineDelete />

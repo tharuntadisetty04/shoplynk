@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaRegUser } from "react-icons/fa6";
 import { FiShoppingCart, FiMenu, FiX } from "react-icons/fi";
 import { IoIosSearch } from "react-icons/io";
@@ -14,13 +14,15 @@ import { IoLogOutOutline } from "react-icons/io5";
 
 const Header = () => {
     const dispatch = useDispatch();
+    const location = useLocation();
+    const navigate = useNavigate();
+
     const { isAuthenticated, user } = useSelector((state) => state.user);
     const cartItems = useSelector((state) => state.cart.cartItems);
 
     const [menuOpen, setMenuOpen] = useState(false);
     const [profileMenuOpen, setProfileMenuOpen] = useState(false);
     const profileMenuRef = useRef(null);
-    const location = useLocation();
 
     const isActive = (path) =>
         location.pathname === path
@@ -48,8 +50,18 @@ const Header = () => {
     }, []);
 
     const logout = () => {
-        dispatch(logoutUser());
-        toast.success("User logged out successfully!");
+        dispatch(logoutUser())
+            .then(() => {
+                navigate("/", {
+                    state: {
+                        toastMessage: "User logged out successfully",
+                        type: "success",
+                    },
+                });
+            })
+            .catch((error) => {
+                toast.error("Logout failed:", error);
+            });
     };
 
     <ToastContainer
@@ -105,6 +117,7 @@ const Header = () => {
                     >
                         <IoIosSearch />
                     </Link>
+
                     <Link
                         aria-label="Cart"
                         to="/cart"
@@ -151,6 +164,7 @@ const Header = () => {
                                         </span>
                                         <span>Profile</span>
                                     </Link>
+
                                     {user && user.role === "seller" && (
                                         <Link
                                             to="/admin/dashboard"
@@ -162,6 +176,7 @@ const Header = () => {
                                             <span>Dashboard</span>
                                         </Link>
                                     )}
+
                                     <Link
                                         to="/orders"
                                         className="font-medium hover:text-blue-600 duration-200 flex items-center justify-start gap-1.5"
@@ -175,6 +190,7 @@ const Header = () => {
                                             <span>Orders</span>
                                         )}
                                     </Link>
+
                                     <div
                                         className="font-medium hover:text-blue-600 duration-200 flex items-center justify-start gap-1.5"
                                         onClick={logout}

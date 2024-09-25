@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import TitleHelmet from "../utils/TitleHelmet";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -6,10 +6,15 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
-import { clearErrors, updateUserRole } from "../../redux/actions/UserAction";
+import {
+    clearErrors,
+    loadUser,
+    updateUserRole,
+} from "../../redux/actions/UserAction";
 import ItemLoader from "../layout/ItemLoader";
 import shopImg from "../../assets/register-seller.jpg";
 import { useNavigate } from "react-router-dom";
+import { UPDATE_ROLE_RESET } from "../../redux/constants/UserConstant";
 
 const UpdateRoleSchema = z.object({
     username: z
@@ -25,8 +30,10 @@ const UpdateRoleSchema = z.object({
 const UpdateRole = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { loading, error, user, isAuthenticated } = useSelector(
-        (state) => state.user
+
+    const { user } = useSelector((state) => state.user);
+    const { loading, error, isUpdated } = useSelector(
+        (state) => state.userProfile
     );
 
     const {
@@ -57,12 +64,19 @@ const UpdateRole = () => {
             });
         }
 
-        if (isAuthenticated && user.role === "seller") {
+        if (isUpdated) {
+            dispatch({ type: UPDATE_ROLE_RESET });
+
             navigate("/", {
-                state: { toastMessage: "User role updated successfully!", type: "success" },
+                state: {
+                    toastMessage: "User role updated successfully!",
+                    type: "success",
+                },
             });
+
+            dispatch(loadUser());
         }
-    }, [dispatch, error, navigate, user, isAuthenticated]);
+    }, [dispatch, error, navigate, isUpdated]);
 
     return loading ? (
         <div className="bg-transparent lg:-mt-[3.4rem] lg:-ml-28 -ml-2">
@@ -104,12 +118,14 @@ const UpdateRole = () => {
                         <label htmlFor="username" className="font-medium text-lg pl-0.5">
                             Business Name
                         </label>
+
                         <input
                             type="text"
                             placeholder="Enter Full Name or Business Name"
                             className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                             {...register("username")}
                         />
+
                         {errors.username && (
                             <span className="text-red-500 text-sm font-medium pl-1">
                                 {errors.username.message}
@@ -121,12 +137,14 @@ const UpdateRole = () => {
                         <label htmlFor="email" className="font-medium text-lg pl-0.5">
                             Email
                         </label>
+
                         <input
                             type="email"
                             placeholder="Enter Email"
                             className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                             {...register("email")}
                         />
+
                         {errors.email && (
                             <span className="text-red-500 text-sm font-medium pl-1">
                                 {errors.email.message}
@@ -141,10 +159,12 @@ const UpdateRole = () => {
                                 {...register("termsAccepted")}
                                 className="cursor-pointer"
                             />
+
                             <label htmlFor="termsAccepted" className="font-medium text-sm">
                                 I Agree to the Terms & Conditions.
                             </label>
                         </div>
+
                         {errors.termsAccepted && (
                             <span className="text-red-500 text-sm font-medium pl-1">
                                 {errors.termsAccepted.message}

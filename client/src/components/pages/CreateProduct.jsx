@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,6 +12,7 @@ import {
     createNewProduct,
 } from "../../redux/actions/ProductAction";
 import { CREATE_PRODUCT_RESET } from "../../redux/constants/ProductConstant";
+import ItemLoader from "../layout/ItemLoader";
 
 const categories = [
     "fashion",
@@ -23,15 +24,15 @@ const categories = [
 ];
 
 const createProductSchema = z.object({
-    name: z.string().min(1, "Product Name is required"),
-    description: z.string().min(1, "Description is required"),
+    name: z.string().min(3, "Product Name is required"),
+    description: z.string().min(3, "Description is required"),
     price: z.coerce
         .string()
         .regex(/^\d{1,6}$/, "Enter a valid Price")
         .refine((val) => parseInt(val, 10) >= 1 && parseInt(val, 10) <= 900000, {
             message: "Price must be between 1 and 900000",
         }),
-    images: z.any(),
+    images: z.array(z.instanceof(File)).min(1, "At least one image is required"),
     category: z.enum(categories, {
         errorMap: () => ({ message: "Invalid category provided" }),
     }),
@@ -80,8 +81,7 @@ const CreateProduct = () => {
         }
     };
 
-    const handleBack = (e) => {
-        e.preventDefault();
+    const handleBack = () => {
         setStep(1);
     };
 
@@ -133,7 +133,11 @@ const CreateProduct = () => {
         dispatch(createNewProduct(formData));
     };
 
-    return (
+    return loading ? (
+        <div className="bg-transparent">
+            <ItemLoader />
+        </div>
+    ) : (
         <div className="create-product h-full w-full flex justify-center lg:justify-start items-start lg:gap-12 mb-4">
             <TitleHelmet title={"Create Product | ShopLynk"} />
 
@@ -172,6 +176,7 @@ const CreateProduct = () => {
                                 <label htmlFor="name" className="font-medium text-lg">
                                     Product Name
                                 </label>
+
                                 <input
                                     type="text"
                                     name="name"
@@ -179,6 +184,7 @@ const CreateProduct = () => {
                                     className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                                     {...register("name")}
                                 />
+
                                 {errors.name && (
                                     <p className="text-red-500 text-sm font-medium pl-0.5">
                                         {errors.name.message}
@@ -190,6 +196,7 @@ const CreateProduct = () => {
                                 <label htmlFor="price" className="font-medium text-lg">
                                     Price
                                 </label>
+
                                 <input
                                     type="text"
                                     name="price"
@@ -197,6 +204,7 @@ const CreateProduct = () => {
                                     className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                                     {...register("price", { valueAsNumber: true })}
                                 />
+
                                 {errors.price && (
                                     <p className="text-red-500 text-sm font-medium pl-0.5">
                                         {errors.price.message}
@@ -208,6 +216,7 @@ const CreateProduct = () => {
                                 <label htmlFor="description" className="font-medium text-lg">
                                     Description
                                 </label>
+
                                 <textarea
                                     rows={2}
                                     name="description"
@@ -215,6 +224,7 @@ const CreateProduct = () => {
                                     className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600 resize-none overflow-y-auto"
                                     {...register("description")}
                                 />
+
                                 {errors.description && (
                                     <p className="text-red-500 text-sm font-medium pl-0.5">
                                         {errors.description.message}
@@ -240,6 +250,7 @@ const CreateProduct = () => {
                                 <label htmlFor="category" className="font-medium text-lg">
                                     Category
                                 </label>
+
                                 <select
                                     name="category"
                                     className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
@@ -260,6 +271,7 @@ const CreateProduct = () => {
                                         </option>
                                     ))}
                                 </select>
+
                                 {errors.category && (
                                     <p className="text-red-500 text-sm font-medium pl-0.5">
                                         {errors.category.message}
@@ -271,6 +283,7 @@ const CreateProduct = () => {
                                 <label htmlFor="stock" className="font-medium text-lg">
                                     Stock
                                 </label>
+
                                 <input
                                     type="text"
                                     name="stock"
@@ -278,6 +291,7 @@ const CreateProduct = () => {
                                     className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                                     {...register("stock", { valueAsNumber: true })}
                                 />
+
                                 {errors.stock && (
                                     <p className="text-red-500 text-sm font-medium pl-0.5">
                                         {errors.stock.message}
@@ -290,10 +304,11 @@ const CreateProduct = () => {
                                     <div className="mt-2">
                                         <label
                                             htmlFor="images"
-                                            className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer"
+                                            className="bg-blue-500 text-neutral-100 px-4 py-2 rounded cursor-pointer"
                                         >
                                             Choose File
                                             <input
+                                                id="images"
                                                 type="file"
                                                 name="images"
                                                 accept="image/*"
@@ -302,13 +317,17 @@ const CreateProduct = () => {
                                                 className="hidden"
                                             />
                                         </label>
-                                        <span className="ml-3">{imagesPreview.length} files</span>
+
+                                        <span className="ml-3">
+                                            {imagesPreview.length} files selected
+                                        </span>
                                     </div>
                                 ) : (
                                     <>
                                         <label htmlFor="images" className="font-medium text-lg">
                                             Image(s):
                                         </label>
+
                                         <input
                                             type="file"
                                             name="images"
@@ -320,7 +339,7 @@ const CreateProduct = () => {
                                     </>
                                 )}
 
-                                {imagesPreview && (
+                                {imagesPreview.length > 0 && (
                                     <div className="overflow-x-auto flex gap-2 mt-2">
                                         {imagesPreview.map((image, index) => (
                                             <img
@@ -332,6 +351,7 @@ const CreateProduct = () => {
                                         ))}
                                     </div>
                                 )}
+
                                 {errors.images && (
                                     <p className="text-red-500 text-sm font-medium pl-0.5">
                                         {errors.images.message}

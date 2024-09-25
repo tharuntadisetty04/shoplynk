@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import TitleHelmet from "../utils/TitleHelmet";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -13,8 +13,8 @@ import { useNavigate } from "react-router-dom";
 import shippingImg from "../../assets/shipping.jpg";
 
 const shippingInfoSchema = z.object({
-    address: z.string().min(1, "Please Enter Address"),
-    city: z.string().min(1, "Please Enter City"),
+    address: z.string().min(3, "Please Enter Address"),
+    city: z.string().min(3, "Please Enter City"),
     state: z.string().min(1, "Please Select State"),
     country: z.string().min(1, "Please Select Country"),
     pincode: z.string().regex(/^\d{6}$/, "Invalid pincode"),
@@ -24,12 +24,13 @@ const shippingInfoSchema = z.object({
 const ShippingInfo = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
     const { shippingInfo } = useSelector((state) => state.cart);
     const { isAuthenticated, user } = useSelector((state) => state.user);
+
     const [selectedCountry, setSelectedCountry] = useState(
         shippingInfo?.country || ""
     );
-
     const [selectedState, setSelectedState] = useState(shippingInfo?.state || "");
     const [currentStep, setCurrentStep] = useState(1);
     const [subStep, setSubStep] = useState(1);
@@ -49,14 +50,6 @@ const ShippingInfo = () => {
             phoneNo: shippingInfo?.phoneNo || "",
         },
     });
-
-    useEffect(() => {
-        if (isAuthenticated) {
-            navigate("/shipping");
-        } else {
-            navigate("/login?redirect=shipping");
-        }
-    }, [isAuthenticated, navigate]);
 
     const nextHandler = (e) => {
         e.preventDefault();
@@ -243,6 +236,7 @@ const ShippingInfo = () => {
                                     <option value="" disabled>
                                         -- Select Country --
                                     </option>
+
                                     {Country &&
                                         Country.getAllCountries().map((ct) => (
                                             <option key={ct.isoCode} value={ct.isoCode}>
@@ -316,6 +310,7 @@ const ShippingInfo = () => {
                                 >
                                     Back
                                 </button>
+
                                 <button
                                     type="submit"
                                     className="bg-blue-600 hover:bg-blue-700 font-medium text-neutral-100 py-2 px-4 rounded duration-200 items-end"

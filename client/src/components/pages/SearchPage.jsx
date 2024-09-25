@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaMicrophoneLines, FaMicrophoneLinesSlash } from "react-icons/fa6";
 import TitleHelmet from "../utils/TitleHelmet";
@@ -10,9 +10,10 @@ const SpeechRecognition =
 
 const SearchPage = () => {
     const navigate = useNavigate();
+    const recognition = new SpeechRecognition();
+
     const [keyword, setKeyword] = useState("");
     const [isListening, setIsListening] = useState(false);
-    const recognition = new SpeechRecognition();
 
     useEffect(() => {
         recognition.interimResults = true;

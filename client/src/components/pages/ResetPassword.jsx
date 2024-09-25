@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import resetPasswordImg from "../../assets/reset-password.jpg";
 import TitleHelmet from "../utils/TitleHelmet";
 import { ToastContainer, toast } from "react-toastify";
@@ -119,12 +119,14 @@ const ResetPassword = () => {
                         <label htmlFor="password" className="font-medium text-lg pl-0.5">
                             Enter Password
                         </label>
+
                         <input
                             type={showPassword ? "text" : "password"}
                             placeholder="Enter password"
                             className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                             {...register("password")}
                         />
+
                         <button
                             type="button"
                             onClick={togglePasswordVisibility}
@@ -132,6 +134,7 @@ const ResetPassword = () => {
                         >
                             {showPassword ? <IoMdEyeOff size={20} /> : <IoMdEye size={20} />}
                         </button>
+
                         {errors.password && (
                             <span className="text-red-500 text-sm font-medium pl-1">
                                 {errors.password.message}
@@ -146,12 +149,14 @@ const ResetPassword = () => {
                         >
                             Confirm Password
                         </label>
+
                         <input
                             type={showConfirmPassword ? "text" : "password"}
                             placeholder="Enter confirm password"
                             className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                             {...register("confirmPassword")}
                         />
+
                         <button
                             type="button"
                             onClick={toggleConfirmPasswordVisibility}
@@ -163,6 +168,7 @@ const ResetPassword = () => {
                                 <IoMdEye size={20} />
                             )}
                         </button>
+
                         {errors.confirmPassword && (
                             <span className="text-red-500 text-sm font-medium pl-1">
                                 {errors.confirmPassword.message}

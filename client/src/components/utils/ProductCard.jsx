@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ReactStars from "react-rating-stars-component";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,7 +7,9 @@ import { toast } from "react-toastify";
 
 const ProductCard = ({ product }) => {
     const dispatch = useDispatch();
+
     const { cartItems } = useSelector((state) => state.cart);
+
     const [discountPercent, setDiscountPercent] = useState(0);
 
     const getRandomDiscount = (min, max) => {
@@ -22,6 +24,7 @@ const ProductCard = ({ product }) => {
             setDiscountPercent(parseInt(savedDiscount));
         } else {
             const newDiscount = getRandomDiscount(5, 30);
+
             sessionStorage.setItem("discountPercent", newDiscount);
             setDiscountPercent(newDiscount);
         }
@@ -39,15 +42,15 @@ const ProductCard = ({ product }) => {
     const addToCart = (e) => {
         e.preventDefault();
 
-        dispatch(addItemsToCart(product._id, 1));
+        dispatch(addItemsToCart(product._id, 1)).then(() => {
+            const isItemAddedToCart = cartItems.some(
+                (item) => item.product === product._id
+            );
 
-        const isItemAddedToCart = cartItems.some(
-            (item) => item.product === product._id
-        );
-
-        if (isItemAddedToCart) {
-            toast.success("Item added to cart");
-        }
+            if (isItemAddedToCart) {
+                toast.success("Item added to cart");
+            }
+        });
     };
 
     return (
@@ -69,6 +72,7 @@ const ProductCard = ({ product }) => {
             <div className="product-details py-3 px-4 flex flex-col items-start justify-center gap-1">
                 <div>
                     <h2 className="text-xl font-bold">{product.name}</h2>
+
                     <div className="text-sm font-medium flex gap-1 items-center">
                         <ReactStars {...options} />
                         <span>({product.numOfReviews})</span>
@@ -78,10 +82,9 @@ const ProductCard = ({ product }) => {
                 <div className="flex items-center justify-between w-full">
                     <div>
                         <span className="font-bold text-xl pr-1">₹{product.price}</span>
+
                         <span className="line-through text-sm text-gray-500 font-medium">
-                            ₹
-                            {product.price +
-                                Math.floor(product.price * (discountPercent / 100))}
+                            ₹{product.price + Math.floor(product.price * (discountPercent / 100))}
                         </span>
                     </div>
 

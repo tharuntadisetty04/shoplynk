@@ -11,7 +11,6 @@ const OrderSuccess = () => {
 
     useEffect(() => {
         localStorage.removeItem("cartItems");
-
         dispatch({ type: CLEAR_CART });
     }, [dispatch, localStorage]);
 
@@ -19,14 +18,12 @@ const OrderSuccess = () => {
         <div className="flex md:flex-row flex-col items-center justify-center lg:-ml-12 lg:gap-20 w-full h-full lg:min-h-[60svh] md:min-h-[65svh] px-8 md:px-16 md:pb-0 pb-4">
             <TitleHelmet title={"Order Complete | ShopLynk"} />
 
-            <div>
-                <img
-                    src={OrderSuccessImg}
-                    alt="Order Success"
-                    width={500}
-                    className="mix-blend-multiply"
-                />
-            </div>
+            <img
+                src={OrderSuccessImg}
+                alt="Order Success"
+                width={500}
+                className="mix-blend-multiply"
+            />
 
             <div className="flex flex-col items-center justify-center text-center">
                 <div className="text-6xl text-blue-600">
@@ -46,6 +43,7 @@ const OrderSuccess = () => {
                     >
                         Shop More
                     </Link>
+
                     <Link
                         to="/orders"
                         className="bg-blue-600 hover:bg-blue-700 font-medium text-neutral-100 py-2 px-4 rounded duration-200"

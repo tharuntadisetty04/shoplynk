@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -21,10 +21,10 @@ const SimilarProducts = () => {
 
     useEffect(() => {
         if (error) {
-            toast.error(error);
-            dispatch(clearErrors());
+            toast.error(error, {
+                onClose: () => dispatch(clearErrors()),
+            });
         }
-
         dispatch(getSimilarProducts(id));
     }, [dispatch, id, error]);
 

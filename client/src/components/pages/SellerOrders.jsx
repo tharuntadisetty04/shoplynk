@@ -1,10 +1,10 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getSellerOrders } from "../../redux/actions/orderAction";
 import TitleHelmet from "../utils/TitleHelmet";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import PageLoader from "../layout/PageLoader";
+import ItemLoader from "../layout/ItemLoader";
 import SellerOrdersGrid from "../utils/SellerOrdersGrid";
 
 const SellerOrders = ({ updateOrderHandler }) => {
@@ -28,7 +28,7 @@ const SellerOrders = ({ updateOrderHandler }) => {
     }, [dispatch, error]);
 
     return loading ? (
-        <PageLoader />
+        <ItemLoader />
     ) : (
         <div className="seller-orders w-full h-full">
             <TitleHelmet title={`${user?.username}'s Orders | ShopLynk`} />
@@ -51,10 +51,12 @@ const SellerOrders = ({ updateOrderHandler }) => {
                 <div className="flex flex-col items-center justify-center md:pb-0 pb-4 w-full h-full lg:min-h-[46svh] md:min-h-[65svh]">
                     <div className="text-center">
                         <h1 className="text-3xl font-semibold mb-4">No Orders Yet</h1>
+
                         <p className="text-lg text-gray-600 mb-8">
                             You haven't received any orders yet. Once you do, they'll show up
                             here.
                         </p>
+
                         <button className="bg-blue-600 hover:bg-blue-500 text-neutral-100 py-2 px-4 rounded shadow-md transition duration-200">
                             Learn How to Get More Orders
                         </button>

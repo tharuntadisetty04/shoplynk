@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,10 +9,11 @@ import { useDispatch, useSelector } from "react-redux";
 import createProductImg from "../../assets/create-product.jpg";
 import { clearErrors, updateProduct } from "../../redux/actions/ProductAction";
 import { UPDATE_PRODUCT_RESET } from "../../redux/constants/ProductConstant";
+import ItemLoader from "../layout/ItemLoader";
 
 const updateProductSchema = z.object({
-    name: z.string().min(1, "Product Name is required"),
-    description: z.string().min(1, "Description is required"),
+    name: z.string().min(3, "Product Name is required"),
+    description: z.string().min(3, "Description is required"),
     price: z.coerce
         .string()
         .regex(/^\d{1,6}$/, "Enter a valid Price")
@@ -30,6 +31,7 @@ const updateProductSchema = z.object({
 
 const UpdateProduct = ({ productId }) => {
     const dispatch = useDispatch();
+
     const { products } = useSelector((state) => state.products);
     const { loading, error, isUpdated } = useSelector(
         (state) => state.modifiedProduct
@@ -73,6 +75,7 @@ const UpdateProduct = ({ productId }) => {
 
     const handleNext = async () => {
         const isValid = await trigger(["name", "price", "description"]);
+
         if (isValid) {
             setStep(2);
         }
@@ -131,7 +134,11 @@ const UpdateProduct = ({ productId }) => {
         dispatch(updateProduct(formData, productId));
     };
 
-    return (
+    return loading ? (
+        <div className="bg-transparent -ml-16 -mt-10">
+            <ItemLoader />
+        </div>
+    ) : (
         <div className="update-product h-full w-full flex justify-center lg:justify-start items-start lg:gap-12 mb-4">
             <TitleHelmet title={"Update Product | ShopLynk"} />
 
@@ -161,7 +168,7 @@ const UpdateProduct = ({ productId }) => {
             <form
                 encType="multipart/form-data"
                 onSubmit={handleSubmit(onSubmit)}
-                className="lg:w-[22rem] w-full p-4 rounded-md shadow-md bg-slate-200 lg:mt-2.5"
+                className="lg:w-[22rem] w-full p-4 rounded-md shadow-md bg-slate-200 lg:mt-3"
             >
                 <div className="flex flex-col gap-4 w-full">
                     {step === 1 && (
@@ -170,6 +177,7 @@ const UpdateProduct = ({ productId }) => {
                                 <label htmlFor="name" className="font-medium text-lg">
                                     Product Name
                                 </label>
+
                                 <input
                                     type="text"
                                     name="name"
@@ -177,6 +185,7 @@ const UpdateProduct = ({ productId }) => {
                                     className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                                     {...register("name")}
                                 />
+
                                 {errors.name && (
                                     <p className="text-red-500 text-sm font-medium pl-0.5">
                                         {errors.name.message}
@@ -188,6 +197,7 @@ const UpdateProduct = ({ productId }) => {
                                 <label htmlFor="price" className="font-medium text-lg">
                                     Price
                                 </label>
+
                                 <input
                                     type="text"
                                     name="price"
@@ -195,6 +205,7 @@ const UpdateProduct = ({ productId }) => {
                                     className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                                     {...register("price", { valueAsNumber: true })}
                                 />
+
                                 {errors.price && (
                                     <p className="text-red-500 text-sm font-medium pl-0.5">
                                         {errors.price.message}
@@ -206,6 +217,7 @@ const UpdateProduct = ({ productId }) => {
                                 <label htmlFor="description" className="font-medium text-lg">
                                     Description
                                 </label>
+
                                 <textarea
                                     rows={2}
                                     name="description"
@@ -213,6 +225,7 @@ const UpdateProduct = ({ productId }) => {
                                     className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600 resize-none overflow-y-auto"
                                     {...register("description")}
                                 />
+
                                 {errors.description && (
                                     <p className="text-red-500 text-sm font-medium pl-0.5">
                                         {errors.description.message}
@@ -238,6 +251,7 @@ const UpdateProduct = ({ productId }) => {
                                 <label htmlFor="stock" className="font-medium text-lg">
                                     Stock
                                 </label>
+
                                 <input
                                     type="text"
                                     name="stock"
@@ -245,6 +259,7 @@ const UpdateProduct = ({ productId }) => {
                                     className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                                     {...register("stock", { valueAsNumber: true })}
                                 />
+
                                 {errors.stock && (
                                     <p className="text-red-500 text-sm font-medium pl-0.5">
                                         {errors.stock.message}
@@ -257,6 +272,7 @@ const UpdateProduct = ({ productId }) => {
                                     <label className="font-medium text-lg">
                                         Previous Image(s):
                                     </label>
+
                                     {productToBeUpdated && (
                                         <div className="overflow-x-auto flex gap-2 mt-1">
                                             {productToBeUpdated?.images.map((image, index) => (
@@ -289,6 +305,7 @@ const UpdateProduct = ({ productId }) => {
                                                 className="hidden"
                                             />
                                         </label>
+
                                         <span className="ml-3">{imagesPreview.length} files</span>
                                     </div>
                                 ) : (
@@ -296,6 +313,7 @@ const UpdateProduct = ({ productId }) => {
                                         <label htmlFor="images" className="font-medium text-lg">
                                             New Image(s):
                                         </label>
+
                                         <input
                                             type="file"
                                             name="images"
@@ -319,6 +337,7 @@ const UpdateProduct = ({ productId }) => {
                                         ))}
                                     </div>
                                 )}
+
                                 {errors.images && (
                                     <p className="text-red-500 text-sm font-medium pl-0.5">
                                         {errors.images.message}

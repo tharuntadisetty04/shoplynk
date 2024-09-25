@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import TitleHelmet from "../utils/TitleHelmet";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -23,7 +23,7 @@ import { clearErrors, createNewOrder } from "../../redux/actions/orderAction";
 import PageLoader from "../layout/PageLoader";
 
 const paymentSchema = z.object({
-    cardHolderName: z.string().min(1, "Please enter card holder name"),
+    cardHolderName: z.string().min(3, "Please enter card holder name"),
 });
 
 const Payment = () => {
@@ -56,24 +56,24 @@ const Payment = () => {
     }, [error, dispatch]);
 
     const paymentData = {
-        amount: Math.round(orderInfo.totalAmount * 100),
+        amount: Math.round(orderInfo?.totalAmount * 100) || 0,
     };
 
     const order = {
         shippingInfo,
         orderItems: cartItems,
-        itemsPrice: orderInfo.totalPrice,
-        taxPrice: orderInfo.tax,
-        shippingPrice: orderInfo.deliveryCharges,
-        totalPrice: orderInfo.totalAmount,
+        itemsPrice: orderInfo?.totalPrice || 0,
+        taxPrice: orderInfo?.tax || 0,
+        shippingPrice: orderInfo?.deliveryCharges || 0,
+        totalPrice: orderInfo?.totalAmount || 0,
     };
 
     const onSubmit = useCallback(
         async (formData) => {
-            try {
-                if (!paymentBtn.current) return;
-                paymentBtn.current.disabled = true;
+            if (!paymentBtn.current) return;
+            paymentBtn.current.disabled = true;
 
+            try {
                 const config = {
                     headers: { "Content-Type": "application/json" },
                     withCredentials: true,
@@ -109,29 +109,26 @@ const Payment = () => {
                 if (paymentResult.error) {
                     paymentBtn.current.disabled = false;
                     toast.error(paymentResult.error.message);
+                } else if (paymentResult.paymentIntent?.status === "succeeded") {
+                    toast.success("Payment successful!");
+
+                    order.paymentInfo = {
+                        id: paymentResult.paymentIntent.id,
+                        status: paymentResult.paymentIntent.status,
+                    };
+
+                    dispatch(createNewOrder(order));
+                    navigate("/order/success");
                 } else {
-                    if (paymentResult.paymentIntent.status === "succeeded") {
-                        toast.success("Payment successful!");
-
-                        order.paymentInfo = {
-                            id: paymentResult.paymentIntent.id,
-                            status: paymentResult.paymentIntent.status,
-                        };
-
-                        dispatch(createNewOrder(order));
-                        navigate("/order/success");
-                    } else {
-                        toast.error("There's some issue while processing payment.");
-                    }
+                    toast.error("There's an issue while processing the payment.");
                 }
             } catch (error) {
-                toast.error("Payment failed");
-                if (paymentBtn.current) {
-                    paymentBtn.current.disabled = false;
-                }
+                toast.error("Payment failed.");
+            } finally {
+                if (paymentBtn.current) paymentBtn.current.disabled = false;
             }
         },
-        [stripe, elements, paymentData, user, shippingInfo, navigate]
+        [stripe, elements, paymentData, user, shippingInfo, navigate, dispatch]
     );
 
     return loading ? (
@@ -242,9 +239,7 @@ const PaymentWrapper = () => {
         try {
             const { data } = await axios.get(
                 "http://localhost:8000/api/v1/payment/payment-apikey",
-                {
-                    withCredentials: true,
-                }
+                { withCredentials: true }
             );
             setStripeApiKey(data.stripeApiKey);
         } catch (error) {
@@ -253,13 +248,11 @@ const PaymentWrapper = () => {
     }, []);
 
     useEffect(() => {
-        if (isAuthenticated) {
-            navigate("/order/payment");
-        } else {
+        if (!isAuthenticated) {
             navigate("/login?redirect=order/payment");
+        } else {
+            getStripeApiKey();
         }
-
-        getStripeApiKey();
     }, [getStripeApiKey, isAuthenticated, navigate]);
 
     return (

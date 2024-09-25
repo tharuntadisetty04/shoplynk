@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,7 +15,7 @@ import { NEW_REVIEW_RESET } from "../../redux/constants/ProductConstant";
 
 const CreateReviewSchema = z.object({
     rating: z.number().min(1, "Rating is required"),
-    comment: z.string().min(1, "Comment is required"),
+    comment: z.string().min(3, "Comment is required"),
 });
 
 const CreateReviewModal = ({ productId, isOpen, onModalClose }) => {
@@ -34,7 +34,6 @@ const CreateReviewModal = ({ productId, isOpen, onModalClose }) => {
         handleSubmit,
         formState: { errors },
         setValue,
-        reset,
     } = useForm({
         resolver: zodResolver(CreateReviewSchema),
     });
@@ -58,14 +57,15 @@ const CreateReviewModal = ({ productId, isOpen, onModalClose }) => {
         }
 
         if (success) {
-            toast.success("Review submitted successfully!", {
-                autoClose: 1200,
-                onClose: () => {
-                    onModalClose();
-                    dispatch(getProductDetails(productId));
-                },
+            toast.success("Review submitted successfully", {
+                autoClose: 1800,
             });
+
             dispatch({ type: NEW_REVIEW_RESET });
+
+            setTimeout(() => {
+                dispatch(getProductDetails(productId));
+            }, 2000);
         }
     }, [dispatch, error, success]);
 
@@ -75,8 +75,10 @@ const CreateReviewModal = ({ productId, isOpen, onModalClose }) => {
         }
 
         data.productId = id;
-        dispatch(createProductReview(data));
-        reset();
+
+        dispatch(createProductReview(data)).then(() => {
+            onModalClose();
+        });
     };
 
     return (

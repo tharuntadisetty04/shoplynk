@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -11,6 +11,8 @@ import PageLoader from "./components/layout/PageLoader";
 import PageNotFound from "./components/pages/PageNotFound";
 import store from "./redux/store";
 import { loadUser } from "./redux/actions/UserAction";
+import ProtectedRoute from "./components/utils/ProtectedRoute";
+import SellerRoute from "./components/utils/SellerRoute";
 
 const Home = lazy(() => import("./components/pages/Home"));
 const Products = lazy(() => import("./components/pages/Products"));
@@ -71,14 +73,74 @@ function App() {
                 path="/password/reset/:token"
                 element={<ResetPassword />}
               />
-              <Route path="/profile" element={<Profile />} />
               <Route path="/cart" element={<Cart />} />
-              <Route path="/orders" element={<Orders />} />
-              <Route path="/shipping" element={<ShippingInfo />} />
-              <Route path="/order/confirm" element={<ConfirmOrder />} />
-              <Route path="/order/payment" element={<Payment />} />
-              <Route path="/order/success" element={<OrderSuccess />} />
-              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
+              {/* protected routes */}
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/orders"
+                element={
+                  <ProtectedRoute>
+                    <Orders />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/shipping"
+                element={
+                  <ProtectedRoute>
+                    <ShippingInfo />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/order/confirm"
+                element={
+                  <ProtectedRoute>
+                    <ConfirmOrder />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/order/payment"
+                element={
+                  <ProtectedRoute>
+                    <Payment />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/order/success"
+                element={
+                  <ProtectedRoute>
+                    <OrderSuccess />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* seller routes */}
+              <Route
+                path="/admin/dashboard"
+                element={
+                  <SellerRoute>
+                    <AdminDashboard />
+                  </SellerRoute>
+                }
+              />
+
+              {/* misc route */}
               <Route path="*" element={<PageNotFound />} />
             </Routes>
           </Suspense>

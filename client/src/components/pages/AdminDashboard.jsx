@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import TitleHelmet from "../utils/TitleHelmet";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -23,8 +23,6 @@ import {
     ArcElement,
 } from "chart.js";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import PageLoader from "../layout/PageLoader";
 import { getSellerProducts } from "../../redux/actions/ProductAction";
 import UpdateProduct from "./UpdateProduct";
 import { getSellerOrders } from "../../redux/actions/orderAction";
@@ -43,24 +41,6 @@ ChartJS.register(
 );
 
 const AdminDashboard = () => {
-    const navigate = useNavigate();
-    const { user, isAuthenticated, loading } = useSelector((state) => state.user);
-    const [authChecked, setAuthChecked] = useState(false);
-
-    useEffect(() => {
-        if (!loading) {
-            if (!isAuthenticated) {
-                navigate("/login");
-            } else if (user?.role === "buyer") {
-                navigate("/", {
-                    state: { toastMessage: "Access Denied", type: "warning" },
-                });
-            } else {
-                setAuthChecked(true);
-            }
-        }
-    }, [isAuthenticated, loading, navigate, user]);
-
     const [activeTab, setActiveTab] = useState("dashboard");
     const [isProductsOpen, setIsProductsOpen] = useState(false);
     const [selectedProductId, setSelectedProductId] = useState(null);
@@ -80,11 +60,7 @@ const AdminDashboard = () => {
         setActiveTab("update-order");
     };
 
-    return !authChecked ? (
-        <div className="bg-transparent">
-            <PageLoader />
-        </div>
-    ) : (
+    return (
         <div className="admin-dashboard h-full w-full px-8 md:px-16 lg:min-h-[60svh] md:min-h-[65svh]">
             <TitleHelmet title={"Admin Dashboard | ShopLynk"} />
 
@@ -132,6 +108,7 @@ const AdminDashboard = () => {
                             </span>
                             <p className="text-base lg:text-lg font-semibold">Products</p>
                         </div>
+
                         <span className="text-xl pl-4">
                             {isProductsOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
                         </span>
@@ -149,6 +126,7 @@ const AdminDashboard = () => {
                                 </span>
                                 <p className="text-base font-medium">Your Products</p>
                             </div>
+
                             <div
                                 className={`hover:text-blue-600 duration-200 cursor-pointer flex items-center gap-2 ${activeTab === "create-product" ? "text-blue-600" : ""
                                     }`}
@@ -193,25 +171,31 @@ const AdminDashboard = () => {
                     {activeTab === "dashboard" && (
                         <Dashboard setActiveTab={setActiveTab} />
                     )}
+
                     {activeTab === "your-products" && (
                         <SellerProducts
                             setActiveTab={setActiveTab}
                             updateProductHandler={updateProductHandler}
                         />
                     )}
+
                     {activeTab === "create-product" && <CreateProduct />}
+
                     {activeTab === "update-product" && (
                         <UpdateProduct productId={selectedProductId} />
                     )}
+
                     {activeTab === "orders" && (
                         <SellerOrders
                             setActiveTab={setActiveTab}
                             updateOrderHandler={updateOrderHandler}
                         />
                     )}
+
                     {activeTab === "update-order" && (
                         <UpdateOrder orderId={selectedOrderId} />
                     )}
+
                     {activeTab === "reviews" && <SellerProductReviews />}
                 </div>
             </div>
@@ -223,6 +207,7 @@ export default AdminDashboard;
 
 const Dashboard = ({ setActiveTab }) => {
     const dispatch = useDispatch();
+
     const { loading, products, productsCount } = useSelector(
         (state) => state.products
     );
@@ -336,6 +321,7 @@ const Dashboard = ({ setActiveTab }) => {
                             <Doughnut data={stockData} />
                         </div>
                     )}
+
                     {orders && orders.length > 0 && (
                         <div className="doughnut-chart bg-white md:p-6 p-2 rounded-md shadow lg:w-1/2 md:w-[49%]">
                             <h2 className="text-center font-semibold text-xl">Orders</h2>
@@ -350,10 +336,12 @@ const Dashboard = ({ setActiveTab }) => {
             <h1 className="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl mb-4 text-center">
                 No Products Available
             </h1>
+
             <p className="text-gray-600 mb-6 text-center">
                 It looks like you haven't added any products yet. Start by adding your
                 first product!
             </p>
+
             <button
                 className="px-5 py-2 bg-blue-600 text-white font-medium rounded hover:bg-blue-500 transition"
                 onClick={() => setActiveTab("create-product")}

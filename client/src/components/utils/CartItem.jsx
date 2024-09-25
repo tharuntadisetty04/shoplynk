@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { debounce } from "lodash";
@@ -21,14 +21,16 @@ const CartItem = ({ item }) => {
         if (newQty > stock) {
             return;
         }
+
         dispatch(addItemsToCart(id, newQty));
     };
 
-    const decreaseQuantity = (id, quantity, stock) => {
+    const decreaseQuantity = (id, quantity) => {
         const newQty = quantity - 1;
         if (newQty <= 0) {
             return;
         }
+
         dispatch(addItemsToCart(id, newQty));
     };
 
@@ -74,6 +76,7 @@ const CartItem = ({ item }) => {
                     alt={item.name}
                     className="w-20 h-20 object-cover rounded duration-200 group-hover:shadow-md"
                 />
+
                 <div className="lg:ml-4 ml-2">
                     <h3 className="text-lg font-medium lg:w-40 w-36 truncate">
                         {item.name}
@@ -88,12 +91,14 @@ const CartItem = ({ item }) => {
                 >
                     -
                 </button>
+
                 <input
                     type="text"
                     value={localQuantity}
                     className="lg:w-12 w-8 lg:h-[1.92rem] h-[1.64rem] text-center mx-2 border-2 border-blue-600 rounded outline-none bg-white"
                     readOnly
                 />
+
                 <button
                     className="duration-200 border-2 border-blue-600 bg-white text-blue-700 hover:bg-blue-600 hover:text-neutral-100 hover:border-blue-600 lg:px-3 px-2 rounded font-semibold lg:text-xl"
                     onClick={handleIncrease}
@@ -148,12 +153,14 @@ const CartItem = ({ item }) => {
                         >
                             -
                         </button>
+
                         <input
                             type="text"
                             value={localQuantity}
                             className="w-8 text-center mx-1 border border-blue-600 rounded outline-none bg-white"
                             readOnly
                         />
+
                         <button
                             className="duration-200 border border-blue-600 bg-white text-blue-700 hover:bg-blue-600 hover:text-neutral-100 hover:border-blue-600 font-medium px-1.5 rounded"
                             onClick={handleIncrease}
@@ -167,6 +174,7 @@ const CartItem = ({ item }) => {
                     <p className="text-base text-gray-700 mr-2">
                         ₹{item.price}x{localQuantity} =
                     </p>
+
                     <p className="text-base font-medium text-blue-600">
                         ₹{item.price * item.quantity}
                     </p>

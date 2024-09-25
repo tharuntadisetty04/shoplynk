@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -24,8 +24,8 @@ const signUpSchema = z
             .min(8, "Password must be at least 8 characters long")
             .max(30, "Password cannot exceed 30 characters"),
         confirmPassword: z.string(),
-        role: z.enum(["buyer", "seller"], "Role is required"),
-        avatar: z.any().optional(),
+        role: z.enum(["buyer", "seller"], { required_error: "Role is required" }),
+        avatar: z.instanceof(File, { message: "Avatar is required" }),
     })
     .refine((data) => data.password === data.confirmPassword, {
         path: ["confirmPassword"],
@@ -35,6 +35,7 @@ const signUpSchema = z
 const SignUp = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
     const { loading, error, isAuthenticated } = useSelector(
         (state) => state.user
     );
@@ -52,14 +53,13 @@ const SignUp = () => {
         setValue,
     } = useForm({
         resolver: zodResolver(signUpSchema),
-        mode: "onChange",
         defaultValues: {
             username: "",
             email: "",
             password: "",
             confirmPassword: "",
             role: "buyer",
-            avatar: "",
+            avatar: undefined,
         },
     });
 
@@ -90,7 +90,8 @@ const SignUp = () => {
     };
 
     const handleNext = async () => {
-        const isValid = await trigger(["username", "email"]);
+        const isValid = await trigger(["username", "email", "avatar"]);
+
         if (isValid) {
             setStep(2);
         }
@@ -113,12 +114,17 @@ const SignUp = () => {
 
         if (isAuthenticated) {
             navigate("/", {
-                state: { toastMessage: "User registered successfully!", type: "success" },
+                state: {
+                    toastMessage: "User registered successfully!",
+                    type: "success",
+                },
             });
         }
     }, [dispatch, error, isAuthenticated, navigate]);
 
-    return !loading ? (
+    return loading ? (
+        <PageLoader />
+    ) : (
         <div className="signup-section w-full lg:h-[90svh] px-8 md:px-16 flex lg:flex-row flex-col-reverse items-center justify-center lg:gap-8">
             <TitleHelmet title={"Sign Up | ShopLynk"} />
 
@@ -164,6 +170,7 @@ const SignUp = () => {
                                 >
                                     Full Name
                                 </label>
+
                                 <input
                                     type="text"
                                     {...register("username", {
@@ -172,6 +179,7 @@ const SignUp = () => {
                                     placeholder="Enter Full Name"
                                     className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                                 />
+
                                 {errors.username && (
                                     <span className="text-red-500 text-sm font-medium pl-1">
                                         {errors.username.message}
@@ -183,12 +191,14 @@ const SignUp = () => {
                                 <label htmlFor="email" className="font-medium text-lg pl-0.5">
                                     Email
                                 </label>
+
                                 <input
                                     type="email"
                                     {...register("email", { required: "Email is required" })}
                                     placeholder="Enter Email"
                                     className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                                 />
+
                                 {errors.email && (
                                     <span className="text-red-500 text-sm font-medium pl-1">
                                         {errors.email.message}
@@ -206,7 +216,7 @@ const SignUp = () => {
                                         <img
                                             src={avatarPreview}
                                             alt="Avatar Preview"
-                                            className="-ml-1 w-16 h-16 object-cover rounded-full"
+                                            className="-ml-1 w-14 h-14 aspect-square object-cover rounded-full"
                                         />
                                     )}
 
@@ -217,6 +227,12 @@ const SignUp = () => {
                                         onChange={handleInputChange}
                                     />
                                 </div>
+
+                                {errors.avatar && (
+                                    <span className="text-red-500 text-sm font-medium pl-1">
+                                        {errors.avatar.message}
+                                    </span>
+                                )}
                             </div>
 
                             <button
@@ -247,6 +263,7 @@ const SignUp = () => {
                                             defaultChecked={true}
                                             className="cursor-pointer"
                                         />
+
                                         <label
                                             htmlFor="buyer"
                                             className="font-medium cursor-pointer"
@@ -254,6 +271,7 @@ const SignUp = () => {
                                             Buyer
                                         </label>
                                     </div>
+
                                     <div className="flex gap-1">
                                         <input
                                             type="radio"
@@ -265,6 +283,7 @@ const SignUp = () => {
                                             })}
                                             className="cursor-pointer"
                                         />
+
                                         <label
                                             htmlFor="seller"
                                             className="font-medium cursor-pointer"
@@ -273,13 +292,12 @@ const SignUp = () => {
                                         </label>
                                     </div>
                                 </div>
-                                <div>
-                                    {errors.role && (
-                                        <span className="text-red-500 text-sm font-medium pl-1">
-                                            {errors.role.message}
-                                        </span>
-                                    )}
-                                </div>
+
+                                {errors.role && (
+                                    <span className="text-red-500 text-sm font-medium pl-1">
+                                        {errors.role.message}
+                                    </span>
+                                )}
                             </div>
 
                             <div className="flex gap-1 flex-col relative">
@@ -289,6 +307,7 @@ const SignUp = () => {
                                 >
                                     Password
                                 </label>
+
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     {...register("password", {
@@ -297,12 +316,14 @@ const SignUp = () => {
                                     placeholder="Enter Password"
                                     className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                                 />
+
                                 <span
                                     onClick={togglePasswordVisibility}
                                     className="absolute right-3 top-11 cursor-pointer text-xl text-gray-500 hover:text-gray-700 duration-200"
                                 >
                                     {showPassword ? <IoMdEyeOff /> : <IoMdEye />}
                                 </span>
+
                                 {errors.password && (
                                     <span className="text-red-500 text-sm font-medium pl-1">
                                         {errors.password.message}
@@ -317,18 +338,21 @@ const SignUp = () => {
                                 >
                                     Confirm Password
                                 </label>
+
                                 <input
                                     type={showConfirmPassword ? "text" : "password"}
                                     {...register("confirmPassword")}
                                     placeholder="Confirm Password"
                                     className="outline-none duration-200 w-full px-3 py-2 rounded border-2 border-slate-200 focus:border-blue-600"
                                 />
+
                                 <span
                                     onClick={toggleConfirmPasswordVisibility}
                                     className="absolute right-3 top-11 cursor-pointer text-xl text-gray-500 hover:text-gray-700 duration-200"
                                 >
                                     {showConfirmPassword ? <IoMdEyeOff /> : <IoMdEye />}
                                 </span>
+
                                 {errors.confirmPassword && (
                                     <span className="text-red-500 text-sm font-medium pl-1">
                                         {errors.confirmPassword.message}
@@ -367,8 +391,6 @@ const SignUp = () => {
                 </div>
             </form>
         </div>
-    ) : (
-        <PageLoader />
     );
 };
 

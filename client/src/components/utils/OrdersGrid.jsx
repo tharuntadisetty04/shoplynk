@@ -5,23 +5,47 @@ const OrdersGrid = ({ orders }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
 
-    // Sorting logic
+    const getOrderStatus = useMemo(
+        () => (orderItems) =>
+            orderItems.every((item) => item.orderStatus === "Delivered")
+                ? "Delivered"
+                : orderItems.some((item) => item.orderStatus === "Shipped")
+                    ? "Shipped"
+                    : "Processing",
+        []
+    );
+
     const sortedData = useMemo(() => {
         if (sortConfig.key) {
             return [...orders].sort((a, b) => {
-                if (a[sortConfig.key] < b[sortConfig.key]) {
+                let aValue = a[sortConfig.key];
+                let bValue = b[sortConfig.key];
+
+                if (sortConfig.key === "status") {
+                    aValue = getOrderStatus(a.orderItems);
+                    bValue = getOrderStatus(b.orderItems);
+
+                    const statusMap = {
+                        Processing: 1,
+                        Shipped: 2,
+                        Delivered: 3,
+                    };
+                    aValue = statusMap[aValue];
+                    bValue = statusMap[bValue];
+                }
+
+                if (aValue < bValue) {
                     return sortConfig.direction === "asc" ? -1 : 1;
                 }
-                if (a[sortConfig.key] > b[sortConfig.key]) {
+                if (aValue > bValue) {
                     return sortConfig.direction === "asc" ? 1 : -1;
                 }
                 return 0;
             });
         }
         return orders;
-    }, [orders, sortConfig]);
+    }, [orders, sortConfig, getOrderStatus]);
 
-    // Pagination logic
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
@@ -33,16 +57,6 @@ const OrdersGrid = ({ orders }) => {
         }
         setSortConfig({ key, direction });
     };
-
-    const getOrderStatus = useMemo(
-        () => (orderItems) =>
-            orderItems.every((item) => item.orderStatus === "Delivered")
-                ? "Delivered"
-                : orderItems.some((item) => item.orderStatus === "Shipped")
-                    ? "Shipped"
-                    : "Processing",
-        []
-    );
 
     return (
         <div className="p-4">
@@ -67,7 +81,14 @@ const OrdersGrid = ({ orders }) => {
                                 {sortConfig.key === "totalPrice" &&
                                     (sortConfig.direction === "asc" ? " ▲" : " ▼")}
                             </th>
-                            <th className="p-3 text-left">Order Status</th>
+                            <th
+                                className="p-3 text-left cursor-pointer"
+                                onClick={() => requestSort("status")}
+                            >
+                                Order Status{" "}
+                                {sortConfig.key === "status" &&
+                                    (sortConfig.direction === "asc" ? " ▲" : " ▼")}
+                            </th>
                             <th className="p-3 text-left lg:pl-28">Shipping Address</th>
                             <th className="p-3 text-left">Payment Status</th>
                         </tr>
