@@ -13,6 +13,7 @@ import store from "./redux/store";
 import { loadUser } from "./redux/actions/UserAction";
 import ProtectedRoute from "./components/utils/ProtectedRoute";
 import SellerRoute from "./components/utils/SellerRoute";
+import CookieConsent from "./components/utils/CookieConsent";
 
 const Home = lazy(() => import("./components/pages/Home"));
 const Products = lazy(() => import("./components/pages/Products"));
@@ -55,6 +56,7 @@ function App() {
       <Router>
         <Header />
         <LoadUser />
+        <CookieConsent />
         <main>
           <Suspense fallback={<PageLoader />}>
             <ScrollToTop />

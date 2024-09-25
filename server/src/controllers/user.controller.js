@@ -102,32 +102,45 @@ const registerUser = asyncHandler(async (req, res) => {
         isUserCreated._id
     );
 
-    const accessTokenOptions = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
-        sameSite: "None",
-    };
+    const cookieConsent =
+        req.cookies.cookieConsent === "true" ||
+        req.headers.cookieConsent === "true";
 
-    const refreshTokenOptions = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
-        sameSite: "None",
-    };
+    if (cookieConsent) {
+        const accessTokenOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+            sameSite: "None",
+        };
 
-    const checkTokenOptions = {
-        httpOnly: false,
-        secure: process.env.NODE_ENV === "production",
-        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        sameSite: "None",
-    };
+        const refreshTokenOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+            sameSite: "None",
+        };
+
+        const checkTokenOptions = {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === "production",
+            expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+            sameSite: "None",
+        };
+
+        res.cookie("accessToken", accessToken, accessTokenOptions);
+        res.cookie("refreshToken", refreshToken, refreshTokenOptions);
+        res.cookie("checkToken", true, checkTokenOptions);
+    } else {
+        return res
+            .status(400)
+            .json(
+                new ApiResponse(400, null, "User did not consent to cookies.")
+            );
+    }
 
     return res
-        .status(201)
-        .cookie("accessToken", accessToken, accessTokenOptions)
-        .cookie("refreshToken", refreshToken, refreshTokenOptions)
-        .cookie("checkToken", true, checkTokenOptions)
+        .status(200)
         .json(
             new ApiResponse(200, isUserCreated, "User registered successfully")
         );
@@ -165,32 +178,45 @@ const loginUser = asyncHandler(async (req, res) => {
         "-password -refreshToken"
     );
 
-    const accessTokenOptions = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
-        sameSite: "None",
-    };
+    const cookieConsent =
+        req.cookies.cookieConsent === "true" ||
+        req.headers.cookieConsent === "true";
 
-    const refreshTokenOptions = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
-        sameSite: "None",
-    };
+    if (cookieConsent) {
+        const accessTokenOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+            sameSite: "None",
+        };
 
-    const checkTokenOptions = {
-        httpOnly: false,
-        secure: process.env.NODE_ENV === "production",
-        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        sameSite: "None",
-    };
+        const refreshTokenOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+            sameSite: "None",
+        };
+
+        const checkTokenOptions = {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === "production",
+            expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+            sameSite: "None",
+        };
+
+        res.cookie("accessToken", accessToken, accessTokenOptions);
+        res.cookie("refreshToken", refreshToken, refreshTokenOptions);
+        res.cookie("checkToken", true, checkTokenOptions);
+    } else {
+        return res
+            .status(400)
+            .json(
+                new ApiResponse(400, null, "User did not consent to cookies.")
+            );
+    }
 
     return res
         .status(200)
-        .cookie("accessToken", accessToken, accessTokenOptions)
-        .cookie("refreshToken", refreshToken, refreshTokenOptions)
-        .cookie("checkToken", true, checkTokenOptions)
         .json(
             new ApiResponse(200, loggedInUser, "User logged in successfully")
         );
@@ -343,32 +369,45 @@ const resetPassword = asyncHandler(async (req, res) => {
         "-password -refreshToken"
     );
 
-    const accessTokenOptions = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
-        sameSite: "None",
-    };
+    const cookieConsent =
+        req.cookies.cookieConsent === "true" ||
+        req.headers.cookieConsent === "true";
 
-    const refreshTokenOptions = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
-        sameSite: "None",
-    };
+    if (cookieConsent) {
+        const accessTokenOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+            sameSite: "None",
+        };
 
-    const checkTokenOptions = {
-        httpOnly: false,
-        secure: process.env.NODE_ENV === "production",
-        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        sameSite: "None",
-    };
+        const refreshTokenOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+            sameSite: "None",
+        };
+
+        const checkTokenOptions = {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === "production",
+            expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+            sameSite: "None",
+        };
+
+        res.cookie("accessToken", accessToken, accessTokenOptions);
+        res.cookie("refreshToken", refreshToken, refreshTokenOptions);
+        res.cookie("checkToken", true, checkTokenOptions);
+    } else {
+        return res
+            .status(400)
+            .json(
+                new ApiResponse(400, null, "User did not consent to cookies.")
+            );
+    }
 
     return res
         .status(200)
-        .cookie("accessToken", accessToken, accessTokenOptions)
-        .cookie("refreshToken", refreshToken, refreshTokenOptions)
-        .cookie("checkToken", true, checkTokenOptions)
         .json(
             new ApiResponse(
                 200,
