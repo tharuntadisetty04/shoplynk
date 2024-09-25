@@ -194,26 +194,16 @@ const loginUser = asyncHandler(async (req, res) => {
 const logoutUser = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(req.user._id, { $unset: { refreshToken: 1 } });
 
-    const accessTokenOptions = {
+    const cookieOptions = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-    };
-
-    const refreshTokenOptions = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-    };
-
-    const checkTokenOptions = {
-        httpOnly: false,
         secure: process.env.NODE_ENV === "production",
     };
 
     return res
         .status(200)
-        .clearCookie("accessToken", accessTokenOptions)
-        .clearCookie("refreshToken", refreshTokenOptions)
-        .clearCookie("checkToken", checkTokenOptions)
+        .clearCookie("accessToken", cookieOptions)
+        .clearCookie("refreshToken", cookieOptions)
+        .clearCookie("checkToken", { ...cookieOptions, httpOnly: false })
         .json(
             new ApiResponse(
                 200,
@@ -591,15 +581,11 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
             secure: process.env.NODE_ENV === "production",
         };
 
-        res.clearCookie("accessToken", cookieOptions);
-        res.clearCookie("refreshToken", cookieOptions);
-        res.clearCookie("checkToken", {
-            httpOnly: false,
-            secure: cookieOptions.secure,
-        });
-
         return res
             .status(200)
+            .clearCookie("accessToken", cookieOptions)
+            .clearCookie("refreshToken", cookieOptions)
+            .clearCookie("checkToken", { ...cookieOptions, httpOnly: false })
             .json(
                 new ApiResponse(200, {}, "User account deleted successfully")
             );

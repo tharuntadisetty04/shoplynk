@@ -92,7 +92,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
         .filter();
 
     const filteredProductsCount = await Product.countDocuments(
-        productFilters.data.getFilter()
+        productFilters.data
     );
 
     const paginatedProducts = productFilters.pagination(resultPerPage).data;
