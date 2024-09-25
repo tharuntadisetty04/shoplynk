@@ -106,31 +106,31 @@ const registerUser = asyncHandler(async (req, res) => {
         req.cookies.cookieConsent === "true" ||
         req.headers.cookieConsent === "true";
 
+    let accessTokenOptions;
+    let refreshTokenOptions;
+    let checkTokenOptions;
+
     if (cookieConsent) {
-        const accessTokenOptions = {
+        accessTokenOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
             sameSite: "None",
         };
 
-        const refreshTokenOptions = {
+        refreshTokenOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
             sameSite: "None",
         };
 
-        const checkTokenOptions = {
+        checkTokenOptions = {
             httpOnly: false,
             secure: process.env.NODE_ENV === "production",
             expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
             sameSite: "None",
         };
-
-        res.cookie("accessToken", accessToken, accessTokenOptions);
-        res.cookie("refreshToken", refreshToken, refreshTokenOptions);
-        res.cookie("checkToken", true, checkTokenOptions);
     } else {
         return res
             .status(400)
@@ -141,6 +141,9 @@ const registerUser = asyncHandler(async (req, res) => {
 
     return res
         .status(200)
+        .cookie("accessToken", accessToken, accessTokenOptions)
+        .cookie("refreshToken", refreshToken, refreshTokenOptions)
+        .cookie("checkToken", true, checkTokenOptions)
         .json(
             new ApiResponse(200, isUserCreated, "User registered successfully")
         );
@@ -182,31 +185,31 @@ const loginUser = asyncHandler(async (req, res) => {
         req.cookies.cookieConsent === "true" ||
         req.headers.cookieConsent === "true";
 
+    let accessTokenOptions;
+    let refreshTokenOptions;
+    let checkTokenOptions;
+
     if (cookieConsent) {
-        const accessTokenOptions = {
+        accessTokenOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
             sameSite: "None",
         };
 
-        const refreshTokenOptions = {
+        refreshTokenOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
             sameSite: "None",
         };
 
-        const checkTokenOptions = {
+        checkTokenOptions = {
             httpOnly: false,
             secure: process.env.NODE_ENV === "production",
             expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
             sameSite: "None",
         };
-
-        res.cookie("accessToken", accessToken, accessTokenOptions);
-        res.cookie("refreshToken", refreshToken, refreshTokenOptions);
-        res.cookie("checkToken", true, checkTokenOptions);
     } else {
         return res
             .status(400)
@@ -217,6 +220,9 @@ const loginUser = asyncHandler(async (req, res) => {
 
     return res
         .status(200)
+        .cookie("accessToken", accessToken, accessTokenOptions)
+        .cookie("refreshToken", refreshToken, refreshTokenOptions)
+        .cookie("checkToken", true, checkTokenOptions)
         .json(
             new ApiResponse(200, loggedInUser, "User logged in successfully")
         );
@@ -373,31 +379,31 @@ const resetPassword = asyncHandler(async (req, res) => {
         req.cookies.cookieConsent === "true" ||
         req.headers.cookieConsent === "true";
 
+    let accessTokenOptions;
+    let refreshTokenOptions;
+    let checkTokenOptions;
+
     if (cookieConsent) {
-        const accessTokenOptions = {
+        accessTokenOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
             sameSite: "None",
         };
 
-        const refreshTokenOptions = {
+        refreshTokenOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
             sameSite: "None",
         };
 
-        const checkTokenOptions = {
+        checkTokenOptions = {
             httpOnly: false,
             secure: process.env.NODE_ENV === "production",
             expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
             sameSite: "None",
         };
-
-        res.cookie("accessToken", accessToken, accessTokenOptions);
-        res.cookie("refreshToken", refreshToken, refreshTokenOptions);
-        res.cookie("checkToken", true, checkTokenOptions);
     } else {
         return res
             .status(400)
@@ -408,6 +414,9 @@ const resetPassword = asyncHandler(async (req, res) => {
 
     return res
         .status(200)
+        .cookie("accessToken", accessToken, accessTokenOptions)
+        .cookie("refreshToken", refreshToken, refreshTokenOptions)
+        .cookie("checkToken", true, checkTokenOptions)
         .json(
             new ApiResponse(
                 200,
