@@ -1,5 +1,3 @@
-import React from "react";
-
 const ItemLoader = () => {
     return (
         <div className="flex items-center justify-center bg-neutral-100 w-full md:h-[54svh] h-[40lvh] bg-transparent">

@@ -44,10 +44,10 @@ const getAllProducts =
             try {
                 dispatch({ type: ALL_PRODUCT_REQUEST });
 
-                let apiLink = `http://localhost:8000/api/v1/products?keyword=${keyword}&page=${currentPage}&rating[gte]=${rating}&price[gte]=${price[0]}&price[lte]=${price[1]}`;
+                let apiLink = `https://shoplynk.onrender.com/api/v1/products?keyword=${keyword}&page=${currentPage}&rating[gte]=${rating}&price[gte]=${price[0]}&price[lte]=${price[1]}`;
 
                 if (category) {
-                    apiLink = `http://localhost:8000/api/v1/products?keyword=${keyword}&page=${currentPage}&category=${category}&rating[gte]=${rating}&price[gte]=${price[0]}&price[lte]=${price[1]}`;
+                    apiLink = `https://shoplynk.onrender.com/api/v1/products?keyword=${keyword}&page=${currentPage}&category=${category}&rating[gte]=${rating}&price[gte]=${price[0]}&price[lte]=${price[1]}`;
                 }
 
                 const { data } = await axios.get(apiLink);
@@ -72,7 +72,7 @@ const getProductDetails = (id) => async (dispatch) => {
         dispatch({ type: PRODUCT_DETAILS_REQUEST });
 
         const { data } = await axios.get(
-            `http://localhost:8000/api/v1/products/product/${id}`
+            `https://shoplynk.onrender.com/api/v1/products/product/${id}`
         );
 
         dispatch({
@@ -95,7 +95,7 @@ const getBestSellingProducts = () => async (dispatch) => {
         dispatch({ type: BEST_PRODUCTS_REQUEST });
 
         const { data } = await axios.get(
-            `http://localhost:8000/api/v1/products/best-products`
+            `https://shoplynk.onrender.com/api/v1/products/best-products`
         );
 
         dispatch({
@@ -118,7 +118,7 @@ const getSimilarProducts = (id) => async (dispatch) => {
         dispatch({ type: SIMILAR_PRODUCTS_REQUEST });
 
         const { data } = await axios.get(
-            `http://localhost:8000/api/v1/products/similar-products/${id}`
+            `https://shoplynk.onrender.com/api/v1/products/similar-products/${id}`
         );
 
         dispatch({
@@ -146,7 +146,7 @@ const createProductReview = (review) => async (dispatch) => {
         };
 
         const { data } = await axios.post(
-            "http://localhost:8000/api/v1/products/review",
+            "https://shoplynk.onrender.com/api/v1/products/review",
             review,
             config
         );
@@ -172,7 +172,7 @@ const getSellerProducts = () => async (dispatch) => {
         dispatch({ type: SELLER_PRODUCT_REQUEST });
 
         const { data } = await axios.get(
-            "http://localhost:8000/api/v1/products/admin/all",
+            "https://shoplynk.onrender.com/api/v1/products/admin/all",
             {
                 withCredentials: true,
             }
@@ -203,7 +203,7 @@ const createNewProduct = (productData) => async (dispatch) => {
         };
 
         const { data } = await axios.post(
-            "http://localhost:8000/api/v1/products/admin/new",
+            "https://shoplynk.onrender.com/api/v1/products/admin/new",
             productData,
             config
         );
@@ -234,7 +234,7 @@ const updateProduct = (productData, productId) => async (dispatch) => {
         };
 
         const { data } = await axios.patch(
-            `http://localhost:8000/api/v1/products/admin/${productId}`,
+            `https://shoplynk.onrender.com/api/v1/products/admin/${productId}`,
             productData,
             config
         );
@@ -260,7 +260,7 @@ const deleteProduct = (id) => async (dispatch) => {
         dispatch({ type: DELETE_PRODUCT_REQUEST });
 
         const { data } = await axios.delete(
-            `http://localhost:8000/api/v1/products/admin/${id}`,
+            `https://shoplynk.onrender.com/api/v1/products/admin/${id}`,
             { withCredentials: true }
         );
 
@@ -285,7 +285,7 @@ const getProductReviews = (id) => async (dispatch) => {
         dispatch({ type: ALL_REVIEW_REQUEST });
 
         const { data } = await axios.get(
-            `http://localhost:8000/api/v1/products/reviews?id=${id}`
+            `https://shoplynk.onrender.com/api/v1/products/reviews?id=${id}`
         );
 
         dispatch({
@@ -308,7 +308,7 @@ const deleteProductReview = (id, reviewId) => async (dispatch) => {
         dispatch({ type: DELETE_REVIEW_REQUEST });
 
         const { data } = await axios.delete(
-            `http://localhost:8000/api/v1/products/reviews?productId=${id}&reviewId=${reviewId}`,
+            `https://shoplynk.onrender.com/api/v1/products/reviews?productId=${id}&reviewId=${reviewId}`,
             { withCredentials: true }
         );
 

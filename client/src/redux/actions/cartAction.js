@@ -8,7 +8,8 @@ import {
 // add to cart
 const addItemsToCart = (id, quantity) => async (dispatch, getState) => {
     const response = await axios.get(
-        `http://localhost:8000/api/v1/products/product/${id}`
+        // `http://localhost:8000/api/v1/products/product/${id}`
+        `https://shoplynk.onrender.com/api/v1/products/product/${id}`
     );
     const productData = response.data.data;
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import signUpImg from "../../assets/signup-img.jpg";
+import signUpImg from "../../../assets/signup-img.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import TitleHelmet from "../../utils/TitleHelmet";

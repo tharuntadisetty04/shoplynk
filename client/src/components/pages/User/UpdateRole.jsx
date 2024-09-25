@@ -12,7 +12,7 @@ import {
     updateUserRole,
 } from "../../../redux/actions/UserAction";
 import ItemLoader from "../../layout/Loaders/ItemLoader";
-import shopImg from "../../assets/register-seller.jpg";
+import shopImg from "../../../assets/register-seller.jpg";
 import { useNavigate } from "react-router-dom";
 import { UPDATE_ROLE_RESET } from "../../../redux/constants/UserConstant";
 

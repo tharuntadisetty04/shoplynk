@@ -1,5 +1,5 @@
 import { useState } from "react";
-import TitleHelmet from "../utils/TitleHelmet";
+import TitleHelmet from "../../utils/TitleHelmet";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Country, State } from "country-state-city";
@@ -7,10 +7,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { saveShippingInfo } from "../../redux/actions/cartAction";
-import ProgressBar from "../utils/ProgressBar";
+import { saveShippingInfo } from "../../../redux/actions/cartAction";
+import ProgressBar from "../../utils/ProgressBar";
 import { useNavigate } from "react-router-dom";
-import shippingImg from "../../assets/shipping.jpg";
+import shippingImg from "../../../assets/shipping.jpg";
 
 const shippingInfoSchema = z.object({
     address: z.string().min(3, "Please Enter Address"),

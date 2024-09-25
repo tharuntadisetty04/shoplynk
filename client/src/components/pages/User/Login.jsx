@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import loginImg from "../../assets/login-img.jpg";
+import loginImg from "../../../assets/login-img.jpg";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import TitleHelmet from "../../utils/TitleHelmet";
@@ -57,7 +57,7 @@ const Login = () => {
         return () => {
             localStorage.removeItem("toastShown");
         };
-    }, [toastMessage, localStorage]);
+    }, [toastMessage]);
 
     useEffect(() => {
         if (error) {

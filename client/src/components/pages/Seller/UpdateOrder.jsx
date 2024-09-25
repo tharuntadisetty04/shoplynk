@@ -8,11 +8,11 @@ import {
     clearErrors,
     getOrderDetails,
     updateOrder,
-} from "../../redux/actions/orderAction";
-import ItemLoader from "../layout/Loaders/ItemLoader";
+} from "../../../redux/actions/orderAction";
+import ItemLoader from "../../layout/Loaders/ItemLoader";
 import { z } from "zod";
-import TitleHelmet from "../utils/TitleHelmet";
-import { UPDATE_ORDER_RESET } from "../../redux/constants/orderConstant";
+import TitleHelmet from "../../utils/TitleHelmet";
+import { UPDATE_ORDER_RESET } from "../../../redux/constants/orderConstant";
 
 const updateOrderSchema = z.object({
     status: z.enum(["Shipped", "Delivered"], {
@@ -48,7 +48,7 @@ const UpdateOrder = ({ orderId }) => {
         }
 
         if (updateError) {
-            toast.error(orderError, {
+            toast.error(updateError, {
                 onClose: () => dispatch(clearErrors()),
             });
         }

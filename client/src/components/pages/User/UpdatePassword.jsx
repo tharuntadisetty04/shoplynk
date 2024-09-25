@@ -14,7 +14,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { UPDATE_PASSWORD_RESET } from "../../../redux/constants/UserConstant";
 import ItemLoader from "../../layout/Loaders/ItemLoader";
-import updatePasswordImg from "../../assets/update-password.jpg";
+import updatePasswordImg from "../../../assets/update-password.jpg";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 
 const UpdatePasswordSchema = z

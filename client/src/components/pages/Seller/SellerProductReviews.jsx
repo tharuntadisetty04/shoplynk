@@ -2,12 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import TitleHelmet from "../utils/TitleHelmet";
-import ItemLoader from "../layout/Loaders/ItemLoader";
+import TitleHelmet from "../../utils/TitleHelmet";
+import ItemLoader from "../../layout/Loaders/ItemLoader";
 import {
     getProductReviews,
     clearErrors,
-} from "../../redux/actions/ProductAction";
+} from "../../../redux/actions/ProductAction";
 
 const SellerProductReviews = () => {
     const dispatch = useDispatch();

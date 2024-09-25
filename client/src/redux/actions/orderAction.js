@@ -33,7 +33,7 @@ const createNewOrder = (order) => async (dispatch) => {
         };
 
         const { data } = await axios.post(
-            "http://localhost:8000/api/v1/orders/new",
+            "https://shoplynk.onrender.com/api/v1/orders/new",
             order,
             config
         );
@@ -59,7 +59,7 @@ const getCurrentUserOrders = () => async (dispatch) => {
         dispatch({ type: MY_ORDERS_REQUEST });
 
         const { data } = await axios.get(
-            "http://localhost:8000/api/v1/orders/my-orders",
+            "https://shoplynk.onrender.com/api/v1/orders/my-orders",
             {
                 withCredentials: true,
             }
@@ -86,7 +86,7 @@ const getSellerOrders = () => async (dispatch) => {
         dispatch({ type: SELLER_ORDERS_REQUEST });
 
         const { data } = await axios.get(
-            "http://localhost:8000/api/v1/orders/admin/all",
+            "https://shoplynk.onrender.com/api/v1/orders/admin/all",
             {
                 withCredentials: true,
             }
@@ -113,7 +113,7 @@ const getOrderDetails = (id) => async (dispatch) => {
         dispatch({ type: ORDER_DETAILS_REQUEST });
 
         const { data } = await axios.get(
-            `http://localhost:8000/api/v1/orders/admin/order/${id}`,
+            `https://shoplynk.onrender.com/api/v1/orders/admin/order/${id}`,
             {
                 withCredentials: true,
             }
@@ -145,7 +145,7 @@ const updateOrder = (orderData, orderId) => async (dispatch) => {
         };
 
         const { data } = await axios.patch(
-            `http://localhost:8000/api/v1/orders/admin/order/${orderId}`,
+            `https://shoplynk.onrender.com/api/v1/orders/admin/order/${orderId}`,
             orderData,
             config
         );
@@ -171,7 +171,7 @@ const deleteOrder = (id) => async (dispatch) => {
         dispatch({ type: DELETE_ORDER_REQUEST });
 
         const { data } = await axios.delete(
-            `http://localhost:8000/api/v1/orders/admin/order/${id}`,
+            `https://shoplynk.onrender.com/api/v1/orders/admin/order/${id}`,
             { withCredentials: true }
         );
 

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import forgotPasswordImg from "../../assets/forgot-password.jpg";
+import forgotPasswordImg from "../../../assets/forgot-password.jpg";
 import TitleHelmet from "../../utils/TitleHelmet";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

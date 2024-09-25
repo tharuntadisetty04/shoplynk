@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 const OrdersGrid = ({ orders }) => {
     const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });

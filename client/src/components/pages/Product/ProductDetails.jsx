@@ -71,7 +71,7 @@ const ProductDetails = () => {
                 dispatch(getProductDetails(id));
             }, 2000);
         }
-    }, [dispatch, deleteError, isDeleted]);
+    }, [dispatch, deleteError, isDeleted, id]);
 
     useEffect(() => {
         if (product?.images) {

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
-import OrderSuccessImg from "../../assets/order-complete.jpg";
+import OrderSuccessImg from "../../../assets/order-complete.jpg";
 import TitleHelmet from "../../utils/TitleHelmet";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
@@ -12,7 +12,7 @@ const OrderSuccess = () => {
     useEffect(() => {
         localStorage.removeItem("cartItems");
         dispatch({ type: CLEAR_CART });
-    }, [dispatch, localStorage]);
+    }, [dispatch]);
 
     return (
         <div className="flex md:flex-row flex-col items-center justify-center lg:-ml-12 lg:gap-20 w-full h-full lg:min-h-[60svh] md:min-h-[65svh] px-8 md:px-16 md:pb-0 pb-4">

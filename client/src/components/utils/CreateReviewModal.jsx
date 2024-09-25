@@ -19,8 +19,6 @@ const CreateReviewSchema = z.object({
 });
 
 const CreateReviewModal = ({ productId, isOpen, onModalClose }) => {
-    if (!isOpen) return null;
-
     const { id } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -67,7 +65,7 @@ const CreateReviewModal = ({ productId, isOpen, onModalClose }) => {
                 dispatch(getProductDetails(productId));
             }, 2000);
         }
-    }, [dispatch, error, success]);
+    }, [dispatch, error, success, productId]);
 
     const onSubmit = (data) => {
         if (!isAuthenticated) {
@@ -80,6 +78,8 @@ const CreateReviewModal = ({ productId, isOpen, onModalClose }) => {
             onModalClose();
         });
     };
+
+    if (!isOpen) return null;
 
     return (
         <div

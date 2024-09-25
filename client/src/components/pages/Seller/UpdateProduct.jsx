@@ -4,12 +4,12 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import TitleHelmet from "../utils/TitleHelmet";
+import TitleHelmet from "../../utils/TitleHelmet";
 import { useDispatch, useSelector } from "react-redux";
-import createProductImg from "../../assets/create-product.jpg";
-import { clearErrors, updateProduct } from "../../redux/actions/ProductAction";
-import { UPDATE_PRODUCT_RESET } from "../../redux/constants/ProductConstant";
-import ItemLoader from "../layout/Loaders/ItemLoader";
+import createProductImg from "../../../assets/create-product.jpg";
+import { clearErrors, updateProduct } from "../../../redux/actions/ProductAction";
+import { UPDATE_PRODUCT_RESET } from "../../../redux/constants/ProductConstant";
+import ItemLoader from "../../layout/Loaders/ItemLoader";
 
 const updateProductSchema = z.object({
     name: z.string().min(3, "Product Name is required"),

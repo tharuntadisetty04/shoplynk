@@ -78,7 +78,7 @@ const Home = () => {
         return () => {
             localStorage.removeItem("toastShown");
         };
-    }, [toastMessage, type, localStorage]);
+    }, [toastMessage, type]);
 
     const handleCategory = (category) => {
         dispatch(getAllProducts("", 1, category, 0, [1, 100000]));

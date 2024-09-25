@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ProgressBar from "../../utils/ProgressBar";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import paymentImg from "../../assets/payment.jpg";
+import paymentImg from "../../../assets/payment.jpg";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";

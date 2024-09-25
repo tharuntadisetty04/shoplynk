@@ -6,7 +6,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TitleHelmet from "../../utils/TitleHelmet";
 import { useDispatch, useSelector } from "react-redux";
-import createProductImg from "../../assets/create-product.jpg";
+import createProductImg from "../../../assets/create-product.jpg";
 import {
     clearErrors,
     createNewProduct,

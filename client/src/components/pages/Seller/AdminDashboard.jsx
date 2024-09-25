@@ -9,7 +9,7 @@ import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import SellerProducts from "./SellerProducts";
 import CreateProduct from "./CreateProduct";
 import SellerOrders from "./SellerOrders";
-import SellerProductReviews from "../SellerProductReviews";
+import SellerProductReviews from "./SellerProductReviews";
 import { Doughnut, Line } from "react-chartjs-2";
 import {
     Chart as ChartJS,
@@ -24,10 +24,10 @@ import {
 } from "chart.js";
 import { useDispatch, useSelector } from "react-redux";
 import { getSellerProducts } from "../../../redux/actions/ProductAction";
-import UpdateProduct from "../UpdateProduct";
+import UpdateProduct from "./UpdateProduct";
 import { getSellerOrders } from "../../../redux/actions/orderAction";
 import ItemLoader from "../../layout/Loaders/ItemLoader";
-import UpdateOrder from "../UpdateOrder";
+import UpdateOrder from "./UpdateOrder";
 
 ChartJS.register(
     CategoryScale,
