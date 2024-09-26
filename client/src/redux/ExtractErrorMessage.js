@@ -7,9 +7,11 @@ export const extractErrorMessage = (htmlString) => {
         let errorMessage = "Unknown error occurred.";
 
         if (preTag) {
-            const parsedResponse = JSON.parse(preTag.innerHTML);
-            if (parsedResponse.message) {
-                errorMessage = parsedResponse.message;
+            const errorLine = preTag.innerHTML.split("<br>")[0];
+
+            if (errorLine.includes("Error: ")) {
+                const message = errorLine.split("Error: ")[1];
+                errorMessage = message ? message.trim() : errorMessage;
             }
         }
 
