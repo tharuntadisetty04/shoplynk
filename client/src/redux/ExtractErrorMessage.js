@@ -1,17 +1,23 @@
 export const extractErrorMessage = (htmlString) => {
     try {
+        console.log(htmlString);
+
         const parser = new DOMParser();
         const doc = parser.parseFromString(htmlString, "text/html");
+
         const preTag = doc.querySelector("pre");
 
         let errorMessage = "Unknown error occurred.";
 
         if (preTag) {
-            const errorLine = preTag.innerHTML.split("<br>")[0];
+            const errorHtml = preTag.innerHTML;
 
-            if (errorLine.includes("Error: ")) {
-                const message = errorLine.split("Error: ")[1];
-                errorMessage = message ? message.trim() : errorMessage;
+            const messageLine = errorHtml.split("<br>")[0];
+
+            if (messageLine.startsWith("Error: ")) {
+                errorMessage = messageLine.split("Error: ")[1].trim();
+            } else {
+                errorMessage = messageLine.trim();
             }
         }
 
