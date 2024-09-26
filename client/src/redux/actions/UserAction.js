@@ -58,7 +58,8 @@ const loginUser = (email, password) => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage = error?.message || extractErrorMessage(error.response.data);
+        const errorMessage =
+            extractErrorMessage(error.response.data) || error.message;
 
         dispatch({
             type: LOGIN_FAIL,
