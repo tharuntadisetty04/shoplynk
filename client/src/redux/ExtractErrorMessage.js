@@ -14,8 +14,9 @@ export const extractErrorMessage = (htmlString) => {
 
             const messageLine = errorHtml.split("<br>")[0];
 
-            if (messageLine.startsWith("Error: ")) {
-                errorMessage = messageLine.split("Error: ")[1].trim();
+            const match = messageLine.match(/Error: (.+)/);
+            if (match) {
+                errorMessage = match[1].trim();
             } else {
                 errorMessage = messageLine.trim();
             }
@@ -24,6 +25,7 @@ export const extractErrorMessage = (htmlString) => {
         return errorMessage;
     } catch (e) {
         console.error("Error parsing error message:", e);
+
         return "An error occurred while extracting the error message.";
     }
 };
