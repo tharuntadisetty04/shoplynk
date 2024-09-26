@@ -7,21 +7,15 @@ export const extractErrorMessage = (htmlString) => {
         let errorMessage = "Unknown error occurred.";
 
         if (preTag) {
-            const errorHtml = preTag.innerHTML;
-            
-            const messageLine = errorHtml.split("<br>")[0];
-            const match = messageLine.match(/Error: (.+)/);
-            
-            if (match) {
-                errorMessage = match[1].trim();
-            } else {
-                errorMessage = messageLine.trim();
+            const preContent = preTag.innerHTML.split("<br>")[0];
+            if (preContent.includes("Error: ")) {
+                const message = preContent.split("Error: ")[1].trim();
+                errorMessage = message || errorMessage;
             }
         }
 
         return errorMessage;
     } catch (e) {
-        console.error("Error parsing error message:", e);
-        return "An error occurred while extracting the error message.";
+        return "Failed to parse error message.";
     }
 };
