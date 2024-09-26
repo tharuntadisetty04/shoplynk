@@ -22,6 +22,9 @@ import {
 } from "../constants/orderConstant";
 import { extractErrorMessage } from "../ExtractErrorMessage";
 
+// Get the API URL from environment variables
+const apiUrl = import.meta.env.VITE_API_URL;
+
 // create new order
 const createNewOrder = (order) => async (dispatch) => {
     try {
@@ -33,7 +36,7 @@ const createNewOrder = (order) => async (dispatch) => {
         };
 
         const { data } = await axios.post(
-            "https://shoplynk.onrender.com/api/v1/orders/new",
+            `${apiUrl}/api/v1/orders/new`,
             order,
             config
         );
@@ -59,7 +62,7 @@ const getCurrentUserOrders = () => async (dispatch) => {
         dispatch({ type: MY_ORDERS_REQUEST });
 
         const { data } = await axios.get(
-            "https://shoplynk.onrender.com/api/v1/orders/my-orders",
+            `${apiUrl}/api/v1/orders/my-orders`,
             {
                 withCredentials: true,
             }
@@ -86,7 +89,7 @@ const getSellerOrders = () => async (dispatch) => {
         dispatch({ type: SELLER_ORDERS_REQUEST });
 
         const { data } = await axios.get(
-            "https://shoplynk.onrender.com/api/v1/orders/admin/all",
+            `${apiUrl}/api/v1/orders/admin/all`,
             {
                 withCredentials: true,
             }
@@ -113,7 +116,7 @@ const getOrderDetails = (id) => async (dispatch) => {
         dispatch({ type: ORDER_DETAILS_REQUEST });
 
         const { data } = await axios.get(
-            `https://shoplynk.onrender.com/api/v1/orders/admin/order/${id}`,
+            `${apiUrl}/api/v1/orders/admin/order/${id}`,
             {
                 withCredentials: true,
             }
@@ -145,7 +148,7 @@ const updateOrder = (orderData, orderId) => async (dispatch) => {
         };
 
         const { data } = await axios.patch(
-            `https://shoplynk.onrender.com/api/v1/orders/admin/order/${orderId}`,
+            `${apiUrl}/api/v1/orders/admin/order/${orderId}`,
             orderData,
             config
         );
@@ -171,7 +174,7 @@ const deleteOrder = (id) => async (dispatch) => {
         dispatch({ type: DELETE_ORDER_REQUEST });
 
         const { data } = await axios.delete(
-            `https://shoplynk.onrender.com/api/v1/orders/admin/order/${id}`,
+            `${apiUrl}/api/v1/orders/admin/order/${id}`,
             { withCredentials: true }
         );
 

@@ -34,6 +34,9 @@ import {
 } from "../constants/UserConstant";
 import { extractErrorMessage } from "../ExtractErrorMessage";
 
+// Get the API URL from environment variables
+const apiUrl = import.meta.env.VITE_API_URL;
+
 // Login user
 const loginUser = (email, password) => async (dispatch) => {
     try {
@@ -45,7 +48,7 @@ const loginUser = (email, password) => async (dispatch) => {
         };
 
         const { data } = await axios.post(
-            "https://shoplynk.onrender.com/api/v1/user/login",
+            `${apiUrl}/api/v1/user/login`,
             { email, password },
             config
         );
@@ -76,7 +79,7 @@ const registerUser = (userData) => async (dispatch) => {
         };
 
         const { data } = await axios.post(
-            "https://shoplynk.onrender.com/api/v1/user/register",
+            `${apiUrl}/api/v1/user/register`,
             userData,
             config
         );
@@ -109,12 +112,9 @@ const loadUser = () => async (dispatch) => {
 
         dispatch({ type: LOAD_USER_REQUEST });
 
-        const { data } = await axios.get(
-            "https://shoplynk.onrender.com/api/v1/user/current-user",
-            {
-                withCredentials: true,
-            }
-        );
+        const { data } = await axios.get(`${apiUrl}/api/v1/user/current-user`, {
+            withCredentials: true,
+        });
 
         dispatch({
             type: LOAD_USER_SUCCESS,
@@ -134,7 +134,7 @@ const loadUser = () => async (dispatch) => {
 // Logout user
 const logoutUser = () => async (dispatch) => {
     try {
-        await axios.post("https://shoplynk.onrender.com/api/v1/user/logout", null, {
+        await axios.post(`${apiUrl}/api/v1/user/logout`, null, {
             withCredentials: true,
         });
 
@@ -161,7 +161,7 @@ const updateUserRole = (userData) => async (dispatch) => {
         };
 
         const { data } = await axios.patch(
-            "https://shoplynk.onrender.com/api/v1/user/update-role",
+            `${apiUrl}/api/v1/user/update-role`,
             userData,
             config
         );
@@ -192,7 +192,7 @@ const updateUserProfile = (userData) => async (dispatch) => {
         };
 
         const { data } = await axios.patch(
-            "https://shoplynk.onrender.com/api/v1/user/update-profile",
+            `${apiUrl}/api/v1/user/update-profile`,
             userData,
             config
         );
@@ -223,7 +223,7 @@ const updateUserPassword = (oldPassword, newPassword) => async (dispatch) => {
         };
 
         const { data } = await axios.patch(
-            "https://shoplynk.onrender.com/api/v1/user/password/update",
+            `${apiUrl}/api/v1/user/password/update`,
             { oldPassword, newPassword },
             config
         );
@@ -254,7 +254,7 @@ const forgotPassword = (email) => async (dispatch) => {
         };
 
         const { data } = await axios.post(
-            "https://shoplynk.onrender.com/api/v1/user/password/forgot",
+            `${apiUrl}/api/v1/user/password/forgot`,
             { email },
             config
         );
@@ -285,7 +285,7 @@ const resetPassword = (token, passwords) => async (dispatch) => {
         };
 
         const { data } = await axios.put(
-            `https://shoplynk.onrender.com/api/v1/user/password/reset/${token}`,
+            `${apiUrl}/api/v1/user/password/reset/${token}`,
             passwords,
             config
         );
@@ -311,7 +311,7 @@ const deleteUser = () => async (dispatch) => {
         dispatch({ type: DELETE_ACCOUNT_REQUEST });
 
         const { data } = await axios.delete(
-            "https://shoplynk.onrender.com/api/v1/user/delete-profile",
+            `${apiUrl}/api/v1/user/delete-profile`,
             { withCredentials: true }
         );
 
@@ -335,7 +335,7 @@ const clearErrors = () => (dispatch) => {
     dispatch({ type: CLEAR_ERRORS });
 };
 
-// Clear errors
+// Clear message
 const clearMessage = () => (dispatch) => {
     dispatch({ type: CLEAR_MESSAGE });
 };

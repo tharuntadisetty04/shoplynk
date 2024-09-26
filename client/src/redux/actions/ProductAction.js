@@ -37,6 +37,9 @@ import {
 } from "../constants/ProductConstant";
 import { extractErrorMessage } from "../ExtractErrorMessage";
 
+// Base URL for the API
+const API_BASE_URL = "https://shoplynk.onrender.com/api/v1/products";
+
 // Get all products
 const getAllProducts =
     (keyword = "", currentPage = 1, category, rating = 0, price = [1, 900000]) =>
@@ -44,10 +47,10 @@ const getAllProducts =
             try {
                 dispatch({ type: ALL_PRODUCT_REQUEST });
 
-                let apiLink = `https://shoplynk.onrender.com/api/v1/products?keyword=${keyword}&page=${currentPage}&rating[gte]=${rating}&price[gte]=${price[0]}&price[lte]=${price[1]}`;
+                let apiLink = `${API_BASE_URL}?keyword=${keyword}&page=${currentPage}&rating[gte]=${rating}&price[gte]=${price[0]}&price[lte]=${price[1]}`;
 
                 if (category) {
-                    apiLink = `https://shoplynk.onrender.com/api/v1/products?keyword=${keyword}&page=${currentPage}&category=${category}&rating[gte]=${rating}&price[gte]=${price[0]}&price[lte]=${price[1]}`;
+                    apiLink = `${API_BASE_URL}?keyword=${keyword}&page=${currentPage}&category=${category}&rating[gte]=${rating}&price[gte]=${price[0]}&price[lte]=${price[1]}`;
                 }
 
                 const { data } = await axios.get(apiLink);
@@ -71,9 +74,7 @@ const getProductDetails = (id) => async (dispatch) => {
     try {
         dispatch({ type: PRODUCT_DETAILS_REQUEST });
 
-        const { data } = await axios.get(
-            `https://shoplynk.onrender.com/api/v1/products/product/${id}`
-        );
+        const { data } = await axios.get(`${API_BASE_URL}/product/${id}`);
 
         dispatch({
             type: PRODUCT_DETAILS_SUCCESS,
@@ -94,9 +95,7 @@ const getBestSellingProducts = () => async (dispatch) => {
     try {
         dispatch({ type: BEST_PRODUCTS_REQUEST });
 
-        const { data } = await axios.get(
-            `https://shoplynk.onrender.com/api/v1/products/best-products`
-        );
+        const { data } = await axios.get(`${API_BASE_URL}/best-products`);
 
         dispatch({
             type: BEST_PRODUCTS_SUCCESS,
@@ -117,9 +116,7 @@ const getSimilarProducts = (id) => async (dispatch) => {
     try {
         dispatch({ type: SIMILAR_PRODUCTS_REQUEST });
 
-        const { data } = await axios.get(
-            `https://shoplynk.onrender.com/api/v1/products/similar-products/${id}`
-        );
+        const { data } = await axios.get(`${API_BASE_URL}/similar-products/${id}`);
 
         dispatch({
             type: SIMILAR_PRODUCTS_SUCCESS,
@@ -145,11 +142,7 @@ const createProductReview = (review) => async (dispatch) => {
             withCredentials: true,
         };
 
-        const { data } = await axios.post(
-            "https://shoplynk.onrender.com/api/v1/products/review",
-            review,
-            config
-        );
+        const { data } = await axios.post(`${API_BASE_URL}/review`, review, config);
 
         dispatch({
             type: NEW_REVIEW_SUCCESS,
@@ -171,12 +164,9 @@ const getSellerProducts = () => async (dispatch) => {
     try {
         dispatch({ type: SELLER_PRODUCT_REQUEST });
 
-        const { data } = await axios.get(
-            "https://shoplynk.onrender.com/api/v1/products/admin/all",
-            {
-                withCredentials: true,
-            }
-        );
+        const { data } = await axios.get(`${API_BASE_URL}/admin/all`, {
+            withCredentials: true,
+        });
 
         dispatch({
             type: SELLER_PRODUCT_SUCCESS,
@@ -203,7 +193,7 @@ const createNewProduct = (productData) => async (dispatch) => {
         };
 
         const { data } = await axios.post(
-            "https://shoplynk.onrender.com/api/v1/products/admin/new",
+            `${API_BASE_URL}/admin/new`,
             productData,
             config
         );
@@ -234,7 +224,7 @@ const updateProduct = (productData, productId) => async (dispatch) => {
         };
 
         const { data } = await axios.patch(
-            `https://shoplynk.onrender.com/api/v1/products/admin/${productId}`,
+            `${API_BASE_URL}/admin/${productId}`,
             productData,
             config
         );
@@ -259,10 +249,9 @@ const deleteProduct = (id) => async (dispatch) => {
     try {
         dispatch({ type: DELETE_PRODUCT_REQUEST });
 
-        const { data } = await axios.delete(
-            `https://shoplynk.onrender.com/api/v1/products/admin/${id}`,
-            { withCredentials: true }
-        );
+        const { data } = await axios.delete(`${API_BASE_URL}/admin/${id}`, {
+            withCredentials: true,
+        });
 
         dispatch({
             type: DELETE_PRODUCT_SUCCESS,
@@ -284,9 +273,7 @@ const getProductReviews = (id) => async (dispatch) => {
     try {
         dispatch({ type: ALL_REVIEW_REQUEST });
 
-        const { data } = await axios.get(
-            `https://shoplynk.onrender.com/api/v1/products/reviews?id=${id}`
-        );
+        const { data } = await axios.get(`${API_BASE_URL}/reviews?id=${id}`);
 
         dispatch({
             type: ALL_REVIEW_SUCCESS,
@@ -308,7 +295,7 @@ const deleteProductReview = (id, reviewId) => async (dispatch) => {
         dispatch({ type: DELETE_REVIEW_REQUEST });
 
         const { data } = await axios.delete(
-            `https://shoplynk.onrender.com/api/v1/products/reviews?productId=${id}&reviewId=${reviewId}`,
+            `${API_BASE_URL}/reviews?productId=${id}&reviewId=${reviewId}`,
             { withCredentials: true }
         );
 
@@ -328,7 +315,7 @@ const deleteProductReview = (id, reviewId) => async (dispatch) => {
 };
 
 // Clear errors
-const clearErrors = () => async (dispatch) => {
+const clearErrors = () => (dispatch) => {
     dispatch({ type: CLEAR_ERRORS });
 };
 
