@@ -14,7 +14,9 @@ const CookieConsent = () => {
     const handleConsent = () => {
         localStorage.setItem("cookieConsent", "true");
 
-        document.cookie = "cookieConsent=true; path=/; max-age=" + 10 * 24 * 60 * 60 * 1000 + "; SameSite=None; Secure";
+        const maxAge = 10 * 24 * 60 * 60;
+        document.cookie = "cookieConsent=true; path=/; max-age=" + maxAge + "; SameSite=None; Secure";
+
         setConsentGiven(true);
     };
 
