@@ -4,19 +4,23 @@ export const extractErrorMessage = (htmlString) => {
         const doc = parser.parseFromString(htmlString, "text/html");
         const preTag = doc.querySelector("pre");
 
-        let errorMessage = "Unknown error occurred";
+        let errorMessage = "Unknown error occurred.";
 
         if (preTag) {
-            const preContent = preTag.innerHTML.split("<br>")[0];
+            const errorHtml = preTag.innerHTML;
 
-            if (preContent) {
-                const message = preContent.trim();
-                errorMessage = message || errorMessage;
+            const messageLine = errorHtml.split("<br>")[0];
+            const match = messageLine.match(/Error: (.+)/);
+
+            if (match) {
+                errorMessage = match[1].trim();
+            } else {
+                errorMessage = messageLine.trim();
             }
         }
 
         return errorMessage;
     } catch (e) {
-        return "Internal server error";
+        return "An error occurred while extracting the error message.";
     }
 };
