@@ -80,7 +80,7 @@ const Payment = () => {
                 };
 
                 const { data } = await axios.post(
-                    "http://localhost:8000/api/v1/payment/process-payment",
+                    "https://shoplynk.onrender.com/api/v1/payment/process-payment",
                     paymentData,
                     config
                 );
@@ -238,7 +238,7 @@ const PaymentWrapper = () => {
     const getStripeApiKey = useCallback(async () => {
         try {
             const { data } = await axios.get(
-                "http://localhost:8000/api/v1/payment/payment-apikey",
+                "https://shoplynk.onrender.com/api/v1/payment/payment-apikey",
                 { withCredentials: true }
             );
             setStripeApiKey(data.stripeApiKey);
