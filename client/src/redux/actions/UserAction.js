@@ -99,22 +99,6 @@ const registerUser = (userData) => async (dispatch) => {
 // get current user
 const loadUser = () => async (dispatch) => {
     try {
-        const getCookie = (name) => {
-            const cookies = document.cookie.split("; ").reduce((acc, cookie) => {
-                const [key, value] = cookie.split("=");
-                acc[key] = value;
-                return acc;
-            }, {});
-            return cookies[name] || null;
-        };
-
-        const checkToken = getCookie("checkToken");
-        console.log("Check Token:", checkToken);
-
-        if (!checkToken) {
-            return null;
-        }
-
         dispatch({ type: LOAD_USER_REQUEST });
 
         const { data } = await axios.get(`${apiUrl}/api/v1/user/current-user`, {

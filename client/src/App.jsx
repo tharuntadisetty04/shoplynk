@@ -44,9 +44,13 @@ function ScrollToTop() {
 }
 
 function App() {
+  const location = useLocation();
+
   useEffect(() => {
-    store.dispatch(loadUser());
-  }, []);
+    if (location.pathname !== "/login" && location.pathname !== "/signup") {
+      store.dispatch(loadUser());
+    }
+  }, [location.pathname]);
 
   return (
     <div className="bg-neutral-100 text-gray-900">
@@ -67,10 +71,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route
-                path="/password/reset/:token"
-                element={<ResetPassword />}
-              />
+              <Route path="/password/reset/:token" element={<ResetPassword />} />
               <Route path="/cart" element={<Cart />} />
 
               {/* Protected routes */}
