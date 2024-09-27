@@ -106,6 +106,10 @@ const SignUp = () => {
     };
 
     useEffect(() => {
+        if (error === "Unauthorized request") {
+            return;
+        }
+
         if (error) {
             toast.error(error, {
                 onClose: () => dispatch(clearErrors()),

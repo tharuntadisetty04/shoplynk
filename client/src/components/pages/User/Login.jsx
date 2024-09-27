@@ -49,6 +49,10 @@ const Login = () => {
     useEffect(() => {
         const toastShown = localStorage.getItem("toastShown");
 
+        if (toastMessage === "Unauthorized request" && !toastShown) {
+            return;
+        }
+
         if (toastMessage && !toastShown) {
             toast.warning(toastMessage);
             localStorage.setItem("toastShown", "true");
@@ -60,6 +64,10 @@ const Login = () => {
     }, [toastMessage]);
 
     useEffect(() => {
+        if (error === "Unauthorized request") {
+            return;
+        }
+
         if (error) {
             toast.error(error, {
                 onClose: () => dispatch(clearErrors()),

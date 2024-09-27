@@ -44,13 +44,9 @@ function ScrollToTop() {
 }
 
 function App() {
-  const location = useLocation();
-
   useEffect(() => {
-    if (location.pathname !== "/login" && location.pathname !== "/signup") {
-      store.dispatch(loadUser());
-    }
-  }, [location.pathname]);
+    store.dispatch(loadUser());
+  }, []);
 
   return (
     <div className="bg-neutral-100 text-gray-900">
