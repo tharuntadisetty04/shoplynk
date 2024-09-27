@@ -282,7 +282,7 @@ const ProductDetails = () => {
                     </div>
 
                     {/* Right Column - Product Details */}
-                    <div className="details flex flex-col items-start px-2 max-w-96">
+                    <div className="details flex flex-col items-start px-2 max-w-[26rem]">
                         <div className="md:-mt-16 lg:-mt-6">
                             <h2 className="text-2xl font-semibold">{product.name}</h2>
 
