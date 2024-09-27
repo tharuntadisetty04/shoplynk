@@ -99,13 +99,13 @@ const registerUser = (userData) => async (dispatch) => {
 // get current user
 const loadUser = () => async (dispatch) => {
     try {
-        const checkToken = document.cookie
-            .split("; ")
-            .find((item) => item.startsWith("checkToken="));
+        // const checkToken = document.cookie
+        //     .split("; ")
+        //     .find((item) => item.startsWith("checkToken="));
 
-        if (!checkToken) {
-            return null;
-        }
+        // if (!checkToken) {
+        //     return null;
+        // }
 
         dispatch({ type: LOAD_USER_REQUEST });
 
