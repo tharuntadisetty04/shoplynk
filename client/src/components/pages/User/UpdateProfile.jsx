@@ -118,14 +118,16 @@ const UpdateProfile = () => {
                 transition:Slide
             />
 
-            <img
-                src={avatarPreview}
-                alt="Avatar"
-                className="md:w-[19rem] md:h-[19rem] aspect-square rounded-full object-cover hover:scale-105 duration-300 cursor-pointer"
-            />
+            <div className="avatar">
+                <img
+                    src={avatarPreview}
+                    alt="Avatar"
+                    className="md:w-[19rem] md:h-[19rem] aspect-square rounded-full object-cover hover:scale-105 duration-300"
+                />
+            </div>
 
             <form
-                className="update-profile-form lg:w-80 w-full shadow-md rounded"
+                className="update-profile-form lg:w-80 w-72 shadow-md rounded"
                 onSubmit={handleSubmit(onSubmit)}
             >
                 <div className="flex flex-col gap-4 border-2 border-slate-200 rounded p-4 bg-slate-200">
@@ -167,19 +169,25 @@ const UpdateProfile = () => {
                         )}
                     </div>
 
-                    <div className="flex gap-1 md:flex-col flex-row items-center md:items-start">
+                    <div className="flex gap-3 flex-codl items-center">
                         <label htmlFor="avatar" className="font-medium text-lg pl-0.5">
                             Avatar
                         </label>
 
-                        <div className="lg:ml-[0.25rem] md:ml-28">
+                        <label
+                            htmlFor="avatar"
+                            className="bg-blue-500 text-neutral-100 px-4 py-2 rounded w-full text-center"
+                        >
+                            Choose File
                             <input
+                                id="avatar"
                                 type="file"
                                 name="avatar"
                                 accept="image/*"
                                 onChange={handleInputChange}
+                                className="hidden"
                             />
-                        </div>
+                        </label>
 
                         {errors.avatar && (
                             <span className="text-red-500 text-sm font-medium pl-1">
