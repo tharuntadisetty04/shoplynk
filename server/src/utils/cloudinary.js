@@ -23,7 +23,7 @@ const uploadToCloudinary = async (localFilePath) => {
         return response;
     } catch (error) {
         fs.unlinkSync(localFilePath);
-        throw new ApiError(500, "Error uploading file to Cloudinary");
+        return new ApiError(500, "Error uploading file to Cloudinary");
     }
 };
 
@@ -46,7 +46,10 @@ const uploadProductImagesToCloudinary = async (localFilePaths) => {
     } catch (error) {
         localFilePaths.forEach((filePath) => fs.unlinkSync(filePath));
 
-        throw new ApiError(500, "Error uploading product images to Cloudinary");
+        return new ApiError(
+            500,
+            "Error uploading product images to Cloudinary"
+        );
     }
 };
 
@@ -58,7 +61,7 @@ const deleteImagesFromCloudinary = async (publicIds) => {
 
         const results = await Promise.all(deletionPromises);
     } catch (error) {
-        throw new ApiError(500, "Failed to delete images from Cloudinary");
+        return new ApiError(500, "Failed to delete images from Cloudinary");
     }
 };
 

@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
+import errorHandler from "./middlewares/errorHandler.middleware.js";
 
 dotenv.config({ path: "./.env" });
 
@@ -41,6 +42,8 @@ app.use("/api/v1/orders", orderRouter);
 
 // Payment route
 app.use("/api/v1/payment", paymentRouter);
+
+app.use(errorHandler);
 
 app.on("error", (err) => {
     console.log("App error: ", err);

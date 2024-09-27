@@ -13,7 +13,6 @@ import store from "./redux/store";
 import { loadUser } from "./redux/actions/UserAction";
 import ProtectedRoute from "./components/utils/ProtectedRoute";
 import SellerRoute from "./components/utils/SellerRoute";
-import CookieConsent from "./components/utils/CookieConsent";
 
 const Home = lazy(() => import("./components/pages/Home"));
 const Products = lazy(() => import("./components/pages/Products"));
@@ -44,23 +43,20 @@ function ScrollToTop() {
   return null;
 }
 
-function LoadUser() {
+function App() {
   useEffect(() => {
     store.dispatch(loadUser());
   }, []);
-}
 
-function App() {
   return (
     <div className="bg-neutral-100 text-gray-900">
       <Router>
         <Header />
-        <LoadUser />
-        <CookieConsent />
         <main>
           <Suspense fallback={<PageLoader />}>
             <ScrollToTop />
             <Routes>
+              {/* Public routes */}
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
@@ -77,7 +73,7 @@ function App() {
               />
               <Route path="/cart" element={<Cart />} />
 
-              {/* protected routes */}
+              {/* Protected routes */}
               <Route
                 path="/profile"
                 element={
@@ -132,7 +128,7 @@ function App() {
                 }
               />
 
-              {/* seller routes */}
+              {/* Seller routes */}
               <Route
                 path="/admin/dashboard"
                 element={
@@ -142,7 +138,7 @@ function App() {
                 }
               />
 
-              {/* misc route */}
+              {/* Misc route */}
               <Route path="*" element={<PageNotFound />} />
             </Routes>
           </Suspense>

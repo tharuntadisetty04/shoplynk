@@ -35,7 +35,6 @@ import {
     DELETE_REVIEW_SUCCESS,
     DELETE_REVIEW_FAIL,
 } from "../constants/ProductConstant";
-import { extractErrorMessage } from "../ExtractErrorMessage";
 
 // Base URL for the API
 const API_BASE_URL = "https://shoplynk.onrender.com/api/v1/products";
@@ -60,7 +59,7 @@ const getAllProducts =
                     payload: data,
                 });
             } catch (error) {
-                const errorMessage = extractErrorMessage(error.response.data);
+                const errorMessage = error.response.data.message || error.message;
 
                 dispatch({
                     type: ALL_PRODUCT_FAIL,
@@ -81,7 +80,7 @@ const getProductDetails = (id) => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage = extractErrorMessage(error.response.data);
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: PRODUCT_DETAILS_FAIL,
@@ -102,7 +101,7 @@ const getBestSellingProducts = () => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage = extractErrorMessage(error.response.data);
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: BEST_PRODUCTS_FAIL,
@@ -123,7 +122,7 @@ const getSimilarProducts = (id) => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage = extractErrorMessage(error.response.data);
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: SIMILAR_PRODUCTS_FAIL,
@@ -149,8 +148,7 @@ const createProductReview = (review) => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage =
-            extractErrorMessage(error.response.data) || error.message;
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: NEW_REVIEW_FAIL,
@@ -173,7 +171,7 @@ const getSellerProducts = () => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage = extractErrorMessage(error.response.data);
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: SELLER_PRODUCT_FAIL,
@@ -203,8 +201,7 @@ const createNewProduct = (productData) => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage =
-            extractErrorMessage(error.response.data) || error.message;
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: CREATE_PRODUCT_FAIL,
@@ -234,8 +231,7 @@ const updateProduct = (productData, productId) => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage =
-            extractErrorMessage(error.response.data) || error.message;
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: UPDATE_PRODUCT_FAIL,
@@ -258,8 +254,7 @@ const deleteProduct = (id) => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage =
-            extractErrorMessage(error.response.data) || error.message;
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: DELETE_PRODUCT_FAIL,
@@ -280,7 +275,7 @@ const getProductReviews = (id) => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage = extractErrorMessage(error.response.data);
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: ALL_REVIEW_FAIL,
@@ -304,8 +299,7 @@ const deleteProductReview = (id, reviewId) => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage =
-            extractErrorMessage(error.response.data) || error.message;
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: DELETE_REVIEW_FAIL,

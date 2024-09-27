@@ -6,15 +6,15 @@ export const verifySeller = asyncHandler(async (req, res, next) => {
         const user = req.user;
 
         if (!user) {
-            throw new ApiError(401, "Unauthorized request");
+            return next(new ApiError(401, "Unauthorized request"));
         }
 
         if (user.role !== "seller") {
-            throw new ApiError(401, "Access denied");
+            return next(new ApiError(401, "Access denied"));
         }
 
         next();
     } catch (error) {
-        throw new ApiError(401, error?.message || "Unauthorized request");
+        return next(new ApiError(401, error?.message || "Unauthorized request"));
     }
 });

@@ -32,7 +32,6 @@ import {
     UPDATE_ROLE_REQUEST,
     UPDATE_ROLE_SUCCESS,
 } from "../constants/UserConstant";
-import { extractErrorMessage } from "../ExtractErrorMessage";
 
 // Get the API URL from environment variables
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -58,8 +57,7 @@ const loginUser = (email, password) => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage =
-            extractErrorMessage(error.response.data) || error.message;
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: LOGIN_FAIL,
@@ -89,8 +87,7 @@ const registerUser = (userData) => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage =
-            extractErrorMessage(error.response.data) || error.message;
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: REGISTER_USER_FAIL,
@@ -121,8 +118,7 @@ const loadUser = () => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage =
-            extractErrorMessage(error.response.data) || error.message;
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: LOAD_USER_FAIL,
@@ -140,8 +136,7 @@ const logoutUser = () => async (dispatch) => {
 
         dispatch({ type: LOGOUT_SUCCESS });
     } catch (error) {
-        const errorMessage =
-            extractErrorMessage(error.response.data) || error.message;
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: LOGOUT_FAIL,
@@ -171,8 +166,7 @@ const updateUserRole = (userData) => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage =
-            extractErrorMessage(error.response.data) || error.message;
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: UPDATE_ROLE_FAIL,
@@ -202,8 +196,7 @@ const updateUserProfile = (userData) => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage =
-            extractErrorMessage(error.response.data) || error.message;
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: UPDATE_PROFILE_FAIL,
@@ -233,8 +226,7 @@ const updateUserPassword = (oldPassword, newPassword) => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage =
-            extractErrorMessage(error.response.data) || error.message;
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: UPDATE_PASSWORD_FAIL,
@@ -264,8 +256,7 @@ const forgotPassword = (email) => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage =
-            extractErrorMessage(error.response.data) || error.message;
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: FORGOT_PASSWORD_FAIL,
@@ -295,8 +286,7 @@ const resetPassword = (token, passwords) => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage =
-            extractErrorMessage(error.response.data) || error.message;
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: RESET_PASSWORD_FAIL,
@@ -320,8 +310,7 @@ const deleteUser = () => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage =
-            extractErrorMessage(error.response.data) || error.message;
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: DELETE_ACCOUNT_FAIL,

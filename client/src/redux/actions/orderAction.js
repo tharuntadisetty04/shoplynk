@@ -20,7 +20,6 @@ import {
     UPDATE_ORDER_REQUEST,
     UPDATE_ORDER_SUCCESS,
 } from "../constants/orderConstant";
-import { extractErrorMessage } from "../ExtractErrorMessage";
 
 // Get the API URL from environment variables
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -46,8 +45,7 @@ const createNewOrder = (order) => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage =
-            extractErrorMessage(error.response.data) || error.message;
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: CREATE_ORDER_FAIL,
@@ -73,8 +71,7 @@ const getCurrentUserOrders = () => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage =
-            extractErrorMessage(error.response.data) || error.message;
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: MY_ORDERS_FAIL,
@@ -100,8 +97,7 @@ const getSellerOrders = () => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage =
-            extractErrorMessage(error.response.data) || error.message;
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: SELLER_ORDERS_FAIL,
@@ -127,8 +123,7 @@ const getOrderDetails = (id) => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage =
-            extractErrorMessage(error.response.data) || error.message;
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: ORDER_DETAILS_FAIL,
@@ -158,8 +153,7 @@ const updateOrder = (orderData, orderId) => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage =
-            extractErrorMessage(error.response.data) || error.message;
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: UPDATE_ORDER_FAIL,
@@ -183,8 +177,7 @@ const deleteOrder = (id) => async (dispatch) => {
             payload: data,
         });
     } catch (error) {
-        const errorMessage =
-            extractErrorMessage(error.response.data) || error.message;
+        const errorMessage = error.response.data.message || error.message;
 
         dispatch({
             type: DELETE_ORDER_FAIL,

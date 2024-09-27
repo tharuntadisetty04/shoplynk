@@ -7,12 +7,11 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import validator from "validator";
 import sendEmail from "../utils/sendEmail.js";
 import crypto from "crypto";
-import jwt from "jsonwebtoken";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
 import cloudinary from "cloudinary";
 
 //generate tokens
-const generateTokens = async (userId) => {
+const generateTokens = async (userId, next) => {
     try {
         const user = await User.findById(userId);
         const accessToken = user.generateAccessToken();
@@ -23,12 +22,12 @@ const generateTokens = async (userId) => {
 
         return { accessToken, refreshToken };
     } catch (error) {
-        throw new ApiError(500, "Token generation failed");
+        return next(new ApiError(500, "Token generation failed"));
     }
 };
 
 //register user
-const registerUser = asyncHandler(async (req, res) => {
+const registerUser = asyncHandler(async (req, res, next) => {
     const { username, email, password, role } = req.body;
 
     if (
@@ -36,25 +35,29 @@ const registerUser = asyncHandler(async (req, res) => {
             (field) => !field || field.trim() === ""
         )
     ) {
-        throw new ApiError(400, "Please enter the required fields");
+        return next(new ApiError(400, "Please enter the required fields"));
     }
 
     if (!validator.isEmail(email)) {
-        throw new ApiError(400, "Please enter a valid email");
+        return next(new ApiError(400, "Please enter a valid email"));
     }
 
     if (username.length < 3 || username.length > 30) {
-        throw new ApiError(400, "Username must be between 3 and 30 characters");
+        return next(
+            new ApiError(400, "Username must be between 3 and 30 characters")
+        );
     }
 
     if (password.length < 8 || password.length > 30) {
-        throw new ApiError(400, "Password must be between 8 and 30 characters");
+        return next(
+            new ApiError(400, "Password must be between 8 and 30 characters")
+        );
     }
 
     const existedUser = await User.findOne({ email });
 
     if (existedUser) {
-        throw new ApiError(409, "User with email already exists");
+        return next(new ApiError(409, "User with email already exists"));
     }
 
     let avatar;
@@ -62,19 +65,15 @@ const registerUser = asyncHandler(async (req, res) => {
         try {
             avatar = await uploadToCloudinary(req.file?.path);
             if (!avatar) {
-                throw new ApiError(
-                    400,
-                    "Failed to upload avatar file to cloud"
-                );
+                return next(new ApiError(400, "Failed to upload avatar file"));
             }
         } catch (error) {
-            throw new ApiError(
-                500,
-                error.message || "Failed to upload avatar file to cloud"
-            );
+            return next(new ApiError(500, "Failed to upload avatar"));
         }
     } else {
-        throw new ApiError(400, "Avatar file is missing or not uploaded");
+        return next(
+            new ApiError(400, "Avatar file is missing or not uploaded")
+        );
     }
 
     const newUser = {
@@ -95,7 +94,7 @@ const registerUser = asyncHandler(async (req, res) => {
     );
 
     if (!isUserCreated) {
-        throw new ApiError(500, "User registration failed");
+        return next(new ApiError(500, "User registration failed"));
     }
 
     const { accessToken, refreshToken } = await generateTokens(
@@ -134,27 +133,27 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 //login user
-const loginUser = asyncHandler(async (req, res) => {
+const loginUser = asyncHandler(async (req, res, next) => {
     const { email, password } = req.body;
 
     if ([email, password].some((field) => !field || field.trim() === "")) {
-        throw new ApiError(400, "Please enter the required fields");
+        return next(new ApiError(400, "Please enter the required fields"));
     }
 
     if (!validator.isEmail(email)) {
-        throw new ApiError(400, "Please Enter a valid Email");
+        return next(new ApiError(400, "Please Enter a valid Email"));
     }
 
     const isUserExists = await User.findOne({ email }).select("+password");
 
     if (!isUserExists) {
-        throw new ApiError(404, "User does not exist or Invalid email");
+        return next(new ApiError(404, "User does not exist or Invalid email"));
     }
 
     const isPasswordValid = await isUserExists.isPasswordCorrect(password);
 
     if (!isPasswordValid) {
-        throw new ApiError(404, "Invalid email or password");
+        return next(new ApiError(401, "Invalid email or password"));
     }
 
     const { accessToken, refreshToken } = await generateTokens(
@@ -221,9 +220,9 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 //get current user
-const getCurrentUser = asyncHandler(async (req, res) => {
+const getCurrentUser = asyncHandler(async (req, res, next) => {
     if (!req.user) {
-        throw new ApiError(401, "User not authenticated");
+        return next(new ApiError(401, "User not authenticated"));
     }
 
     return res
@@ -234,15 +233,15 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 });
 
 //forgot password
-const forgotPassword = asyncHandler(async (req, res) => {
+const forgotPassword = asyncHandler(async (req, res, next) => {
     const email = req.body?.email;
 
     if (!email) {
-        throw new ApiError(400, "Please enter your email.");
+        return next(new ApiError(400, "Please enter your email."));
     }
 
     if (!validator.isEmail(email)) {
-        throw new ApiError(400, "Please enter a valid email.");
+        return next(new ApiError(400, "Please enter a valid email."));
     }
 
     const user = await User.findOne({ email });
@@ -289,20 +288,22 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
         await user.save({ validateBeforeSave: false });
 
-        throw new ApiError(
-            500,
-            error.message ||
-            "Failed to send reset email. Please try again later."
+        return next(
+            new ApiError(
+                500,
+                error.message ||
+                "Failed to send reset email. Please try again later."
+            )
         );
     }
 });
 
 //reset password
-const resetPassword = asyncHandler(async (req, res) => {
+const resetPassword = asyncHandler(async (req, res, next) => {
     const { password, confirmPassword } = req.body;
 
     if (!password || !confirmPassword) {
-        throw new ApiError(400, "Please enter both passwords");
+        return next(new ApiError(400, "Please enter both passwords"));
     }
 
     const resetPasswordToken = crypto
@@ -316,17 +317,16 @@ const resetPassword = asyncHandler(async (req, res) => {
     });
 
     if (!user) {
-        throw new ApiError(400, "Invalid or expired reset token.");
+        return next(new ApiError(400, "Invalid or expired reset token."));
     }
 
     if (password !== confirmPassword) {
-        throw new ApiError(400, "Passwords do not match.");
+        return next(new ApiError(400, "Passwords do not match."));
     }
 
     if (password.length > 30 || password.length < 8) {
-        throw new ApiError(
-            400,
-            "Password must be between 8 and 30 characters."
+        return next(
+            new ApiError(400, "Password must be between 8 and 30 characters.")
         );
     }
 
@@ -379,36 +379,42 @@ const resetPassword = asyncHandler(async (req, res) => {
 });
 
 //update current password
-const updatePassword = asyncHandler(async (req, res) => {
+const updatePassword = asyncHandler(async (req, res, next) => {
     const { oldPassword, newPassword } = req.body;
 
     if (!oldPassword || !newPassword) {
-        throw new ApiError(400, "Both old and new passwords are required");
+        return next(
+            new ApiError(400, "Both old and new passwords are required")
+        );
     }
 
     const user = await User.findById(req.user?._id);
 
     if (!user) {
-        throw new ApiError(404, "User not found");
+        return next(new ApiError(404, "User not found"));
     }
 
     const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
 
     if (!isPasswordCorrect) {
-        throw new ApiError(400, "Invalid old password");
+        return next(new ApiError(400, "Invalid old password"));
     }
 
     if (oldPassword === newPassword) {
-        throw new ApiError(
-            400,
-            "New password cannot be the same as the old password."
+        return next(
+            new ApiError(
+                400,
+                "New password cannot be the same as the old password."
+            )
         );
     }
 
     if (newPassword.length > 30 || newPassword.length < 8) {
-        throw new ApiError(
-            400,
-            "Password length must be between 8 and 30 characters"
+        return next(
+            new ApiError(
+                400,
+                "Password length must be between 8 and 30 characters"
+            )
         );
     }
 
@@ -422,25 +428,27 @@ const updatePassword = asyncHandler(async (req, res) => {
 });
 
 //update profile
-const updateProfile = asyncHandler(async (req, res) => {
+const updateProfile = asyncHandler(async (req, res, next) => {
     const { username, email } = req.body;
 
     if ([username, email].some((field) => !field || field.trim() === "")) {
-        throw new ApiError(400, "Both username and email are required");
+        return next(new ApiError(400, "Both username and email are required"));
     }
 
     if (!validator.isEmail(email)) {
-        throw new ApiError(400, "Please enter a valid email address");
+        return next(new ApiError(400, "Please enter a valid email address"));
     }
 
     if (username.length > 30 || username.length < 3) {
-        throw new ApiError(400, "Username must be between 3 and 30 characters");
+        return next(
+            new ApiError(400, "Username must be between 3 and 30 characters")
+        );
     }
 
     const user = await User.findById(req.user._id);
 
     if (!user) {
-        throw new ApiError(404, "User not found");
+        return next(new ApiError(404, "User not found"));
     }
 
     if (user.avatar && user.avatar.public_id) {
@@ -457,10 +465,12 @@ const updateProfile = asyncHandler(async (req, res) => {
         avatar = await uploadToCloudinary(avatarLocalPath);
 
         if (!avatar) {
-            throw new ApiError(500, "Failed to upload new avatar");
+            return next(new ApiError(500, "Failed to upload new avatar"));
         }
     } else {
-        throw new ApiError(400, "Avatar file is missing or not uploaded");
+        return next(
+            new ApiError(400, "Avatar file is missing or not uploaded")
+        );
     }
 
     const newUserData = {
@@ -482,7 +492,7 @@ const updateProfile = asyncHandler(async (req, res) => {
     );
 
     if (!updatedUser) {
-        throw new ApiError(500, "Failed to update user profile");
+        return next(new ApiError(500, "Failed to update user profile"));
     }
 
     return res
@@ -493,29 +503,35 @@ const updateProfile = asyncHandler(async (req, res) => {
 });
 
 //update from buyer to seller role
-const updateUserRole = asyncHandler(async (req, res) => {
+const updateUserRole = asyncHandler(async (req, res, next) => {
     const { username, email } = req.body;
 
     if ([username, email].some((field) => !field || field.trim() === "")) {
-        throw new ApiError(400, "Username and email are required");
+        return next(new ApiError(400, "Username and email are required"));
     }
 
     if (!validator.isEmail(email)) {
-        throw new ApiError(400, "Please Enter a valid Email");
+        return next(new ApiError(400, "Please Enter a valid Email"));
     }
 
     if (username.length > 30 || username.length < 3) {
-        throw new ApiError(400, "Username must be between 3 and 30 characters");
+        return next(
+            new ApiError(400, "Username must be between 3 and 30 characters")
+        );
     }
 
     const user = await User.findById(req.user?._id);
 
     if (!user) {
-        throw new ApiError(404, `User with ID ${req.user?._id} not found.`);
+        return next(
+            new ApiError(404, `User with ID ${req.user?._id} not found.`)
+        );
     }
 
     if (user.role !== "buyer") {
-        throw new ApiError(403, "Only buyers can upgrade to seller role.");
+        return next(
+            new ApiError(403, "Only buyers can upgrade to seller role.")
+        );
     }
 
     const updatedUser = await User.findByIdAndUpdate(
@@ -532,14 +548,14 @@ const updateUserRole = asyncHandler(async (req, res) => {
 });
 
 //delete account
-const deleteUserProfile = asyncHandler(async (req, res) => {
+const deleteUserProfile = asyncHandler(async (req, res, next) => {
     const userId = req.user._id;
 
     try {
         const user = await User.findById(userId);
 
         if (!user) {
-            throw new ApiError(404, "User not found");
+            return next(new ApiError(404, "User not found"));
         }
 
         if (user.avatar && user.avatar.public_id) {
@@ -557,7 +573,6 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
         }
 
         await Product.deleteMany({ owner: userId });
-
         await Order.deleteMany({ user: userId });
 
         await Order.updateMany(
@@ -601,9 +616,11 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
                 new ApiResponse(200, {}, "User account deleted successfully")
             );
     } catch (error) {
-        throw new ApiError(
-            500,
-            error.message || "An error occurred while deleting the account"
+        return next(
+            new ApiError(
+                500,
+                error.message || "An error occurred while deleting the account"
+            )
         );
     }
 });

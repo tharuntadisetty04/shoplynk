@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 
 //create new order
-const newOrder = asyncHandler(async (req, res) => {
+const newOrder = asyncHandler(async (req, res, next) => {
     const {
         shippingInfo,
         orderItems,
@@ -25,23 +25,25 @@ const newOrder = asyncHandler(async (req, res) => {
         shippingPrice === null ||
         totalPrice === null
     ) {
-        throw new ApiError(400, "All fields are required");
+        return next(new ApiError(400, "All fields are required"));
     }
 
     const { address, city, state, country, pincode, phoneNo } = shippingInfo;
 
     if (!address || !city || !state || !country || !pincode || !phoneNo) {
-        throw new ApiError(400, "Complete shipping information is required");
+        return next(
+            new ApiError(400, "Complete shipping information is required")
+        );
     }
 
     const phoneNoPattern = /^\d{10}$/;
     if (!phoneNoPattern.test(phoneNo)) {
-        throw new ApiError(400, "Invalid phone number format");
+        return next(new ApiError(400, "Invalid phone number format"));
     }
 
     const pincodePattern = /^\d{6}$/;
     if (!pincodePattern.test(pincode)) {
-        throw new ApiError(400, "Invalid pincode format");
+        return next(new ApiError(400, "Invalid pincode format"));
     }
 
     try {
@@ -58,23 +60,25 @@ const newOrder = asyncHandler(async (req, res) => {
         });
 
         if (!order) {
-            throw new ApiError(500, "Order creation failed");
+            return next(new ApiError(500, "Order creation failed"));
         }
 
         res.status(201).json(
             new ApiResponse(201, order, "Order created successfully")
         );
     } catch (error) {
-        throw new ApiError(500, error?.message || "Internal server error");
+        return next(
+            new ApiError(500, error?.message || "Internal server error")
+        );
     }
 });
 
 //get single order
-const getSingleOrder = asyncHandler(async (req, res) => {
+const getSingleOrder = asyncHandler(async (req, res, next) => {
     const sellerId = req.user._id;
 
     if (!req.params?.id) {
-        throw new ApiError(400, "Order ID is required");
+        return next(new ApiError(400, "Order ID is required"));
     }
 
     const order = await Order.findById(req.params.id)
@@ -82,23 +86,27 @@ const getSingleOrder = asyncHandler(async (req, res) => {
         .populate("orderItems.product", "name owner");
 
     if (!order) {
-        throw new ApiError(404, "Order not found with the given ID");
+        return next(new ApiError(404, "Order not found with the given ID"));
     }
 
     const sellerItems = order.orderItems.filter((item) => {
         if (!item.product) {
-            throw new ApiError(
-                400,
-                `Product associated with order item ${item._id} has been deleted.`
+            return next(
+                new ApiError(
+                    400,
+                    `Product associated with order item ${item._id} has been deleted.`
+                )
             );
         }
         return item.product.owner.equals(sellerId);
     });
 
     if (!sellerItems) {
-        throw new ApiError(
-            403,
-            "No products in this order are owned by the seller"
+        return next(
+            new ApiError(
+                403,
+                "No products in this order are owned by the seller"
+            )
         );
     }
 
@@ -110,7 +118,7 @@ const getSingleOrder = asyncHandler(async (req, res) => {
 });
 
 //get all orders for a specific seller
-const getSellerOrders = asyncHandler(async (req, res) => {
+const getSellerOrders = asyncHandler(async (req, res, next) => {
     const sellerId = req.user._id;
 
     const orders = await Order.find({
@@ -123,7 +131,7 @@ const getSellerOrders = asyncHandler(async (req, res) => {
         .populate("user", "username email");
 
     if (!orders) {
-        throw new ApiError(404, "No orders found.");
+        return next(new ApiError(404, "No orders found."));
     }
 
     const filteredOrders = orders
@@ -144,7 +152,7 @@ const getSellerOrders = asyncHandler(async (req, res) => {
         .filter((order) => order !== null);
 
     if (!filteredOrders) {
-        throw new ApiError(404, "No orders found for this seller.");
+        return next(new ApiError(404, "No orders found for this seller."));
     }
 
     res.status(200).json(
@@ -157,11 +165,11 @@ const getSellerOrders = asyncHandler(async (req, res) => {
 });
 
 //get current user orders
-const getCurrentUserOrders = asyncHandler(async (req, res) => {
+const getCurrentUserOrders = asyncHandler(async (req, res, next) => {
     const orders = await Order.find({ user: req.user._id }).lean();
 
     if (!orders) {
-        throw new ApiError(404, "No orders found for the current user");
+        return next(new ApiError(404, "No orders found for the current user"));
     }
 
     res.status(200).json(
@@ -170,13 +178,13 @@ const getCurrentUserOrders = asyncHandler(async (req, res) => {
 });
 
 //update order status
-const updateOrder = asyncHandler(async (req, res) => {
+const updateOrder = asyncHandler(async (req, res, next) => {
     const { id } = req.params;
     const { status } = req.body;
     const sellerId = req.user._id;
 
     if (!["Processing", "Shipped", "Delivered"].includes(status)) {
-        throw new ApiError(400, "Invalid status provided");
+        return next(new ApiError(400, "Invalid status provided"));
     }
 
     const order = await Order.findById(id)
@@ -184,7 +192,7 @@ const updateOrder = asyncHandler(async (req, res) => {
         .populate("user", "username email");
 
     if (!order) {
-        throw new ApiError(404, "Order not found with this ID");
+        return next(new ApiError(404, "Order not found with this ID"));
     }
 
     const sellerItems = order.orderItems.filter(
@@ -192,9 +200,11 @@ const updateOrder = asyncHandler(async (req, res) => {
     );
 
     if (!sellerItems) {
-        throw new ApiError(
-            403,
-            "Order does not contain products owned by this seller"
+        return next(
+            new ApiError(
+                403,
+                "Order does not contain products owned by this seller"
+            )
         );
     }
 
@@ -203,7 +213,7 @@ const updateOrder = asyncHandler(async (req, res) => {
     );
 
     if (status === "Delivered" && alreadyDelivered) {
-        throw new ApiError(400, "All items have already been delivered");
+        return next(new ApiError(400, "All items have already been delivered"));
     }
 
     if (status === "Shipped") {
@@ -247,13 +257,14 @@ async function updateStock(productId, quantity) {
     const product = await Product.findById(productId);
 
     if (!product) {
-        throw new ApiError(404, `Product not found with ID: ${productId}`);
+        return next(
+            new ApiError(404, `Product not found with ID: ${productId}`)
+        );
     }
 
     if (product.stock < quantity) {
-        throw new ApiError(
-            400,
-            `Insufficient stock for product ID: ${productId}`
+        return next(
+            new ApiError(400, `Insufficient stock for product ID: ${productId}`)
         );
     }
 
@@ -262,7 +273,7 @@ async function updateStock(productId, quantity) {
 }
 
 //delete order
-const deleteOrder = asyncHandler(async (req, res) => {
+const deleteOrder = asyncHandler(async (req, res, next) => {
     const sellerId = req.user._id;
     const orderId = req.params.id;
 
@@ -272,7 +283,7 @@ const deleteOrder = asyncHandler(async (req, res) => {
     );
 
     if (!order) {
-        throw new ApiError(404, `Order not found with ID: ${orderId}`);
+        return next(new ApiError(404, `Order not found with ID: ${orderId}`));
     }
 
     const remainingItems = order.orderItems.filter(
@@ -287,7 +298,6 @@ const deleteOrder = asyncHandler(async (req, res) => {
     }
 
     order.orderItems = remainingItems;
-
     await order.save();
 
     res.status(200).json(
