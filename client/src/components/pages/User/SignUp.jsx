@@ -211,31 +211,73 @@ const SignUp = () => {
                             </div>
 
                             <div className="flex gap-1 flex-col">
-                                <label htmlFor="avatar" className="font-medium text-lg pl-0.5">
-                                    Avatar
-                                </label>
+                                {window.innerWidth < 700 ? (
+                                    <>
+                                        <div className="flex items-center gap-6">
+                                            <div>
+                                                {avatarPreview && (
+                                                    <img
+                                                        src={avatarPreview}
+                                                        alt="Avatar Preview"
+                                                        className="w-16 h-16 aspect-square object-cover rounded-full"
+                                                    />
+                                                )}
+                                            </div>
 
-                                <div className="flex gap-3 items-center ml-8 md:ml-0">
-                                    {avatarPreview && (
-                                        <img
-                                            src={avatarPreview}
-                                            alt="Avatar Preview"
-                                            className="-ml-1 w-14 h-14 aspect-square object-cover rounded-full"
-                                        />
-                                    )}
+                                            <label
+                                                htmlFor="avatar"
+                                                className="bg-blue-500 text-neutral-100 px-4 py-2 rounded"
+                                            >
+                                                Choose File
+                                                <input
+                                                    type="file"
+                                                    id="avatar"
+                                                    name="avatar"
+                                                    accept="image/*"
+                                                    onChange={handleInputChange}
+                                                    className="hidden"
+                                                />
+                                            </label>
+                                        </div>
 
-                                    <input
-                                        type="file"
-                                        name="avatar"
-                                        accept="image/*"
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
+                                        {errors.avatar && (
+                                            <span className="text-red-500 text-sm font-medium pl-1">
+                                                {errors.avatar.message}
+                                            </span>
+                                        )}
+                                    </>
+                                ) : (
+                                    <>
+                                        <label
+                                            htmlFor="avatar"
+                                            className="font-medium text-lg pl-0.5"
+                                        >
+                                            Avatar
+                                        </label>
 
-                                {errors.avatar && (
-                                    <span className="text-red-500 text-sm font-medium pl-1">
-                                        {errors.avatar.message}
-                                    </span>
+                                        <div className="flex gap-3 items-center ml-8 md:ml-0">
+                                            {avatarPreview && (
+                                                <img
+                                                    src={avatarPreview}
+                                                    alt="Avatar Preview"
+                                                    className="-ml-1 w-14 h-14 aspect-square object-cover rounded-full"
+                                                />
+                                            )}
+
+                                            <input
+                                                type="file"
+                                                name="avatar"
+                                                accept="image/*"
+                                                onChange={handleInputChange}
+                                            />
+                                        </div>
+
+                                        {errors.avatar && (
+                                            <span className="text-red-500 text-sm font-medium pl-1">
+                                                {errors.avatar.message}
+                                            </span>
+                                        )}
+                                    </>
                                 )}
                             </div>
 
