@@ -73,8 +73,8 @@ const ProductCard = ({ product }) => {
                 <div>
                     <h2 className="text-xl font-bold">
                         {product.name &&
-                            product.name.length > 20 &&
-                            product.name.slice(0, 20) + "..."}
+                            product.name.length > 20 ?
+                            product.name.slice(0, 20) + "..." : product?.name}
                     </h2>
 
                     <div className="text-sm font-medium flex gap-1 items-center">
