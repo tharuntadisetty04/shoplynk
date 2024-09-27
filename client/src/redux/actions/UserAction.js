@@ -100,11 +100,12 @@ const registerUser = (userData) => async (dispatch) => {
 const loadUser = () => async (dispatch) => {
     try {
         const getCookie = (name) => {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-
-            if (parts.length === 2) return parts.pop().split(";").shift();
-            return null;
+            const cookies = document.cookie.split("; ").reduce((acc, cookie) => {
+                const [key, value] = cookie.split("=");
+                acc[key] = value;
+                return acc;
+            }, {});
+            return cookies[name] || null;
         };
 
         const checkToken = getCookie("checkToken");
