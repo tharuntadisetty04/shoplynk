@@ -21,14 +21,14 @@ router.route("/login").post(loginUser);
 router.route("/password/forgot").post(forgotPassword);
 router.route("/password/reset/:token").put(resetPassword);
 
-router.use(verifyJWT);
-
-// Secured routes
-router.route("/logout").post(logoutUser);
-router.route("/current-user").get(getCurrentUser);
-router.route("/password/update").patch(updatePassword);
-router.route("/update-profile").patch(upload.single("avatar"), updateProfile);
-router.route("/delete-profile").delete(deleteUserProfile);
-router.route("/update-role").patch(updateUserRole);
+//secured routes
+router.route("/logout").post(verifyJWT, logoutUser);
+router.route("/current-user").get(verifyJWT, getCurrentUser);
+router.route("/password/update").patch(verifyJWT, updatePassword);
+router
+    .route("/update-profile")
+    .patch(upload.single("avatar"), verifyJWT, updateProfile);
+router.route("/delete-profile").delete(verifyJWT, deleteUserProfile);
+router.route("/update-role").patch(verifyJWT, updateUserRole);
 
 export default router;

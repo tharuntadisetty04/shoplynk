@@ -22,7 +22,7 @@ const generateTokens = async (userId, next) => {
 
         return { accessToken, refreshToken };
     } catch (error) {
-        next(new ApiError(500, "Token generation failed"));
+        return next(new ApiError(500, "Token generation failed"));
     }
 };
 
@@ -157,8 +157,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
     }
 
     const { accessToken, refreshToken } = await generateTokens(
-        isUserExists._id,
-        next
+        isUserExists._id
     );
 
     const loggedInUser = await User.findById(isUserExists._id).select(

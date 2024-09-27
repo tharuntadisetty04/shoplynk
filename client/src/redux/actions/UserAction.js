@@ -99,13 +99,20 @@ const registerUser = (userData) => async (dispatch) => {
 // get current user
 const loadUser = () => async (dispatch) => {
     try {
-        // const checkToken = document.cookie
-        //     .split("; ")
-        //     .find((item) => item.startsWith("checkToken="));
+        const getCookie = (name) => {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
 
-        // if (!checkToken) {
-        //     return null;
-        // }
+            if (parts.length === 2) return parts.pop().split(";").shift();
+            return null;
+        };
+
+        const checkToken = getCookie("checkToken");
+        console.log("Check Token:", checkToken);
+
+        if (!checkToken) {
+            return null;
+        }
 
         dispatch({ type: LOAD_USER_REQUEST });
 
