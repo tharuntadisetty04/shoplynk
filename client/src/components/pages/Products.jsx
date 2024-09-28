@@ -63,7 +63,7 @@ const Products = () => {
         setPrice(priceRange);
 
         dispatch(
-            getAllProducts(keyword, currentPage, category, rating, priceRange)
+            getAllProducts(keyword, 1, category, rating, priceRange)
         );
     };
 
@@ -128,7 +128,7 @@ const Products = () => {
         setActiveCategory("");
         setRating(0);
         setCurrentPage(1);
-        dispatch(getAllProducts(keyword, currentPage, "", 0, [1, 900000]));
+        dispatch(getAllProducts(keyword, 1, "", 0, [1, 900000]));
     }, 200);
 
     const togglePrice = () => {
