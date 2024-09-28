@@ -99,15 +99,17 @@ const Profile = () => {
                         <p className="text-base lg:text-lg">Personal Information</p>
                     </div>
 
-                    <Link
-                        to="/orders"
-                        className="text-start rounded-md border-2 border-slate-200 text-lg font-medium py-2 px-3 hover:bg-blue-600 hover:text-neutral-100 duration-200 flex items-center gap-1.5"
-                    >
-                        <span className="text-base">
-                            <FaBagShopping />
-                        </span>
-                        <span className="text-base lg:text-lg">My Orders</span>
-                    </Link>
+                    {window.innerWidth > 1000 && (
+                        <Link
+                            to="/orders"
+                            className="text-start rounded-md border-2 border-slate-200 text-lg font-medium py-2 px-3 hover:bg-blue-600 hover:text-neutral-100 duration-200 flex items-center gap-1.5"
+                        >
+                            <span className="text-base">
+                                <FaBagShopping />
+                            </span>
+                            <span className="text-base lg:text-lg">My Orders</span>
+                        </Link>
+                    )}
 
                     {user && user.role === "seller" && (
                         <Link
