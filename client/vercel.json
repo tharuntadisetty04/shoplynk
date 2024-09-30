@@ -1,19 +1,8 @@
 {
-  "functions": {
-    "api/pingServer.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "rewrites": [
     {
       "source": "/(.*)",
       "destination": "/index.html"
-    }
-  ],
-  "crons": [
-    {
-      "path": "/api/pingServer", 
-      "schedule": "*/5 * * * *"
     }
   ]
 }
