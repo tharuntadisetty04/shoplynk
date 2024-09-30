@@ -4,16 +4,5 @@
       "source": "/(.*)",
       "destination": "/index.html"
     }
-  ],
-  "functions": {
-    "api/pingServer.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
-  "routes": [
-    {
-      "src": "/api/pingServer",
-      "dest": "/api/pingServer.js"
-    }
   ]
 }
