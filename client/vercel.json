@@ -1,5 +1,16 @@
 {
-  "rewrites": [
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/pingServer.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/pingServer",
+      "dest": "/api/pingServer.js"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
