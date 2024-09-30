@@ -13,13 +13,8 @@
   "builds": [
     {
       "src": "api/pingServer.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/pingServer",
-      "dest": "/api/pingServer.js"
+      "use": "@vercel/node",
+      "framework": "Node.js"
     }
   ]
 }
