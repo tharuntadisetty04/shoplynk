@@ -7,7 +7,19 @@
   ],
   "functions": {
     "api/pingServer.js": {
-      "runtime": "nodejs"
+      "runtime": "nodejs18.x"
     }
-  }
+  },
+  "builds": [
+    {
+      "src": "api/pingServer.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/pingServer",
+      "dest": "/api/pingServer.js"
+    }
+  ]
 }
