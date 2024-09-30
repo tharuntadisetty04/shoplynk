@@ -10,12 +10,10 @@
       "destination": "/index.html"
     }
   ],
-  "cron": {
-    "jobs": [
-      {
-        "path": "/api/pingServer",
-        "schedule": "*/5 * * * *"
-      }
-    ]
-  }
+  "crons": [
+    {
+      "path": "/api/pingServer", 
+      "schedule": "*/5 * * * *"
+    }
+  ]
 }
