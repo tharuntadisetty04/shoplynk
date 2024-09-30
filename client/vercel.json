@@ -7,7 +7,7 @@
   ],
   "functions": {
     "api/pingServer.js": {
-      "runtime": "nodejs18.x"
+      "runtime": "nodejs"
     }
   }
 }
