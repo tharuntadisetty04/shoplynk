@@ -10,11 +10,10 @@
       "runtime": "nodejs18.x"
     }
   },
-  "builds": [
+  "routes": [
     {
-      "src": "api/pingServer.js",
-      "use": "@vercel/node",
-      "framework": "Node.js"
+      "src": "/api/pingServer",
+      "dest": "/api/pingServer.js"
     }
   ]
 }
