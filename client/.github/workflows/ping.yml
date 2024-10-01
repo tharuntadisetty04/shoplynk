@@ -10,4 +10,4 @@ jobs:
 
     steps:
       - name: Send Ping to Vercel API
-        run: curl -X GET https://shoplynk.vercel.app/api/pingServer
+        run: curl -X GET https://shoplynk-cron.vercel.app/api/cron
